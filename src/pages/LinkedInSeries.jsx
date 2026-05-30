@@ -21,6 +21,72 @@ const EPISODES = [
 // Published LinkedIn posts. Render above the episode grid so the live drops are the first content after the hero.
 const LIVE_POSTS = [
   {
+    type: 'announcement',
+    author: 'both',
+    date: '2026-05-29',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7466156416198680577',
+  },
+  {
+    type: 'student-lens',
+    author: 'jocelyn',
+    date: '2026-05-28',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465883343570534401',
+  },
+  {
+    type: 'postgrad-lens',
+    author: 'jose',
+    date: '2026-05-28',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465867333836750848',
+  },
+  {
+    type: 'series',
+    author: 'both',
+    date: '2026-05-28',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465809154117476352',
+  },
+  {
+    type: 'real-talk',
+    author: 'both',
+    date: '2026-05-27',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465446734387675136',
+  },
+  {
+    type: 'strategy',
+    author: 'both',
+    date: '2026-05-21',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7463272426001498112',
+  },
+  {
+    type: 'tips',
+    author: 'both',
+    date: '2026-05-20',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7462910032209207298',
+  },
+  {
+    type: 'real-talk',
+    author: 'both',
+    date: '2026-05-18',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7462185243022901248',
+  },
+  {
+    type: 'behind-the-scenes',
+    author: 'both',
+    date: '2026-05-15',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7461083153688842240',
+  },
+  {
+    type: 'perspective',
+    author: 'both',
+    date: '2026-05-14',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7460720723968577536',
+  },
+  {
+    type: 'real-talk',
+    author: 'both',
+    date: '2026-05-11',
+    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7459648558691164160',
+  },
+  {
     type: 'series-launch',
     author: 'both',
     date: '2026-05-05',
