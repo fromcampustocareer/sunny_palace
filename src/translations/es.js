@@ -1668,7 +1668,7 @@ export const es = {
     livePosts: [
       {
         kicker: 'Lanzamiento · Anuncio',
-        title: 'Marca tu calendario — el 31 de mayo se lanza From Campus to Career.',
+        title: 'Marca tu calendario. El 31 de mayo se lanza From Campus to Career.',
         preview: 'Para estudiantes de primera generación y recién graduados que recorren el camino de la universidad a la carrera en tiempo real. ¿Sin manual? Estamos creando uno. Únete a la lista de los Primeros 1,000 y cuéntanos qué recursos de carrera te hubiera gustado tener.',
         dateLabel: '29 de mayo, 2026',
       },
@@ -1681,7 +1681,7 @@ export const es = {
         posts: [
           {
             kicker: 'Perspectiva del estudiante · Jocelyn',
-            title: 'Otro verano sin pasantía — y sí, puede sentirse personal.',
+            title: 'Otro verano sin pasantía, y sí, puede sentirse personal.',
             preview: 'Dijeron haz un currículum. ✓ Haz más networking. ✓ Aplica temprano. ✓ Escríbele a reclutadores. ✓ Trabaja en proyectos. ✓ Date a conocer. ✓ Hiciste absolutamente todo lo que te dijeron. Y aún así sigues aquí.',
             dateLabel: '28 de mayo, 2026',
           },
@@ -1693,7 +1693,7 @@ export const es = {
           },
           {
             kicker: 'Logro · Tips de pasantía',
-            title: 'Llegamos a 67 seguidores — así que aquí van 6–7 tips de pasantía.',
+            title: 'Llegamos a 67 seguidores, así que aquí van 6–7 tips de pasantía.',
             preview: '6 cosas que toda persona en pasantía debe registrar: los proyectos en los que trabajaste, la retroalimentación que recibiste, la gente con la que conectaste, las métricas o resultados, las habilidades que practicaste, y los momentos en que te sentiste orgulloso. ¿Y el 7º? Guarda tus pruebas. 🧾',
             dateLabel: '20 de mayo, 2026',
           },
@@ -1705,19 +1705,19 @@ export const es = {
           {
             kicker: 'Sin filtro · Rechazo',
             title: 'Dejen de decirles a los estudiantes que el rechazo forja carácter.',
-            preview: 'A veces solo revela quién tuvo acceso al manual primero. Para estudiantes de primera generación, un “no” puede sentirse como prueba de que estás atrasado, no calificado, sin oportunidades. Pero el rechazo no es prueba de que no eres capaz — a veces es solo información.',
+            preview: 'A veces solo revela quién tuvo acceso al manual primero. Para estudiantes de primera generación, un “no” puede sentirse como prueba de que estás atrasado, no calificado, sin oportunidades. Pero el rechazo no es prueba de que no eres capaz. A veces es solo información.',
             dateLabel: '27 de mayo, 2026',
           },
           {
             kicker: 'Sin filtro · La brecha',
             title: 'Dejen de decir que un título es suficiente. No lo es.',
-            preview: 'Un título ayuda. Pero no te enseña automáticamente a navegar el mercado, explicar tu valor, construir relaciones o convertir la experiencia en pruebas. Esa es la verdadera brecha de la universidad a la carrera. No es el esfuerzo — es el acceso.',
+            preview: 'Un título ayuda. Pero no te enseña automáticamente a navegar el mercado, explicar tu valor, construir relaciones o convertir la experiencia en pruebas. Esa es la verdadera brecha de la universidad a la carrera. No es el esfuerzo. Es el acceso.',
             dateLabel: '18 de mayo, 2026',
           },
           {
             kicker: 'Sin filtro · Networking',
             title: '“Solo haz networking” es consejo flojo cuando faltan las instrucciones.',
-            preview: 'A algunos estudiantes les entregan el manual — saben cómo funcionan las referencias, cómo se ve un buen perfil, qué preguntar en una entrevista. Para muchos estudiantes de primera generación y subrepresentados, se siente como armar un rompecabezas sin ver la imagen de la caja.',
+            preview: 'A algunos estudiantes les entregan el manual. Saben cómo funcionan las referencias, cómo se ve un buen perfil, qué preguntar en una entrevista. Para muchos estudiantes de primera generación y subrepresentados, se siente como armar un rompecabezas sin ver la imagen de la caja.',
             dateLabel: '11 de mayo, 2026',
           },
         ],
@@ -1727,14 +1727,14 @@ export const es = {
         posts: [
           {
             kicker: 'Serie · Qué hay en mi escritorio',
-            title: '“¿Qué hay en mi escritorio?” — pero en clave first-gen de la U a la carrera.',
+            title: '“¿Qué hay en mi escritorio?” Pero en clave first-gen de la U a la carrera.',
             preview: 'En nuestro escritorio: una laptop para construir el sueño, LinkedIn para hacer networking, notas first-gen de lecciones aprendidas tarde, matcha de horchata como combustible, recordatorios de cafecito para la confianza, y a Sunny para un poco de luz. ☀️',
             dateLabel: '28 de mayo, 2026',
           },
           {
             kicker: 'Estrategia · Marca',
             title: '¿Sigues la tendencia o la haces significar algo?',
-            preview: 'Spotify hizo viral el logo de la bola de disco y las marcas copiaron el look. Pero una bola de disco refleja la luz desde todos los ángulos — y eso es lo que el apoyo de carrera debería hacer: hacer visibles las reglas ocultas, convertir la incertidumbre en lenguaje, reflejar a los estudiantes mientras aún se descubren.',
+            preview: 'Spotify hizo viral el logo de la bola de disco y las marcas copiaron el look. Pero una bola de disco refleja la luz desde todos los ángulos, y eso es lo que el apoyo de carrera debería hacer: hacer visibles las reglas ocultas, convertir la incertidumbre en lenguaje, reflejar a los estudiantes mientras aún se descubren.',
             dateLabel: '21 de mayo, 2026',
           },
         ],
@@ -1745,7 +1745,7 @@ export const es = {
           {
             kicker: 'Tras bambalinas · Recursos',
             title: 'Los recursos de carrera no deberían empezar cuando ya te sientes perdido.',
-            preview: 'Con demasiada frecuencia a la gente le dicen “haz networking”, “arregla tu currículum”, “date a conocer” — cuando ya está abrumada y sin saber por dónde empezar. Estamos construyendo antes de ese punto: el primer paquete de recursos de From Campus to Career, con herramientas que la gente sí puede usar.',
+            preview: 'Con demasiada frecuencia a la gente le dicen “haz networking”, “arregla tu currículum”, “date a conocer,” cuando ya está abrumada y sin saber por dónde empezar. Estamos construyendo antes de ese punto: el primer paquete de recursos de From Campus to Career, con herramientas que la gente sí puede usar.',
             dateLabel: '15 de mayo, 2026',
           },
           {
@@ -1757,7 +1757,7 @@ export const es = {
           {
             kicker: 'Lanzamiento de la serie · Anuncio',
             title: 'El 5 de mayo de 1862, México estaba superado en número.',
-            preview: 'Tenían todas las razones para perder. Ganaron de todos modos. Esa misma energía es exactamente lo que define a estudiantes de primera generación — aparecer sin un manual, construir redes desde cero, y convertir la adversidad en lo que nos hace, nosotros. Hemos estado construyendo algo en silencio. Deja tu correo en los comentarios para ser el primero en enterarte.',
+            preview: 'Tenían todas las razones para perder. Ganaron de todos modos. Esa misma energía es exactamente lo que define a estudiantes de primera generación, aparecer sin un manual, construir redes desde cero, y convertir la adversidad en lo que nos hace, nosotros. Hemos estado construyendo algo en silencio. Deja tu correo en los comentarios para ser el primero en enterarte.',
             dateLabel: '5 de mayo, 2026',
           },
         ],
