@@ -4,6 +4,10 @@ import ArticleLayout from '../components/ArticleLayout'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
 
+// Hide the episode roadmap browser (filters + jump-to TOC + episodes 01–10).
+// Flip to true to restore the full episode-browsing section.
+const SHOW_EPISODES = false
+
 // Stable structural data — canonical keys only, no display strings
 const EPISODES = [
   { num: '01', lens: 'both', topics: 'internships rejection', tags: ['internships', 'rejection'], posts: [{ type: 'announcement', author: 'both', status: 'coming-soon' }, { type: 'student-lens', author: 'jose', status: 'coming-soon' }, { type: 'post-grad-lens', author: 'jocelyn', status: 'coming-soon' }, { type: 'recap-cta', author: 'both', status: 'coming-soon' }] },
@@ -554,6 +558,8 @@ export default function LinkedInSeries() {
         </section>
       )}
 
+      {SHOW_EPISODES && (
+      <>
       <div className="ls-controls">
         <div className="ls-filters" role="group" aria-label={t.filtersAriaLabel} ref={filtersRef}>
           <button
@@ -656,6 +662,8 @@ export default function LinkedInSeries() {
             })
         }
       </div>
+      </>
+      )}
 
       <div className="ls-bridge">
         <div className="ls-bridge__inner">
