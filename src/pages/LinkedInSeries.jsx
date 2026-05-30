@@ -19,6 +19,8 @@ const EPISODES = [
 ]
 
 // Published LinkedIn posts. Render above the episode grid so the live drops are the first content after the hero.
+// Only the single most-recent drop headlines the "Latest from the series" section.
+// All earlier published posts live in PUBLISHED_GROUPS below, sorted by topic.
 const LIVE_POSTS = [
   {
     type: 'announcement',
@@ -26,71 +28,42 @@ const LIVE_POSTS = [
     date: '2026-05-29',
     url: 'https://www.linkedin.com/feed/update/urn:li:activity:7466156416198680577',
   },
+]
+
+// Published posts grouped by topic category. Rendered between the live drop and the
+// episode roadmap. Each card links straight to LinkedIn. Order: newest first within group.
+// Content (kicker/title/preview/dateLabel) comes from t.publishedGroups[groupIdx].posts[postIdx].
+const PUBLISHED_GROUPS = [
   {
-    type: 'student-lens',
-    author: 'jocelyn',
-    date: '2026-05-28',
-    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465883343570534401',
+    key: 'internships',
+    posts: [
+      { author: 'jocelyn', date: '2026-05-28', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465883343570534401' },
+      { author: 'jose', date: '2026-05-28', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465867333836750848' },
+      { author: 'both', date: '2026-05-20', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7462910032209207298' },
+    ],
   },
   {
-    type: 'postgrad-lens',
-    author: 'jose',
-    date: '2026-05-28',
-    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465867333836750848',
+    key: 'rejection',
+    posts: [
+      { author: 'both', date: '2026-05-27', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465446734387675136' },
+      { author: 'both', date: '2026-05-18', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7462185243022901248' },
+      { author: 'both', date: '2026-05-11', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7459648558691164160' },
+    ],
   },
   {
-    type: 'series',
-    author: 'both',
-    date: '2026-05-28',
-    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465809154117476352',
+    key: 'brand',
+    posts: [
+      { author: 'both', date: '2026-05-28', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465809154117476352' },
+      { author: 'both', date: '2026-05-21', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7463272426001498112' },
+    ],
   },
   {
-    type: 'real-talk',
-    author: 'both',
-    date: '2026-05-27',
-    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7465446734387675136',
-  },
-  {
-    type: 'strategy',
-    author: 'both',
-    date: '2026-05-21',
-    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7463272426001498112',
-  },
-  {
-    type: 'tips',
-    author: 'both',
-    date: '2026-05-20',
-    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7462910032209207298',
-  },
-  {
-    type: 'real-talk',
-    author: 'both',
-    date: '2026-05-18',
-    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7462185243022901248',
-  },
-  {
-    type: 'behind-the-scenes',
-    author: 'both',
-    date: '2026-05-15',
-    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7461083153688842240',
-  },
-  {
-    type: 'perspective',
-    author: 'both',
-    date: '2026-05-14',
-    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7460720723968577536',
-  },
-  {
-    type: 'real-talk',
-    author: 'both',
-    date: '2026-05-11',
-    url: 'https://www.linkedin.com/feed/update/urn:li:activity:7459648558691164160',
-  },
-  {
-    type: 'series-launch',
-    author: 'both',
-    date: '2026-05-05',
-    url: 'https://www.linkedin.com/posts/from-campus-to-career_fromcampustocareer-firstgen-careerdevelopment-activity-7457496865899626496-3eB_',
+    key: 'behind-the-scenes',
+    posts: [
+      { author: 'both', date: '2026-05-15', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7461083153688842240' },
+      { author: 'both', date: '2026-05-14', url: 'https://www.linkedin.com/feed/update/urn:li:activity:7460720723968577536' },
+      { author: 'both', date: '2026-05-05', url: 'https://www.linkedin.com/posts/from-campus-to-career_fromcampustocareer-firstgen-careerdevelopment-activity-7457496865899626496-3eB_' },
+    ],
   },
 ]
 
@@ -286,6 +259,35 @@ const PAGE_CSS = `
     .ls-live__card,.ls-live__cta,.ls-live__cta svg { transition:none !important; }
     .ls-live__card:hover { transform:none !important; }
     .ls-live__card:hover .ls-live__cta svg { transform:none !important; }
+  }
+
+  /* Published posts, grouped by topic — sits between the live drop and the episode roadmap */
+  .ls-pub { max-width:1240px;margin:0 auto;padding:8px clamp(20px,5vw,56px) 56px;display:flex;flex-direction:column;gap:40px; }
+  .ls-pub__head { display:flex;flex-direction:column;gap:8px; }
+  .ls-pub__heading { font-family:var(--font-display);font-size:clamp(22px,2.6vw,30px);font-weight:700;letter-spacing:-0.02em;color:var(--color-dark);margin:0;text-wrap:balance; }
+  .ls-pub__sub { font-size:clamp(14px,1.3vw,16px);line-height:1.6;color:var(--color-muted);margin:0;max-width:60ch; }
+  .ls-pub__group { display:flex;flex-direction:column;gap:18px; }
+  .ls-pub__group-head { display:flex;align-items:baseline;gap:12px;padding-bottom:10px;border-bottom:1px solid rgba(26,25,22,.1); }
+  .ls-pub__group-title { font-family:var(--font-display);font-size:clamp(16px,1.9vw,21px);font-weight:700;letter-spacing:-0.01em;color:var(--color-dark);margin:0; }
+  .ls-pub__group-count { font-size:11px;color:var(--color-muted);font-variant-numeric:tabular-nums;letter-spacing:.08em;text-transform:uppercase;font-weight:700; }
+  .ls-pub__grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px; }
+  .ls-pub__card { display:flex;flex-direction:column;gap:10px;padding:22px;background:linear-gradient(180deg,rgba(255,250,242,.85) 0%,rgba(255,250,242,.5) 100%);border:1px solid rgba(26,25,22,.13);border-radius:14px;color:inherit;text-decoration:none;transition:border-color .28s var(--ease-out),transform .28s var(--ease-out),box-shadow .28s var(--ease-out); }
+  .ls-pub__card:hover { border-color:rgba(26,25,22,.24);transform:translateY(-3px);box-shadow:0 16px 36px -16px rgba(var(--ls-shadow-warm),.22); }
+  .ls-pub__card:active { transform:translateY(0); }
+  .ls-pub__card:focus-visible { outline:2px solid var(--color-gold);outline-offset:3px; }
+  .ls-pub__badges { display:flex;align-items:center;gap:10px;flex-wrap:wrap; }
+  .ls-pub__kicker { font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--color-muted); }
+  .ls-pub__date { font-size:11px;color:var(--color-muted);font-variant-numeric:tabular-nums;margin-left:auto; }
+  .ls-pub__title { font-family:var(--font-display);font-size:16px;font-weight:600;line-height:1.32;letter-spacing:-0.01em;color:var(--color-dark);margin:0;text-wrap:balance; }
+  .ls-pub__preview { font-size:13px;line-height:1.55;color:var(--color-muted);margin:0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden; }
+  .ls-pub__footer { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:8px; }
+  .ls-pub__cta { display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--color-accent); }
+  .ls-pub__cta svg { transition:transform .22s cubic-bezier(.16,1,.3,1); }
+  .ls-pub__card:hover .ls-pub__cta svg { transform:translate(2px,-2px); }
+  @media (prefers-reduced-motion: reduce) {
+    .ls-pub__card,.ls-pub__cta svg { transition:none !important; }
+    .ls-pub__card:hover { transform:none !important; }
+    .ls-pub__card:hover .ls-pub__cta svg { transform:none !important; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -496,6 +498,57 @@ export default function LinkedInSeries() {
                   </span>
                 </div>
               </a>
+            )
+          })}
+        </section>
+      )}
+
+      {PUBLISHED_GROUPS.length > 0 && (
+        <section className="ls-pub" aria-labelledby="ls-pub-heading">
+          <div className="ls-pub__head">
+            <h2 className="ls-pub__heading" id="ls-pub-heading">{t.publishedHeading}</h2>
+            <p className="ls-pub__sub">{t.publishedSub}</p>
+          </div>
+          {PUBLISHED_GROUPS.map((g, gi) => {
+            const gData = t.publishedGroups?.[gi] ?? {}
+            return (
+              <div key={g.key} className="ls-pub__group">
+                <div className="ls-pub__group-head">
+                  <h3 className="ls-pub__group-title">{gData.label}</h3>
+                  <span className="ls-pub__group-count">{g.posts.length}</span>
+                </div>
+                <div className="ls-pub__grid">
+                  {g.posts.map((p, pi) => {
+                    const d = gData.posts?.[pi] ?? {}
+                    return (
+                      <a
+                        key={pi}
+                        href={p.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ls-pub__card"
+                      >
+                        <div className="ls-pub__badges">
+                          {d.kicker && <span className="ls-pub__kicker">{d.kicker}</span>}
+                          {d.dateLabel && <span className="ls-pub__date">{d.dateLabel}</span>}
+                        </div>
+                        <h4 className="ls-pub__title">{d.title}</h4>
+                        <p className="ls-pub__preview">{d.preview}</p>
+                        <div className="ls-pub__footer">
+                          <span className={`ls-post__author ${authorClass(p.author)}`}>{getAuthorLabel(p.author)}</span>
+                          <span className="ls-pub__cta">
+                            {t.liveReadOnLinkedIn}
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                              <path d="M7 17 17 7"/>
+                              <polyline points="7 7 17 7 17 17"/>
+                            </svg>
+                          </span>
+                        </div>
+                      </a>
+                    )
+                  })}
+                </div>
+              </div>
             )
           })}
         </section>
