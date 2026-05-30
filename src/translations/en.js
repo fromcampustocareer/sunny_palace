@@ -1606,8 +1606,8 @@ export const en = {
     heroSubJoseRest: ' covers the student lens, internships, outreach, applications, rejection, and figuring things out in real time. ',
     heroSubJocelynStrong: 'Jocelyn',
     heroSubJocelynRest: ' covers the post-grad lens, interviews, offers, onboarding, and early-career growth. Every episode lives on LinkedIn first, then gets archived here.',
-    stat1Num: '10',
-    stat1Label: 'Episodes planned',
+    stat1Num: '12',
+    stat1Label: 'Posts published',
     stat3Num: '2',
     stat3Label: 'Lenses',
     stat4Num: 'Weekly',
@@ -1667,10 +1667,100 @@ export const en = {
     liveReadOnLinkedIn: 'Read on LinkedIn',
     livePosts: [
       {
-        kicker: 'Series Launch · Announcement',
-        title: 'On May 5th, 1862, Mexico stood outnumbered.',
-        preview: 'They had every reason to lose. They won anyway. That same energy is exactly what shapes first-gen students — showing up without a rulebook, building networks from nothing, and turning adversity into the very thing that makes us, us. We’ve been building something quietly. Drop your email in the comments to be the first to know.',
-        dateLabel: 'May 5, 2026',
+        kicker: 'Launch · Announcement',
+        title: 'Mark your calendar. May 31, From Campus to Career launches.',
+        preview: 'For first-gen students and new grads figuring out the campus-to-career journey in real time. No blueprint? We’re building one. Join the Founding 1,000 waitlist and tell us what career resources you wish you’d had.',
+        dateLabel: 'May 29, 2026',
+      },
+    ],
+    publishedHeading: 'Every post so far',
+    publishedSub: 'The full From Campus to Career feed, sorted by what each drop is really about.',
+    publishedGroups: [
+      {
+        label: 'Internships',
+        posts: [
+          {
+            kicker: 'Student Lens · Jocelyn',
+            title: 'Another summer with no internship, and honestly, it can feel personal.',
+            preview: 'They said build a resume. ✓ Network more. ✓ Apply early. ✓ Message recruiters. ✓ Work on projects. ✓ Put yourself out there. ✓ You did every single thing people told you to do. And you’re still here.',
+            dateLabel: 'May 28, 2026',
+          },
+          {
+            kicker: 'Post-Grad Lens · Jose',
+            title: 'In 3 days, I start my Software Engineering internship at State Farm.',
+            preview: 'But the road here was never easy. First-gen, from Miami-Dade, learning the rules of tech in real time while everyone seemed to already have the map. The rejections nobody screenshots. The nights rewriting a resume I didn’t know was wrong. The cold messages that never got a reply.',
+            dateLabel: 'May 28, 2026',
+          },
+          {
+            kicker: 'Milestone · Intern Tips',
+            title: 'We hit 67 followers, so naturally, here are 6–7 internship tips.',
+            preview: '6 things every intern should track: projects you worked on, feedback you received, people you connected with, metrics or results, skills you practiced, and moments you felt proud of. And the 7th? Keep your receipts. 🧾',
+            dateLabel: 'May 20, 2026',
+          },
+        ],
+      },
+      {
+        label: 'Rejection & Access',
+        posts: [
+          {
+            kicker: 'Real Talk · Rejection',
+            title: 'Stop telling students rejection builds character.',
+            preview: 'Sometimes it just reveals who had access to the playbook first. For first-gen students, a “no” can feel like proof you’re behind, unqualified, out of chances. But rejection isn’t proof that you’re not capable. Sometimes it’s just information.',
+            dateLabel: 'May 27, 2026',
+          },
+          {
+            kicker: 'Real Talk · The Gap',
+            title: 'Stop telling students a degree is enough. It’s not.',
+            preview: 'A degree helps. But it doesn’t automatically teach you to navigate the market, explain your value, build relationships, or turn experience into proof. That’s the real campus-to-career gap. Not effort. Access.',
+            dateLabel: 'May 18, 2026',
+          },
+          {
+            kicker: 'Real Talk · Networking',
+            title: '“Just network” is lazy advice when the instructions are always missing.',
+            preview: 'Some students are handed the playbook. They know how referrals work, what a good profile looks like, what to ask in an interview. For many first-gen and underrepresented students, it feels like solving a puzzle without the picture on the box.',
+            dateLabel: 'May 11, 2026',
+          },
+        ],
+      },
+      {
+        label: 'Personal Brand',
+        posts: [
+          {
+            kicker: 'Series · What’s On My Desk',
+            title: '“What’s On My Desk?” But make it first-gen campus-to-career coded.',
+            preview: 'On our desk: a laptop for building the dream, LinkedIn for networking, first-gen notes for lessons learned late, horchata matcha for fuel, cafecito reminders for confidence, and Sunny for a little light. ☀️',
+            dateLabel: 'May 28, 2026',
+          },
+          {
+            kicker: 'Strategy · Brand',
+            title: 'Do you follow the trend, or make it mean something?',
+            preview: 'Spotify made the disco-ball logo go viral and brands copied the look. But a disco ball reflects light from every angle, and that’s what career support should do too: make hidden rules visible, turn uncertainty into language, reflect students back to themselves.',
+            dateLabel: 'May 21, 2026',
+          },
+        ],
+      },
+      {
+        label: 'Behind the Scenes',
+        posts: [
+          {
+            kicker: 'Behind the Scenes · Resource Drop',
+            title: 'Career resources shouldn’t start after people already feel lost.',
+            preview: 'Too often people get told to “network,” “fix your resume,” “put yourself out there,” after they’re already overwhelmed and unsure where to start. We’re building before that point: the first From Campus to Career resource drop, with tools people can actually use.',
+            dateLabel: 'May 15, 2026',
+          },
+          {
+            kicker: 'Perspective · Gen Z',
+            title: '“Work hard and wait your turn” was advice built for a different market.',
+            preview: 'Careers used to look linear and the ladder felt stable. But Gen Z is entering a different market: the resume isn’t enough, LinkedIn isn’t optional, and vague advice doesn’t close an access gap. Send the script, move with strategy, show proof, build your brand.',
+            dateLabel: 'May 14, 2026',
+          },
+          {
+            kicker: 'Series Launch · Announcement',
+            title: 'On May 5th, 1862, Mexico stood outnumbered.',
+            preview: 'They had every reason to lose. They won anyway. That same energy is exactly what shapes first-gen students, showing up without a rulebook, building networks from nothing, and turning adversity into the very thing that makes us, us. We’ve been building something quietly. Drop your email in the comments to be the first to know.',
+            dateLabel: 'May 5, 2026',
+          },
+        ],
       },
     ],
     typeAnnouncement: 'Announcement',

@@ -1303,7 +1303,8 @@ ul { list-style: none; }
   font-style: italic;
   color: var(--color-dark);
   text-align: center;
-  max-width: 600px;
+  max-width: none;
+  white-space: nowrap;
   line-height: 1.5;
   opacity: 0.65;
 }
@@ -1318,6 +1319,7 @@ ul { list-style: none; }
   .c2c__grid { grid-template-columns: 1fr; }
   .c2c__title-img { width: clamp(220px, 72vw, 360px); }
   .c2c__lead { font-size: clamp(17px, 4vw, 24px); }
+  .c2c__closing { white-space: normal; max-width: 600px; }
 }
 
 /* ============================================
