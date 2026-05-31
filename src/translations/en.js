@@ -2016,19 +2016,12 @@ export const en = {
         num: '03',
         title: 'LinkedIn Outreach',
         desc: 'Connection-request and intro messages for recruiters and employees, after applying, cold, or when asking for a referral.',
-        body: `LinkedIn Outreach
-
-TO A RECRUITER (AFTER APPLYING)
-Hi [Recruiter Name], my name is [Your First Name] and I recently applied for the [Role Name] [internship/role] at [Company Name]. I'm really excited about it, as I believe it aligns with my interest in [1 or 2 Interests], and I know I could bring [1 Skill or Experience] to the team. I'd love to connect and learn more!
-
-TO A RECRUITER (COLD INTRO)
-Hi [Recruiter Name], great to e-meet you! My name is [Your First Name] and I'm a [Major] major at [Insert College/University] '2X. I'd love to connect and learn more about your role, the company culture, and future opportunities at your organization. If you're open to it, just let me know your availability and I'll do my best to work around your schedule. Looking forward to hearing from you!
-
-TO AN EMPLOYEE (COLD INTRO)
-Hi [Employee Name], great to e-meet you! My name is [Your First Name] and I'm a [Major] major at [Insert College/University] '2X. I'd love to connect and hear more about your role, the company culture, and your experience as a [Insert Shared Identity] at [Company Name]. If you're open to it, let me know your availability and I'll happily work around your schedule. Looking forward to connecting!
-
-TO AN EMPLOYEE (ASKING FOR A REFERRAL)
-Hi [Employee Name], great to meet you at [Insert Event]! My name is [Your First Name] and I'm a [Major] major at [Insert College/University] '2X. I'm interested in applying to the [Role Title] position at your company, and I was wondering if you'd be open to referring me. My resume is attached, and I've copied the link to the job posting below. Thank you so much in advance for your help and consideration!`,
+        variants: [
+          { label: 'To a recruiter (after applying)', text: `Hi [Recruiter Name], my name is [Your First Name] and I recently applied for the [Role Name] [internship/role] at [Company Name]. I'm really excited about it, as I believe it aligns with my interest in [1 or 2 Interests], and I know I could bring [1 Skill or Experience] to the team. I'd love to connect and learn more!` },
+          { label: 'To a recruiter (cold intro)', text: `Hi [Recruiter Name], great to e-meet you! My name is [Your First Name] and I'm a [Major] major at [Insert College/University] '2X. I'd love to connect and learn more about your role, the company culture, and future opportunities at your organization. If you're open to it, just let me know your availability and I'll do my best to work around your schedule. Looking forward to hearing from you!` },
+          { label: 'To an employee (cold intro)', text: `Hi [Employee Name], great to e-meet you! My name is [Your First Name] and I'm a [Major] major at [Insert College/University] '2X. I'd love to connect and hear more about your role, the company culture, and your experience as a [Insert Shared Identity] at [Company Name]. If you're open to it, let me know your availability and I'll happily work around your schedule. Looking forward to connecting!` },
+          { label: 'To an employee (asking for a referral)', text: `Hi [Employee Name], great to meet you at [Insert Event]! My name is [Your First Name] and I'm a [Major] major at [Insert College/University] '2X. I'm interested in applying to the [Role Title] position at your company, and I was wondering if you'd be open to referring me. My resume is attached, and I've copied the link to the job posting below. Thank you so much in advance for your help and consideration!` },
+        ],
         ctaLabel: 'Copy Template', ctaIcon: 'copy',
       },
       {

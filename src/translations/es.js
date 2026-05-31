@@ -2016,19 +2016,12 @@ export const es = {
         num: '03',
         title: 'Contacto en LinkedIn',
         desc: 'Mensajes de conexión e introducción para reclutadores y empleados, después de aplicar, en frío, o al pedir una recomendación.',
-        body: `Contacto en LinkedIn
-
-A UN RECLUTADOR (DESPUÉS DE APLICAR)
-Hola [Nombre del Reclutador], me llamo [Tu Nombre] y hace poco apliqué para el puesto de [Nombre del Rol] [pasantía/rol] en [Nombre de la Empresa]. Estoy muy emocionado/a porque creo que se alinea con mi interés en [1 o 2 Intereses], y sé que podría aportar [1 Habilidad o Experiencia] al equipo. ¡Me encantaría conectar y saber más!
-
-A UN RECLUTADOR (PRESENTACIÓN EN FRÍO)
-Hola [Nombre del Reclutador], ¡un gusto conocerte! Me llamo [Tu Nombre] y soy estudiante de [Carrera] en [Universidad] '2X. Me encantaría conectar y saber más sobre tu rol, la cultura de la empresa y las futuras oportunidades en tu organización. Si te parece bien, dime tu disponibilidad y haré lo posible por ajustarme a tu horario. ¡Quedo atento/a a tu respuesta!
-
-A UN EMPLEADO (PRESENTACIÓN EN FRÍO)
-Hola [Nombre del Empleado], ¡un gusto conocerte! Me llamo [Tu Nombre] y soy estudiante de [Carrera] en [Universidad] '2X. Me encantaría conectar y conocer más sobre tu rol, la cultura de la empresa y tu experiencia como [Identidad Compartida] en [Nombre de la Empresa]. Si te parece bien, dime tu disponibilidad y con gusto me ajusto a tu horario. ¡Quedo atento/a a conectar!
-
-A UN EMPLEADO (PIDIENDO UNA RECOMENDACIÓN)
-Hola [Nombre del Empleado], ¡un gusto conocerte en [Evento]! Me llamo [Tu Nombre] y soy estudiante de [Carrera] en [Universidad] '2X. Me interesa aplicar al puesto de [Título del Rol] en tu empresa, y quería saber si estarías dispuesto/a a recomendarme. Adjunto mi currículum y abajo copié el enlace a la vacante. ¡Muchas gracias de antemano por tu ayuda y consideración!`,
+        variants: [
+          { label: 'A un reclutador (después de aplicar)', text: `Hola [Nombre del Reclutador], me llamo [Tu Nombre] y hace poco apliqué para el puesto de [Nombre del Rol] [pasantía/rol] en [Nombre de la Empresa]. Estoy muy emocionado/a porque creo que se alinea con mi interés en [1 o 2 Intereses], y sé que podría aportar [1 Habilidad o Experiencia] al equipo. ¡Me encantaría conectar y saber más!` },
+          { label: 'A un reclutador (presentación en frío)', text: `Hola [Nombre del Reclutador], ¡un gusto conocerte! Me llamo [Tu Nombre] y soy estudiante de [Carrera] en [Universidad] '2X. Me encantaría conectar y saber más sobre tu rol, la cultura de la empresa y las futuras oportunidades en tu organización. Si te parece bien, dime tu disponibilidad y haré lo posible por ajustarme a tu horario. ¡Quedo atento/a a tu respuesta!` },
+          { label: 'A un empleado (presentación en frío)', text: `Hola [Nombre del Empleado], ¡un gusto conocerte! Me llamo [Tu Nombre] y soy estudiante de [Carrera] en [Universidad] '2X. Me encantaría conectar y conocer más sobre tu rol, la cultura de la empresa y tu experiencia como [Identidad Compartida] en [Nombre de la Empresa]. Si te parece bien, dime tu disponibilidad y con gusto me ajusto a tu horario. ¡Quedo atento/a a conectar!` },
+          { label: 'A un empleado (pidiendo una recomendación)', text: `Hola [Nombre del Empleado], ¡un gusto conocerte en [Evento]! Me llamo [Tu Nombre] y soy estudiante de [Carrera] en [Universidad] '2X. Me interesa aplicar al puesto de [Título del Rol] en tu empresa, y quería saber si estarías dispuesto/a a recomendarme. Adjunto mi currículum y abajo copié el enlace a la vacante. ¡Muchas gracias de antemano por tu ayuda y consideración!` },
+        ],
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
