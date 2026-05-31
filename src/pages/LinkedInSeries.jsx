@@ -351,6 +351,8 @@ export default function LinkedInSeries() {
   const filtersRef = useRef(null)
 
   useEffect(() => {
+    // The "/" shortcut focuses the filter bar, which only exists when the episode browser is shown.
+    if (!SHOW_EPISODES) return
     const onKeyDown = e => {
       if (e.key !== '/') return
       const el = document.activeElement
