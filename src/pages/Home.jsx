@@ -1207,40 +1207,46 @@ export default function Home() {
           </div>
         </div>
         <div className="editorial__grid">
-          <Link to="/articles/late-cycle-internships" className="editorial__card editorial__card--link">
+          <article className="editorial__card editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card1Tag}</div>
             <h3 className="editorial__card-title">{t.card1Title}</h3>
             <p className="editorial__card-excerpt">{t.card1Excerpt}</p>
-          </Link>
-          <Link to="/articles/first-90-days" className="editorial__card editorial__card--dark editorial__card--link">
+          </article>
+          <article className="editorial__card editorial__card--dark editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card2Tag}</div>
             <h3 className="editorial__card-title">{t.card2Title}</h3>
             <p className="editorial__card-excerpt">{t.card2Excerpt}</p>
-          </Link>
+          </article>
         </div>
         <div className="editorial__grid">
-          <Link to="/articles/first-gen-internship-playbook" className="editorial__card editorial__card--dark editorial__card--link">
+          <article className="editorial__card editorial__card--dark editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card3Tag}</div>
             <h3 className="editorial__card-title">{t.card3Title}</h3>
             <p className="editorial__card-excerpt">{t.card3Excerpt}</p>
-          </Link>
-          <Link to="/articles/coffee-chat-framework" className="editorial__card editorial__card--link">
+          </article>
+          <article className="editorial__card editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card4Tag}</div>
             <h3 className="editorial__card-title">{t.card4Title}</h3>
             <p className="editorial__card-excerpt">{t.card4Excerpt}</p>
-          </Link>
+          </article>
         </div>
         <div className="editorial__grid">
-          <Link to="/articles/negotiate-salary" className="editorial__card editorial__card--link">
+          <article className="editorial__card editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card5Tag}</div>
             <h3 className="editorial__card-title">{t.card5Title}</h3>
             <p className="editorial__card-excerpt">{t.card5Excerpt}</p>
-          </Link>
-          <Link to="/articles/rejection" className="editorial__card editorial__card--dark editorial__card--link">
+          </article>
+          <article className="editorial__card editorial__card--dark editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card6Tag}</div>
             <h3 className="editorial__card-title">{t.card6Title}</h3>
             <p className="editorial__card-excerpt">{t.card6Excerpt}</p>
-          </Link>
+          </article>
         </div>
         <div className="editorial__more">
           <Link to="/articles" className="editorial__more-btn">
