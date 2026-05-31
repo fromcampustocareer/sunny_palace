@@ -263,6 +263,26 @@ ul { list-style: none; }
 .nav__services-item:hover { color: var(--hero-gold); }
 .nav__services-item:focus-visible { outline: 2px solid var(--hero-gold); outline-offset: 2px; border-radius: 3px; }
 
+/* Not-yet-live sprints in the Services dropdown: muted, non-interactive */
+.nav__services-item--soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(242, 228, 206, 0.45);
+  cursor: default;
+}
+.nav__services-item--soon:hover { color: rgba(242, 228, 206, 0.45); }
+.nav__services-soon {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(232, 168, 56, 0.18);
+  color: var(--hero-gold);
+}
+
 .nav__link--cta {
   position: relative;
   padding: 0;

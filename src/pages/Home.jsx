@@ -857,8 +857,14 @@ export default function Home() {
                   </div>
                   <div className="nav__services-group">
                     <span className="nav__services-label">{tNav.sprintsLabel}</span>
-                    <Link to="/bridge-year" className="nav__services-item">{tNav.bridgeYearSprint}</Link>
-                    <Link to="/interview-prep" className="nav__services-item">{tNav.interviewPrep}</Link>
+                    <span className="nav__services-item nav__services-item--soon" aria-disabled="true">
+                      {tNav.bridgeYearSprint}
+                      <span className="nav__services-soon">{t.editorialComingSoon}</span>
+                    </span>
+                    <span className="nav__services-item nav__services-item--soon" aria-disabled="true">
+                      {tNav.interviewPrep}
+                      <span className="nav__services-soon">{t.editorialComingSoon}</span>
+                    </span>
                   </div>
                   <div className="nav__services-group">
                     <span className="nav__services-label">{tNav.communityLabel}</span>
