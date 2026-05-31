@@ -25,6 +25,10 @@ const TEMPLATE_LINKS = {
   5: 'https://docs.google.com/spreadsheets/d/1O3AkqZiVSXUMq2qfj3tIsy-mWNLgCi3MiNwyNrSFIJM/edit?gid=617684609#gid=617684609',
 }
 
+// Card color is assigned per ROW (every 3 cards at desktop) so each row is one
+// uniform color, cycling through the brand palette instead of per-category color.
+const ROW_COLORS = ['outreach', 'apply', 'interview', 'offers', 'job']
+
 export default function CareerTemplates() {
   const t = useT('careerTemplates')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -782,14 +786,6 @@ export default function CareerTemplates() {
         </div>
       </div>
 
-      <div className="ct-legend" aria-hidden="true">
-        {['outreach', 'apply', 'interview', 'offers', 'job'].map(s => (
-          <div key={s} className="ct-legend__item">
-            <span className={`ct-legend__dot ct-legend__dot--${s}`}></span>
-            {LEGEND_LABELS[s]}
-          </div>
-        ))}
-      </div>
 
       <div className="ct-meta">
         <p className="ct-count">{countLabel}</p>
@@ -799,12 +795,14 @@ export default function CareerTemplates() {
         {visible.length === 0 ? (
           <div className="ct-empty" aria-live="polite">{t.emptyState}</div>
         ) : (
-          visible.map((tmpl, idx) => (
-            <div key={tmpl.id} className={`ct-card ct-card--${tmpl.stage}`} style={{ '--ct-i': idx % 12 }}>
+          visible.map((tmpl, idx) => {
+            const rowColor = ROW_COLORS[Math.floor(idx / 3) % ROW_COLORS.length]
+            return (
+            <div key={tmpl.id} className={`ct-card ct-card--${rowColor}`} style={{ '--ct-i': idx % 12 }}>
               <div className="ct-card__top">
                 <span className="ct-card__num">{tmpl.num}</span>
                 <div className="ct-card__badges">
-                  <span className={`ct-card__stage ct-card__stage--${tmpl.stage}`}>{STAGE_LABELS[tmpl.stage]}</span>
+                  <span className={`ct-card__stage ct-card__stage--${rowColor}`}>{STAGE_LABELS[tmpl.stage]}</span>
                   <span className={`ct-card__author ct-card__author--${tmpl.author}`}>
                     {tmpl.author === 'jose' ? t.authorJose : tmpl.author === 'jocelyn' ? t.authorJocelyn : t.authorBoth}
                   </span>
@@ -814,12 +812,12 @@ export default function CareerTemplates() {
               <p className="ct-card__desc">{tmpl.desc}</p>
               <div className="ct-card__actions">
                 {TEMPLATE_LINKS[tmpl.id] ? (
-                  <a href={TEMPLATE_LINKS[tmpl.id]} target="_blank" rel="noopener noreferrer" className={`ct-card__cta ct-card__cta--${tmpl.stage}`}>
+                  <a href={TEMPLATE_LINKS[tmpl.id]} target="_blank" rel="noopener noreferrer" className={`ct-card__cta ct-card__cta--${rowColor}`}>
                     {tmpl.ctaLabel}
                     {tmpl.ctaIcon === 'copy' ? <CopyIcon /> : <ExternalIcon />}
                   </a>
                 ) : tmpl.body ? (
-                  <button type="button" className={`ct-card__cta ct-card__cta--${tmpl.stage}`} onClick={() => copyTemplate(tmpl)}>
+                  <button type="button" className={`ct-card__cta ct-card__cta--${rowColor}`} onClick={() => copyTemplate(tmpl)}>
                     {copiedCardId === tmpl.id ? t.modalCopiedLabel : tmpl.ctaLabel}
                     <CopyIcon />
                   </button>
@@ -840,7 +838,8 @@ export default function CareerTemplates() {
                 </button>
               </div>
             </div>
-          ))
+            )
+          })
         )}
       </div>
 
