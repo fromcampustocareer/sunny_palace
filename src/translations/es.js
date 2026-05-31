@@ -2005,13 +2005,10 @@ export const es = {
         num: '02',
         title: 'Pitch Personal / Presentación de Networking',
         desc: 'Un pitch de ascensor para rellenar, para presentaciones, sesiones informativas y contacto en frío, con una versión completa y una más corta para decir en un pasillo.',
-        body: `Pitch Personal / Presentación de Networking
-
-VERSIÓN COMPLETA
-¡Hola! Soy [Nombre]. Estudio [X] y ahora mismo estoy [construyendo / investigando / liderando] [algo específico]. Me importa [X] porque he visto lo que pasa cuando nadie hace [razón real y específica]. A través de mis experiencias en [X, Y y Z], me he convertido en la persona que [habilidad específica que te distingue en un equipo], y me encantaría aportar eso a su trabajo en [XYZ]. ¿Hay alguna oportunidad para que un estudiante como yo se una a su equipo? Ninguna tarea es demasiado grande ni demasiado pequeña. ¡Solo quiero aprender!
-
-VERSIÓN CORTA
-¡Hola! Soy [Nombre], estudio [X] y actualmente estoy [construyendo / investigando] [algo específico]. Me importa mucho [X] porque [razón real y específica]. A través de [X y Y], me he convertido en la persona que [habilidad específica], y me encantaría aportar eso a [XYZ]. ¿Habrá espacio para que un estudiante como yo ayude? Ninguna tarea es demasiado grande ni demasiado pequeña, ¡solo quiero aprender!`,
+        variants: [
+          { label: 'Versión completa', text: `¡Hola! Soy [Nombre]. Estudio [X] y ahora mismo estoy [construyendo / investigando / liderando] [algo específico]. Me importa [X] porque he visto lo que pasa cuando nadie hace [razón real y específica]. A través de mis experiencias en [X, Y y Z], me he convertido en la persona que [habilidad específica que te distingue en un equipo], y me encantaría aportar eso a su trabajo en [XYZ]. ¿Hay alguna oportunidad para que un estudiante como yo se una a su equipo? Ninguna tarea es demasiado grande ni demasiado pequeña. ¡Solo quiero aprender!` },
+          { label: 'Versión corta', text: `¡Hola! Soy [Nombre], estudio [X] y actualmente estoy [construyendo / investigando] [algo específico]. Me importa mucho [X] porque [razón real y específica]. A través de [X y Y], me he convertido en la persona que [habilidad específica], y me encantaría aportar eso a [XYZ]. ¿Habrá espacio para que un estudiante como yo ayude? Ninguna tarea es demasiado grande ni demasiado pequeña, ¡solo quiero aprender!` },
+        ],
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {

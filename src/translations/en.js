@@ -2005,13 +2005,10 @@ export const en = {
         num: '02',
         title: 'Personal Pitch / Networking Intro',
         desc: 'A fill-in-the-blank elevator pitch for intros, info sessions, and cold outreach, with a full version and a shorter one you can say in a hallway.',
-        body: `Personal Pitch / Networking Intro
-
-FULL VERSION
-Hi! I'm [Name]. I study [X] and right now I'm [building / researching / leading] [specific thing]. I care about [X] because I've seen what happens when no one does [real, specific reason]. Through my experiences in [X, Y, + Z], I've become the person who [specific skill that sets you apart in a team], and I'd love to bring that to your work at [XYZ]. Are there any opportunities for a student like me to join your team? No task is too big or too small. I just want to learn!
-
-SHORTER VERSION
-Hi! I'm [Name], I study [X], and I'm currently [building / researching] [specific thing]. I care a lot about [X] because [real, specific reason]. Through [X + Y], I've become the person who [specific skill], and I'd love to bring that to [XYZ]. Any chance there's room for a student like me to help out? No task too big or too small, I just want to learn!`,
+        variants: [
+          { label: 'Full version', text: `Hi! I'm [Name]. I study [X] and right now I'm [building / researching / leading] [specific thing]. I care about [X] because I've seen what happens when no one does [real, specific reason]. Through my experiences in [X, Y, + Z], I've become the person who [specific skill that sets you apart in a team], and I'd love to bring that to your work at [XYZ]. Are there any opportunities for a student like me to join your team? No task is too big or too small. I just want to learn!` },
+          { label: 'Shorter version', text: `Hi! I'm [Name], I study [X], and I'm currently [building / researching] [specific thing]. I care a lot about [X] because [real, specific reason]. Through [X + Y], I've become the person who [specific skill], and I'd love to bring that to [XYZ]. Any chance there's room for a student like me to help out? No task too big or too small, I just want to learn!` },
+        ],
         ctaLabel: 'Copy Template', ctaIcon: 'copy',
       },
       {
