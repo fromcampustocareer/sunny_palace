@@ -45,7 +45,10 @@ export default function CareerTemplates() {
   const [previewId, setPreviewId] = useState(null)
   const [copied, setCopied] = useState(false)
   const [copiedCardId, setCopiedCardId] = useState(null)
+  const [pickerId, setPickerId] = useState(null)
+  const [copiedVariantKey, setCopiedVariantKey] = useState(null)
   const previewTriggerRef = useRef(null)
+  const pickerTriggerRef = useRef(null)
   const filtersRef = useRef(null)
 
   useEffect(() => {
@@ -113,6 +116,40 @@ export default function CareerTemplates() {
     navigator.clipboard.writeText(tmpl.body).then(() => {
       setCopiedCardId(tmpl.id)
       setTimeout(() => setCopiedCardId(null), 2200)
+    })
+  }
+
+  // Multi-option templates open a picker so users copy just the version they want.
+  const openPicker = (id, e) => {
+    pickerTriggerRef.current = e?.currentTarget ?? null
+    setCopiedVariantKey(null)
+    setPickerId(id)
+  }
+  const closePicker = useCallback(() => {
+    setPickerId(null)
+    setCopiedVariantKey(null)
+    if (pickerTriggerRef.current) {
+      pickerTriggerRef.current.focus()
+      pickerTriggerRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    if (pickerId == null) { document.body.style.overflow = ''; return }
+    document.body.style.overflow = 'hidden'
+    const onKey = e => { if (e.key === 'Escape') closePicker() }
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = ''
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [pickerId, closePicker])
+
+  const copyVariant = (templateId, index, text) => {
+    if (!text) return
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedVariantKey(`${templateId}-${index}`)
+      setTimeout(() => setCopiedVariantKey(null), 2200)
     })
   }
 
@@ -579,6 +616,17 @@ export default function CareerTemplates() {
         .ct-modal__copy-btn.copied { background: var(--color-teal); }
         .ct-modal__copy-btn:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 999px; }
 
+        /* Copy picker — choose which version of a multi-option template to copy */
+        .ct-picker__list { display: flex; flex-direction: column; gap: 14px; max-height: 60vh; overflow-y: auto; }
+        .ct-picker__item { background: var(--color-white); border: 1px solid rgba(26,25,22,.1); border-radius: 12px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(63,42,28,.06); }
+        .ct-picker__item-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 8px; flex-wrap: wrap; }
+        .ct-picker__item-label { font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; color: var(--color-dark); }
+        .ct-picker__item-text { font-size: 13px; line-height: 1.7; color: var(--color-muted); white-space: pre-wrap; margin: 0; }
+        .ct-picker__copy { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; border: 1.5px solid var(--color-dark); background: var(--color-dark); color: var(--color-cream); font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: .02em; cursor: pointer; transition: background .2s, color .2s, transform .2s; }
+        .ct-picker__copy:hover { transform: translateY(-1px); }
+        .ct-picker__copy.copied { background: var(--color-teal); border-color: var(--color-teal); }
+        .ct-picker__copy:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+
         .ct-empty {
           grid-column: 1 / -1;
           text-align: center;
@@ -990,6 +1038,51 @@ export default function CareerTemplates() {
                 <CopyIcon />
                 {copied ? t.modalCopiedLabel : t.modalCopyLabel}
               </button>
+            </div>
+          )
+        })()}
+      </div>
+
+      <div
+        className={`ct-modal-overlay${pickerId != null ? ' open' : ''}`}
+        onClick={closePicker}
+        aria-hidden={pickerId == null}
+      >
+        {(() => {
+          const tmpl = pickerId != null ? TEMPLATES.find(x => x.id === pickerId) : null
+          if (!tmpl?.variants) return null
+          return (
+            <div
+              className="ct-modal ct-picker"
+              role="dialog"
+              aria-modal="true"
+              aria-label={`${tmpl.title} ${t.pickerIntro}`}
+              onClick={e => e.stopPropagation()}
+            >
+              <button type="button" className="ct-modal__close" onClick={closePicker} aria-label={t.modalCloseLabel}>✕</button>
+              <h2 className="ct-modal__title">{tmpl.title}</h2>
+              <p className="ct-modal__intro">{t.pickerIntro}</p>
+              <div className="ct-picker__list">
+                {tmpl.variants.map((v, i) => {
+                  const isCopied = copiedVariantKey === `${tmpl.id}-${i}`
+                  return (
+                    <div key={i} className="ct-picker__item">
+                      <div className="ct-picker__item-head">
+                        <span className="ct-picker__item-label">{v.label}</span>
+                        <button
+                          type="button"
+                          className={`ct-picker__copy${isCopied ? ' copied' : ''}`}
+                          onClick={() => copyVariant(tmpl.id, i, v.text)}
+                        >
+                          <CopyIcon />
+                          {isCopied ? t.modalCopiedLabel : t.modalCopyLabel}
+                        </button>
+                      </div>
+                      <p className="ct-picker__item-text">{v.text}</p>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )
         })()}

@@ -2155,6 +2155,7 @@ Hola [Nombre del Empleado], ¡un gusto conocerte en [Evento]! Me llamo [Tu Nombr
     formErrorCategoryOther: 'Por favor describe tu etapa.',
     previewLabel: 'Vista previa',
     previewIntro: 'Esto es lo que cubre esta plantilla. Haz clic en Copiar abajo para usarla.',
+    pickerIntro: 'Elige la versión que quieres copiar.',
     modalCloseLabel: 'Cerrar vista previa',
     modalCopyLabel: 'Copiar al portapapeles',
     modalCopiedLabel: '¡Copiado!',

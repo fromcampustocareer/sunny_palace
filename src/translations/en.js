@@ -2155,6 +2155,7 @@ Hi [Employee Name], great to meet you at [Insert Event]! My name is [Your First 
     formErrorCategoryOther: 'Please describe your stage.',
     previewLabel: 'Preview',
     previewIntro: "Here's what this template covers. Click Copy below to grab it for your own use.",
+    pickerIntro: 'Pick the version you want to copy.',
     modalCloseLabel: 'Close preview',
     modalCopyLabel: 'Copy to clipboard',
     modalCopiedLabel: 'Copied!',
