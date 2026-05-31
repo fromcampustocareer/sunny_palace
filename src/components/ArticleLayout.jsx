@@ -25,9 +25,8 @@ export default function ArticleLayout({ children, title, footerWidth = 680, sign
     { to: '/career-templates', label: t.navTemplates },
     { to: '/coffee-chat',      label: t.navCoffeeChat },
     { to: '/opportunity-board',label: t.navOpportunities },
-    { to: '/partner-panels',   label: t.navPanels },
     { to: '/resume-reviews',   label: t.navResumes },
-    // Bridge Year + Interview Prep sprints are gated "coming soon" pre-launch.
+    // Bridge Year, Interview Prep, and Partner Panels are gated "coming soon" pre-launch.
   ]
 
   const [menuOpen, setMenuOpen] = useState(false)

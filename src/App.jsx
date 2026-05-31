@@ -47,7 +47,8 @@ export default function App() {
         <Route path="/resume-reviews" element={<ResumeReviews />} />
         <Route path="/resume-reviews/companies" element={<ResumeCompanies />} />
         <Route path="/resume-reviews/builder" element={<ResumeBuilder />} />
-        <Route path="/partner-panels" element={<PartnerPanels />} />
+        {/* Not open yet — redirect direct visits home. Restore <PartnerPanels /> at launch. */}
+        <Route path="/partner-panels" element={<Navigate to="/" replace />} />
         <Route path="/linkedin-series" element={<LinkedInSeries />} />
         <Route path="/career-templates" element={<CareerTemplates />} />
         {/* Sprint not open yet — redirect direct visits home. Restore <BridgeYear /> at launch. */}
