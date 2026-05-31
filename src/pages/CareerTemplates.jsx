@@ -864,6 +864,11 @@ export default function CareerTemplates() {
                     {tmpl.ctaLabel}
                     {tmpl.ctaIcon === 'copy' ? <CopyIcon /> : <ExternalIcon />}
                   </a>
+                ) : tmpl.variants ? (
+                  <button type="button" className={`ct-card__cta ct-card__cta--${rowColor}`} onClick={e => openPicker(tmpl.id, e)} aria-haspopup="dialog">
+                    {tmpl.ctaLabel}
+                    <CopyIcon />
+                  </button>
                 ) : tmpl.body ? (
                   <button type="button" className={`ct-card__cta ct-card__cta--${rowColor}`} onClick={() => copyTemplate(tmpl)}>
                     {copiedCardId === tmpl.id ? t.modalCopiedLabel : tmpl.ctaLabel}
