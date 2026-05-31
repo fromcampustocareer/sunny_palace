@@ -197,26 +197,26 @@ function OBSpotlight({ card, t }) {
   const typeKey = (card.type || '').split(' ')[0]
   return (
     <article className={`ob-spotlight${typeKey ? ' ob-spotlight--' + typeKey : ''}`}>
-      <div className="ob-spotlight__main">
+      <div className="ob-spotlight__bar">
         <p className="ob-spotlight__eyebrow"><span aria-hidden="true" />{t.featuredLabel}</p>
-        <div className="ob-spotlight__head">
-          <div className="ob-card__company-logo ob-spotlight__logo" style={card.logoStyle}>{card.logo}</div>
-          <div>
-            <h3 className="ob-spotlight__title">{card.title}</h3>
-            <div className="ob-spotlight__company">{card.company}</div>
-          </div>
+        <span className={`ob-card__deadline${card.deadlineCls ? ' ' + card.deadlineCls : ''}`}>{card.deadlineLabel}</span>
+      </div>
+      <div className="ob-spotlight__head">
+        <div className="ob-card__company-logo ob-spotlight__logo" style={card.logoStyle}>{card.logo}</div>
+        <div>
+          <h3 className="ob-spotlight__title">{card.title}</h3>
+          <div className="ob-spotlight__company">{card.company}</div>
         </div>
-        <p className="ob-spotlight__desc">{card.desc}</p>
-        <div className="ob-card__tags">
-          {card.tags.map(tag => <span key={tag.l} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
-        </div>
+      </div>
+      <p className="ob-spotlight__desc">{card.desc}</p>
+      <div className="ob-card__tags">
+        {card.tags.map(tag => <span key={tag.l} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
+      </div>
+      <div className="ob-spotlight__footer">
         <div className="ob-spotlight__meta">
           {card.meta.map(m => { const chars = [...m]; return <span key={m} className="ob-card__meta-item"><span aria-hidden="true">{chars[0]}</span>{chars.slice(1).join('')}</span> })}
+          <span className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</span>
         </div>
-        <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>
-      </div>
-      <div className="ob-spotlight__aside">
-        <span className={`ob-card__deadline${card.deadlineCls ? ' ' + card.deadlineCls : ''}`}>{card.deadlineLabel}</span>
         <div className="ob-spotlight__actions">
           <a href={card.viewLink} className="ob-card__cta-primary" target="_blank" rel="noopener">{t.cardViewRole}</a>
           {isExternal
@@ -416,28 +416,29 @@ export default function OpportunityBoard() {
         .ob-featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; margin-top: 16px; }
 
         /* Featured spotlight — large editorial focal card for the top featured role */
-        .ob-spotlight { display: grid; grid-template-columns: minmax(0,1fr) 300px; border-radius: 18px; border: 1.5px solid rgba(232,168,56,.4); background: linear-gradient(180deg, rgba(232,168,56,.09) 0%, rgba(255,250,242,.6) 62%); overflow: hidden; box-shadow: 0 1px 0 rgba(255,255,255,.55) inset, 0 22px 54px -26px rgba(var(--ob-shadow-warm),.3); }
-        .ob-spotlight--internship    { border-color: rgba(22,43,68,.3);  background: linear-gradient(180deg, rgba(22,43,68,.09) 0%, rgba(255,250,242,.6) 62%); }
-        .ob-spotlight--apprenticeship{ border-color: rgba(58,125,107,.3); background: linear-gradient(180deg, rgba(58,125,107,.09) 0%, rgba(255,250,242,.6) 62%); }
+        .ob-spotlight { display: flex; flex-direction: column; gap: 16px; padding: clamp(24px,3.2vw,40px); border-radius: 18px; border: 1.5px solid rgba(232,168,56,.4); background: linear-gradient(180deg, rgba(232,168,56,.09) 0%, rgba(255,250,242,.55) 70%); box-shadow: 0 1px 0 rgba(255,255,255,.55) inset, 0 22px 54px -26px rgba(var(--ob-shadow-warm),.3); }
+        .ob-spotlight--internship    { border-color: rgba(22,43,68,.3);  background: linear-gradient(180deg, rgba(22,43,68,.09) 0%, rgba(255,250,242,.55) 70%); }
+        .ob-spotlight--apprenticeship{ border-color: rgba(58,125,107,.3); background: linear-gradient(180deg, rgba(58,125,107,.09) 0%, rgba(255,250,242,.55) 70%); }
         .ob-spotlight--new-grad      { border-color: rgba(232,168,56,.42); }
-        .ob-spotlight--fellowship    { border-color: rgba(91,142,194,.3); background: linear-gradient(180deg, rgba(91,142,194,.09) 0%, rgba(255,250,242,.6) 62%); }
-        .ob-spotlight--program       { border-color: rgba(179,69,57,.3);  background: linear-gradient(180deg, rgba(179,69,57,.08) 0%, rgba(255,250,242,.6) 62%); }
-        .ob-spotlight__main { padding: clamp(24px,3.2vw,40px); display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-        .ob-spotlight__eyebrow { display: inline-flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--color-gold-dark); }
+        .ob-spotlight--fellowship    { border-color: rgba(91,142,194,.3); background: linear-gradient(180deg, rgba(91,142,194,.09) 0%, rgba(255,250,242,.55) 70%); }
+        .ob-spotlight--program       { border-color: rgba(179,69,57,.3);  background: linear-gradient(180deg, rgba(179,69,57,.08) 0%, rgba(255,250,242,.55) 70%); }
+        .ob-spotlight__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+        .ob-spotlight__eyebrow { display: inline-flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--color-gold-dark); margin: 0; }
         .ob-spotlight__eyebrow span { width: 20px; height: 2px; background: var(--color-gold); border-radius: 1px; }
+        .ob-spotlight__bar .ob-card__deadline { font-size: 13px; }
         .ob-spotlight__head { display: flex; align-items: flex-start; gap: 16px; }
         .ob-spotlight__logo { width: 52px; height: 52px; border-radius: 12px; font-size: 18px; }
         .ob-spotlight__title { font-family: var(--font-display); font-size: clamp(22px,2.9vw,32px); font-weight: 700; line-height: 1.12; letter-spacing: -.012em; color: var(--color-dark); }
         .ob-spotlight__company { font-size: 14px; color: var(--color-muted); font-weight: 500; margin-top: 4px; }
-        .ob-spotlight__desc { font-size: 15px; color: var(--color-muted); line-height: 1.7; max-width: 62ch; }
-        .ob-spotlight__meta { display: flex; flex-wrap: wrap; gap: 16px; }
-        .ob-spotlight__aside { background: rgba(26,25,22,.035); border-left: 1px solid rgba(26,25,22,.08); padding: clamp(24px,3vw,40px) 28px; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
-        .ob-spotlight__aside .ob-card__deadline { font-size: 13px; }
-        .ob-spotlight__actions { display: flex; flex-direction: column; gap: 10px; }
-        .ob-spotlight__actions > * { width: 100%; flex: none; }
-        @media (max-width: 680px) {
-          .ob-spotlight { grid-template-columns: 1fr; }
-          .ob-spotlight__aside { border-left: none; border-top: 1px solid rgba(26,25,22,.08); }
+        .ob-spotlight__desc { font-size: 15px; color: var(--color-muted); line-height: 1.7; max-width: 70ch; }
+        .ob-spotlight__footer { display: flex; align-items: center; justify-content: space-between; gap: 20px 28px; flex-wrap: wrap; margin-top: 4px; padding-top: 18px; border-top: 1px solid rgba(26,25,22,.08); }
+        .ob-spotlight__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+        .ob-spotlight__actions { display: flex; gap: 10px; flex-shrink: 0; }
+        .ob-spotlight__actions .ob-card__cta-primary { flex: none; padding: 13px 24px; }
+        @media (max-width: 560px) {
+          .ob-spotlight__footer { align-items: stretch; }
+          .ob-spotlight__actions { width: 100%; }
+          .ob-spotlight__actions > * { flex: 1; }
         }
 
         .ob-card { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.1); border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(var(--ob-shadow-warm),.12); transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s, border-color .22s; position: relative; }
@@ -480,7 +481,7 @@ export default function OpportunityBoard() {
         .ob-card__desc strong { color: var(--color-dark); font-weight: 600; }
         .ob-card__source { font-size: 11px; color: rgba(0,0,0,.35); display: flex; align-items: center; gap: 5px; }
         .ob-card__source-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-gold-dark); flex-shrink: 0; }
-        .ob-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+        .ob-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 4px; }
         .ob-card__cta-primary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 16px; background: var(--color-dark); color: var(--color-cream); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: background .2s, transform .15s; flex: 1; justify-content: center; }
         .ob-card__cta-primary:hover { background: var(--color-accent-hover); transform: translateY(-1px); }
         .ob-card__cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 14px; background: transparent; color: var(--color-muted); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: 1.5px solid rgba(0,0,0,.12); cursor: pointer; transition: border-color .2s, color .2s; flex-shrink: 0; }
@@ -622,18 +623,16 @@ export default function OpportunityBoard() {
         {visibleFeatured.length > 0 && (
           <div className="ob-featured-strip">
             <OBSpotlight card={visibleFeatured[0]} t={t} />
-            {visibleFeatured.length > 1 && (
-              <div className="ob-featured-grid">
-                {visibleFeatured.slice(1).map((c, i) => <OBCard key={c.id} card={c} featured t={t} idx={i} />)}
-              </div>
-            )}
           </div>
         )}
 
         <div className="ob-main-grid">
-          {visibleMain.length === 0 && visibleFeatured.length === 0
+          {visibleMain.length === 0 && visibleFeatured.length <= 1
             ? <p className="ob-no-results">{t.noResults}</p>
-            : visibleMain.map((c, i) => <OBCard key={c.id} card={c} featured={false} t={t} idx={i} />)
+            : [
+                ...visibleFeatured.slice(1).map(c => ({ c, featured: true })),
+                ...visibleMain.map(c => ({ c, featured: false })),
+              ].map(({ c, featured }, i) => <OBCard key={c.id} card={c} featured={featured} t={t} idx={i} />)
           }
         </div>
 
