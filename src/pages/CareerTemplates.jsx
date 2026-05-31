@@ -19,6 +19,16 @@ const ExternalIcon = () => (
   </svg>
 )
 
+// Templates that are actually live (id → URL). Everything else shows "coming soon".
+// #5 = the Internship Application Tracker → the real "Career Chisme Sheet" Google Sheet.
+const TEMPLATE_LINKS = {
+  5: 'https://docs.google.com/spreadsheets/d/1O3AkqZiVSXUMq2qfj3tIsy-mWNLgCi3MiNwyNrSFIJM/edit?gid=617684609#gid=617684609',
+}
+
+// Card color is assigned per ROW (every 3 cards at desktop) so each row is one
+// uniform color, cycling through the brand palette instead of per-category color.
+const ROW_COLORS = ['outreach', 'apply', 'interview', 'offers', 'job']
+
 export default function CareerTemplates() {
   const t = useT('careerTemplates')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -34,7 +44,11 @@ export default function CareerTemplates() {
 
   const [previewId, setPreviewId] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [copiedCardId, setCopiedCardId] = useState(null)
+  const [pickerId, setPickerId] = useState(null)
+  const [copiedVariantKey, setCopiedVariantKey] = useState(null)
   const previewTriggerRef = useRef(null)
+  const pickerTriggerRef = useRef(null)
   const filtersRef = useRef(null)
 
   useEffect(() => {
@@ -93,6 +107,49 @@ export default function CareerTemplates() {
     navigator.clipboard.writeText(body).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2200)
+    })
+  }
+
+  // Copy an available template's body straight from its card.
+  const copyTemplate = tmpl => {
+    if (!tmpl.body) return
+    navigator.clipboard.writeText(tmpl.body).then(() => {
+      setCopiedCardId(tmpl.id)
+      setTimeout(() => setCopiedCardId(null), 2200)
+    })
+  }
+
+  // Multi-option templates open a picker so users copy just the version they want.
+  const openPicker = (id, e) => {
+    pickerTriggerRef.current = e?.currentTarget ?? null
+    setCopiedVariantKey(null)
+    setPickerId(id)
+  }
+  const closePicker = useCallback(() => {
+    setPickerId(null)
+    setCopiedVariantKey(null)
+    if (pickerTriggerRef.current) {
+      pickerTriggerRef.current.focus()
+      pickerTriggerRef.current = null
+    }
+  }, [])
+
+  useEffect(() => {
+    if (pickerId == null) { document.body.style.overflow = ''; return }
+    document.body.style.overflow = 'hidden'
+    const onKey = e => { if (e.key === 'Escape') closePicker() }
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = ''
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [pickerId, closePicker])
+
+  const copyVariant = (templateId, index, text) => {
+    if (!text) return
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedVariantKey(`${templateId}-${index}`)
+      setTimeout(() => setCopiedVariantKey(null), 2200)
     })
   }
 
@@ -423,6 +480,14 @@ export default function CareerTemplates() {
         .ct-card__cta--offers:hover    { background: var(--color-accent); color: var(--color-cream); border-color: var(--color-accent); box-shadow: 0 8px 16px -8px rgba(179,69,57,.5); }
         .ct-card__cta--job:hover       { background: var(--color-navy);   color: var(--color-cream); border-color: var(--color-navy);   box-shadow: 0 8px 16px -8px rgba(22,43,68,.5); }
         .ct-card__cta:active { transform: translateY(0); }
+        /* Not-yet-available templates: muted, non-interactive badge in place of the CTA */
+        .ct-card__cta--soon {
+          background: rgba(26,25,22,.04);
+          color: var(--color-muted);
+          border-color: rgba(26,25,22,.16);
+          cursor: default;
+        }
+        .ct-card__cta--soon:hover { transform: none; }
 
         /* card actions row — Copy Template + Preview side by side */
         .ct-card__actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; }
@@ -550,6 +615,17 @@ export default function CareerTemplates() {
         .ct-modal__copy-btn:active { transform: translateY(0); }
         .ct-modal__copy-btn.copied { background: var(--color-teal); }
         .ct-modal__copy-btn:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 999px; }
+
+        /* Copy picker — choose which version of a multi-option template to copy */
+        .ct-picker__list { display: flex; flex-direction: column; gap: 14px; max-height: 60vh; overflow-y: auto; }
+        .ct-picker__item { background: var(--color-white); border: 1px solid rgba(26,25,22,.1); border-radius: 12px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(63,42,28,.06); }
+        .ct-picker__item-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 8px; flex-wrap: wrap; }
+        .ct-picker__item-label { font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; color: var(--color-dark); }
+        .ct-picker__item-text { font-size: 13px; line-height: 1.7; color: var(--color-muted); white-space: pre-wrap; margin: 0; }
+        .ct-picker__copy { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; border: 1.5px solid var(--color-dark); background: var(--color-dark); color: var(--color-cream); font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: .02em; cursor: pointer; transition: background .2s, color .2s, transform .2s; }
+        .ct-picker__copy:hover { transform: translateY(-1px); }
+        .ct-picker__copy.copied { background: var(--color-teal); border-color: var(--color-teal); }
+        .ct-picker__copy:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
 
         .ct-empty {
           grid-column: 1 / -1;
@@ -758,14 +834,6 @@ export default function CareerTemplates() {
         </div>
       </div>
 
-      <div className="ct-legend" aria-hidden="true">
-        {['outreach', 'apply', 'interview', 'offers', 'job'].map(s => (
-          <div key={s} className="ct-legend__item">
-            <span className={`ct-legend__dot ct-legend__dot--${s}`}></span>
-            {LEGEND_LABELS[s]}
-          </div>
-        ))}
-      </div>
 
       <div className="ct-meta">
         <p className="ct-count">{countLabel}</p>
@@ -775,12 +843,14 @@ export default function CareerTemplates() {
         {visible.length === 0 ? (
           <div className="ct-empty" aria-live="polite">{t.emptyState}</div>
         ) : (
-          visible.map((tmpl, idx) => (
-            <div key={tmpl.id} className={`ct-card ct-card--${tmpl.stage}`} style={{ '--ct-i': idx % 12 }}>
+          visible.map((tmpl, idx) => {
+            const rowColor = ROW_COLORS[Math.floor(idx / 3) % ROW_COLORS.length]
+            return (
+            <div key={tmpl.id} className={`ct-card ct-card--${rowColor}`} style={{ '--ct-i': idx % 12 }}>
               <div className="ct-card__top">
                 <span className="ct-card__num">{tmpl.num}</span>
                 <div className="ct-card__badges">
-                  <span className={`ct-card__stage ct-card__stage--${tmpl.stage}`}>{STAGE_LABELS[tmpl.stage]}</span>
+                  <span className={`ct-card__stage ct-card__stage--${rowColor}`}>{STAGE_LABELS[tmpl.stage]}</span>
                   <span className={`ct-card__author ct-card__author--${tmpl.author}`}>
                     {tmpl.author === 'jose' ? t.authorJose : tmpl.author === 'jocelyn' ? t.authorJocelyn : t.authorBoth}
                   </span>
@@ -789,10 +859,24 @@ export default function CareerTemplates() {
               <h2 className="ct-card__title">{tmpl.title}</h2>
               <p className="ct-card__desc">{tmpl.desc}</p>
               <div className="ct-card__actions">
-                <a href="#" className={`ct-card__cta ct-card__cta--${tmpl.stage}`}>
-                  {tmpl.ctaLabel}
-                  {tmpl.ctaIcon === 'copy' ? <CopyIcon /> : <ExternalIcon />}
-                </a>
+                {TEMPLATE_LINKS[tmpl.id] ? (
+                  <a href={TEMPLATE_LINKS[tmpl.id]} target="_blank" rel="noopener noreferrer" className={`ct-card__cta ct-card__cta--${rowColor}`}>
+                    {tmpl.ctaLabel}
+                    {tmpl.ctaIcon === 'copy' ? <CopyIcon /> : <ExternalIcon />}
+                  </a>
+                ) : tmpl.variants ? (
+                  <button type="button" className={`ct-card__cta ct-card__cta--${rowColor}`} onClick={e => openPicker(tmpl.id, e)} aria-haspopup="dialog">
+                    {tmpl.ctaLabel}
+                    <CopyIcon />
+                  </button>
+                ) : tmpl.body ? (
+                  <button type="button" className={`ct-card__cta ct-card__cta--${rowColor}`} onClick={() => copyTemplate(tmpl)}>
+                    {copiedCardId === tmpl.id ? t.modalCopiedLabel : tmpl.ctaLabel}
+                    <CopyIcon />
+                  </button>
+                ) : (
+                  <span className="ct-card__cta ct-card__cta--soon" aria-disabled="true">{t.comingSoon}</span>
+                )}
                 <button
                   type="button"
                   className="ct-card__preview"
@@ -807,7 +891,8 @@ export default function CareerTemplates() {
                 </button>
               </div>
             </div>
-          ))
+            )
+          })
         )}
       </div>
 
@@ -928,7 +1013,9 @@ export default function CareerTemplates() {
         {(() => {
           const tmpl = previewId != null ? TEMPLATES.find(x => x.id === previewId) : null
           if (!tmpl) return null
-          const body = tmpl.body || tmpl.desc
+          const hasContent = !!(tmpl.body || tmpl.variants)
+          const body = tmpl.body
+            || (tmpl.variants ? tmpl.variants.map(v => `${v.label}\n${v.text}`).join('\n\n') : tmpl.desc)
           return (
             <div
               className="ct-modal"
@@ -947,7 +1034,7 @@ export default function CareerTemplates() {
               </div>
               <h2 className="ct-modal__title">{tmpl.title}</h2>
               <p className="ct-modal__intro">{t.previewIntro}</p>
-              <div className={`ct-modal__body${tmpl.body ? '' : ' ct-modal__body--placeholder'}`}>{body}</div>
+              <div className={`ct-modal__body${hasContent ? '' : ' ct-modal__body--placeholder'}`}>{body}</div>
               <button
                 type="button"
                 className={`ct-modal__copy-btn${copied ? ' copied' : ''}`}
@@ -956,6 +1043,51 @@ export default function CareerTemplates() {
                 <CopyIcon />
                 {copied ? t.modalCopiedLabel : t.modalCopyLabel}
               </button>
+            </div>
+          )
+        })()}
+      </div>
+
+      <div
+        className={`ct-modal-overlay${pickerId != null ? ' open' : ''}`}
+        onClick={closePicker}
+        aria-hidden={pickerId == null}
+      >
+        {(() => {
+          const tmpl = pickerId != null ? TEMPLATES.find(x => x.id === pickerId) : null
+          if (!tmpl?.variants) return null
+          return (
+            <div
+              className="ct-modal ct-picker"
+              role="dialog"
+              aria-modal="true"
+              aria-label={`${tmpl.title} ${t.pickerIntro}`}
+              onClick={e => e.stopPropagation()}
+            >
+              <button type="button" className="ct-modal__close" onClick={closePicker} aria-label={t.modalCloseLabel}>✕</button>
+              <h2 className="ct-modal__title">{tmpl.title}</h2>
+              <p className="ct-modal__intro">{t.pickerIntro}</p>
+              <div className="ct-picker__list">
+                {tmpl.variants.map((v, i) => {
+                  const isCopied = copiedVariantKey === `${tmpl.id}-${i}`
+                  return (
+                    <div key={i} className="ct-picker__item">
+                      <div className="ct-picker__item-head">
+                        <span className="ct-picker__item-label">{v.label}</span>
+                        <button
+                          type="button"
+                          className={`ct-picker__copy${isCopied ? ' copied' : ''}`}
+                          onClick={() => copyVariant(tmpl.id, i, v.text)}
+                        >
+                          <CopyIcon />
+                          {isCopied ? t.modalCopiedLabel : t.modalCopyLabel}
+                        </button>
+                      </div>
+                      <p className="ct-picker__item-text">{v.text}</p>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )
         })()}
