@@ -28,7 +28,7 @@ const SEARCH_INDEX = [
     keywords: ['coffee chat', 'coffee chats', 'virtual coffee', 'grab coffee', 'coffee meeting', 'networking', 'network', 'build connections', 'connect', 'connection', 'connections', 'meet professionals', 'meet people', 'reach out', 'cold email', 'cold outreach', 'linkedin message', 'mentor', 'mentors', 'mentorship', 'mentoring', 'mentee', 'find a mentor', 'get mentored', 'advisory', 'advisor', 'guide', 'guidance', 'career guidance', 'career advice', 'informational interview', 'info interview', 'info chat', 'industry insights', 'learning from professionals', 'professional', 'professionals', 'industry professional', 'industry expert', 'recruiter', 'hiring manager', 'engineer', 'designer', 'alumni', 'alum', 'alums', 'upperclassmen', 'peers', 'community', 'people', 'relationship', 'relationship building', 'professional development', 'professional network', 'talk to someone', 'talk to someone in the industry', 'get advice', 'ask questions', 'career questions', 'career path', 'day in the life', 'what is it like to work at', 'company culture', 'chat', 'talk', 'conversation', 'meet', 'meeting', 'zoom call', 'phone call', 'virtual meeting', 'advice', 'support', 'learn', 'how to reach out', 'how to network'] },
   { label: 'Resume Reviews', description: 'Community · Get your resume reviewed', type: 'page', to: '/resume-reviews',
     keywords: ['resume', 'resumes', 'cv', 'curriculum vitae', 'bio', 'professional profile', 'review', 'reviews', 'reviewed', 'feedback', 'critique', 'critiqued', 'help', 'resume help', 'improve', 'improve resume', 'fix', 'fix my resume', 'check', 'check my resume', 'proofread', 'edit', 'polish', 'polish up', 'ats', 'ats friendly', 'applicant tracking', 'keyword', 'keywords', 'format', 'formatting', 'layout', 'design', 'one page', 'two page', 'one pager', 'chronological', 'functional', 'skills', 'experience', 'work experience', 'projects', 'extracurriculars', 'clubs', 'gpa', 'education', 'certifications', 'awards', 'honors', 'leadership', 'bullet points', 'action verbs', 'quantify', 'metrics', 'numbers', 'accomplishments', 'achievements', 'results', 'student resume', 'college resume', 'undergrad resume', 'undergraduate', 'graduate', 'new grad resume', 'entry level resume', 'first resume', 'no experience resume', 'limited experience', 'tech resume', 'software engineer resume', 'swe resume', 'pm resume', 'product manager resume', 'data science resume', 'ux resume', 'marketing resume', 'internship resume', 'career changer resume', 'transfer student', 'nontraditional', 'international student resume', 'get reviewed', 'submit resume', 'share resume', 'see other resumes', 'browse resumes', 'resume examples', 'resume inspiration', 'showcase', 'upload', 'first gen resume', 'weak resume', 'strong resume', 'bad resume'] },
-  { label: 'Partner Panels', description: 'Community · Live panels with partners', type: 'page', to: '/partner-panels',
+  { label: 'Partner Panels', description: 'Community · Live panels with partners', type: 'page', to: '/partner-panels', comingSoon: true,
     keywords: ['panel', 'panels', 'event', 'events', 'live', 'live event', 'webinar', 'webinars', 'talk', 'talks', 'speaker', 'speakers', 'panelist', 'panelists', 'industry talk', 'industry expert', 'fireside chat', 'fireside chats', 'roundtable', 'summit', 'workshop', 'seminar', 'recording', 'recordings', 'replay', 'rewatch', 'watch', 'listen', 'video', 'watch again', 'presentation', 'q&a', 'qa', 'questions', 'discussion', 'conversation', 'partners', 'partner', 'partner companies', 'company', 'sponsor', 'recruiter panel', 'alumni panel', 'career panel', 'tech panel', 'diversity panel', 'first gen panel', 'recruiting panel', 'zoom', 'virtual', 'online', 'live stream', 'past events', 'archive', 'past panels', 'previous panels', 'rsvp', 'register', 'sign up', 'attend', 'upcoming', 'schedule', 'next event', 'future events', '30 under 30', 'industry professionals speaking', 'hear from professionals', 'learn from professionals'] },
 ]
 
@@ -879,7 +879,10 @@ export default function Home() {
                     <Link to="/opportunity-board" className="nav__services-item">{tNav.opportunityBoard}</Link>
                     <Link to="/coffee-chat" className="nav__services-item">{tNav.coffeeChatNetwork}</Link>
                     <Link to="/resume-reviews" className="nav__services-item">{tNav.resumeReviews}</Link>
-                    <Link to="/partner-panels" className="nav__services-item">{tNav.partnerPanels}</Link>
+                    <span className="nav__services-item nav__services-item--soon" aria-disabled="true">
+                      {tNav.partnerPanels}
+                      <span className="nav__services-soon">{t.editorialComingSoon}</span>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1236,7 +1239,10 @@ export default function Home() {
                 <Link to="/opportunity-board" className="services__list-btn">{tNav.opportunityBoard} →</Link>
                 <Link to="/coffee-chat" className="services__list-btn">{tNav.coffeeChatNetwork} →</Link>
                 <Link to="/resume-reviews" className="services__list-btn">{tNav.resumeReviews} →</Link>
-                <Link to="/partner-panels" className="services__list-btn">{tNav.partnerPanels} →</Link>
+                <span className="services__list-btn services__list-btn--soon" aria-disabled="true">
+                  {tNav.partnerPanels}
+                  <span className="services__list-soon">{t.editorialComingSoon}</span>
+                </span>
               </div>
             </div>
           </div>
