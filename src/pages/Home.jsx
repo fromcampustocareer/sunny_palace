@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, Fragment } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { supabase } from '../lib/supabase'
@@ -957,10 +957,9 @@ export default function Home() {
           if (next) { setAboutTab(next); setTimeout(() => document.getElementById(`about-tab-${next}`)?.focus(), 0) }
         }}>
           {['who-we-are', 'mission', 'vision'].map((tab, i) => (
-            <>
-              {i > 0 && <span key={`sep-${tab}`} className="about__tab-sep" aria-hidden="true">|</span>}
+            <Fragment key={tab}>
+              {i > 0 && <span className="about__tab-sep" aria-hidden="true">|</span>}
               <button
-                key={tab}
                 id={`about-tab-${tab}`}
                 role="tab"
                 className={`about__tab${aboutTab === tab ? ' about__tab--active' : ''}`}
@@ -971,7 +970,7 @@ export default function Home() {
               >
                 {tab === 'who-we-are' ? t.aboutTabWhoWeAre : tab === 'mission' ? t.aboutTabMission : t.aboutTabVision}
               </button>
-            </>
+            </Fragment>
           ))}
         </div>
 
