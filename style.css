@@ -263,6 +263,26 @@ ul { list-style: none; }
 .nav__services-item:hover { color: var(--hero-gold); }
 .nav__services-item:focus-visible { outline: 2px solid var(--hero-gold); outline-offset: 2px; border-radius: 3px; }
 
+/* Not-yet-live sprints in the Services dropdown: muted, non-interactive */
+.nav__services-item--soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(242, 228, 206, 0.45);
+  cursor: default;
+}
+.nav__services-item--soon:hover { color: rgba(242, 228, 206, 0.45); }
+.nav__services-soon {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(232, 168, 56, 0.18);
+  color: var(--hero-gold);
+}
+
 .nav__link--cta {
   position: relative;
   padding: 0;
@@ -422,6 +442,10 @@ ul { list-style: none; }
 }
 .search-palette__result-type--page { background: var(--color-accent); color: #fff; }
 .search-palette__result-type--section { background: var(--color-navy); color: #fff; }
+.search-palette__result-type--soon { background: rgba(232, 168, 56, 0.18); color: var(--color-gold-dark); }
+/* Coming-soon results: visible but not selectable, never navigate */
+.search-palette__result--soon { cursor: default; opacity: 0.6; }
+.search-palette__result--soon:hover { background: none; }
 .search-palette__empty {
   padding: 20px 18px;
   font-family: var(--font-body); font-size: 14px; color: var(--color-muted);
@@ -1903,6 +1927,30 @@ ul { list-style: none; }
   color: var(--color-cream);
   border-color: var(--color-dark);
   transform: translateY(-2px);
+}
+
+/* Not-yet-live sprints: muted, non-interactive, with a "coming soon" tag */
+.services__list-btn--soon {
+  gap: 10px;
+  cursor: default;
+  color: var(--color-muted);
+  border-color: rgba(26, 25, 22, 0.18);
+}
+.services__list-btn--soon:hover {
+  background: transparent;
+  color: var(--color-muted);
+  border-color: rgba(26, 25, 22, 0.18);
+  transform: none;
+}
+.services__list-soon {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(232, 168, 56, 0.16);
+  color: var(--color-gold-dark);
 }
 
 .services__list-btn:focus-visible {

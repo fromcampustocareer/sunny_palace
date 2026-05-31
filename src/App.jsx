@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import Home from './pages/Home'
 import CoffeeChat from './pages/CoffeeChat'
@@ -42,14 +42,16 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/coffee-chat" element={<CoffeeChat />} />
         <Route path="/opportunity-board" element={<OpportunityBoard />} />
-        <Route path="/interview-prep" element={<InterviewPrep />} />
+        {/* Sprint not open yet — redirect direct visits home. Restore <InterviewPrep /> at launch. */}
+        <Route path="/interview-prep" element={<Navigate to="/" replace />} />
         <Route path="/resume-reviews" element={<ResumeReviews />} />
         <Route path="/resume-reviews/companies" element={<ResumeCompanies />} />
         <Route path="/resume-reviews/builder" element={<ResumeBuilder />} />
         <Route path="/partner-panels" element={<PartnerPanels />} />
         <Route path="/linkedin-series" element={<LinkedInSeries />} />
         <Route path="/career-templates" element={<CareerTemplates />} />
-        <Route path="/bridge-year" element={<BridgeYear />} />
+        {/* Sprint not open yet — redirect direct visits home. Restore <BridgeYear /> at launch. */}
+        <Route path="/bridge-year" element={<Navigate to="/" replace />} />
         <Route path="/articles" element={<ArticlesIndex />} />
         <Route path="/articles/late-cycle-internships" element={<LateCycleInternships />} />
         <Route path="/articles/first-90-days" element={<First90Days />} />
