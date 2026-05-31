@@ -277,9 +277,6 @@ ul { list-style: none; }
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: rgba(232, 168, 56, 0.18);
   color: var(--hero-gold);
 }
 
