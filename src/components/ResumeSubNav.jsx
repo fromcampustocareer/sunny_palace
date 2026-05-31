@@ -15,7 +15,8 @@ export default function ResumeSubNav() {
         .rsn {
           max-width: 1240px;
           margin: 0 auto;
-          padding: 12px clamp(20px, 5vw, 56px) 0;
+          /* Clear the fixed top nav (~60px) so the sub-nav isn't hidden under it */
+          padding: 80px clamp(20px, 5vw, 56px) 0;
           display: flex;
           gap: 4px;
           border-bottom: 1px solid rgba(0,0,0,.08);
@@ -23,6 +24,7 @@ export default function ResumeSubNav() {
           scrollbar-width: none;
         }
         .rsn::-webkit-scrollbar { display: none; }
+        @media (max-width: 768px) { .rsn { padding-top: 64px; } }
         .rsn__tab {
           position: relative;
           padding: 10px 14px 14px;

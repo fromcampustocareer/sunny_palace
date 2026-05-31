@@ -124,7 +124,7 @@ export default function ResumeCompanies() {
         html, body { background: var(--color-cream); }
         .rc-wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 56px) 80px; }
 
-        .rc-hero { position: relative; padding: 90px 24px 56px; text-align: center; overflow: hidden; isolation: isolate; }
+        .rc-hero { position: relative; padding: 36px 24px 56px; text-align: center; overflow: hidden; isolation: isolate; }
         .rc-hero__stack { position: absolute; inset: 30px 0 auto 0; display: flex; justify-content: center; align-items: flex-start; gap: 24px; opacity: .25; pointer-events: none; filter: blur(.4px); z-index: 0; }
         .rc-hero__stack-icon { width: 72px; height: 72px; border-radius: 18px; background: var(--color-white); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
         .rc-hero__stack-icon:nth-child(1) { transform: translateY(-8px) rotate(-3deg); }

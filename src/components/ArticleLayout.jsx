@@ -20,7 +20,6 @@ export default function ArticleLayout({ children, title, footerWidth = 680, sign
   const t = useT('articleLayout')
 
   const NAV_LINKS = [
-    { to: '/articles',         label: t.navLaVoz },
     { to: '/linkedin-series',  label: t.navLinkedIn },
     { to: '/career-templates', label: t.navTemplates },
     { to: '/coffee-chat',      label: t.navCoffeeChat },

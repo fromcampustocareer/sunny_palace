@@ -431,8 +431,8 @@ export default function ResumeReviews() {
         .rr-btn-secondary:active { transform: translateY(0); }
 
         /* HERO — asymmetric, lead with emotional hook */
-        .rr-hero { padding: 96px clamp(20px,5vw,56px) 56px; max-width: 1240px; margin: 0 auto; position: relative; overflow: hidden; }
-        .rr-hero::before { content: ''; position: absolute; top: 96px; left: clamp(20px,5vw,56px); width: 56px; height: 4px; background: var(--color-accent); border-radius: 2px; }
+        .rr-hero { padding: 40px clamp(20px,5vw,56px) 56px; max-width: 1240px; margin: 0 auto; position: relative; overflow: hidden; }
+        .rr-hero::before { content: ''; position: absolute; top: 40px; left: clamp(20px,5vw,56px); width: 56px; height: 4px; background: var(--color-accent); border-radius: 2px; }
         .rr-hero::after { content: ''; position: absolute; top: -20%; right: -8%; width: 380px; height: 380px; background: radial-gradient(closest-side, rgba(179,69,57,.13), transparent 70%); pointer-events: none; z-index: -1; }
         .rr-hero__kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-accent); margin: 28px 0 22px; display: inline-flex; align-items: center; gap: 10px; }
         .rr-hero__kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-accent); opacity: .5; }
@@ -723,9 +723,9 @@ export default function ResumeReviews() {
           .rr-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 560px) { .rr-grid { grid-template-columns: 1fr; } .rr-panel { width: 100vw; } }
-        @media (max-width: 768px) { .rr-hero { padding: 88px 20px 48px; } .rr-stats { gap: 20px; } .rr-hero__ctas { flex-wrap: wrap; } }
+        @media (max-width: 768px) { .rr-hero { padding: 28px 20px 48px; } .rr-stats { gap: 20px; } .rr-hero__ctas { flex-wrap: wrap; } }
         @media (max-width: 480px) {
-          .rr-hero { padding: 80px 16px 40px; }
+          .rr-hero { padding: 24px 16px 40px; }
           .rr-hero__ctas { flex-direction: column; }
           .rr-hero__ctas a { justify-content: center; }
           .rr-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
