@@ -1074,30 +1074,14 @@ export default function Home() {
       </section>
 
       {/* GALLERY */}
-      <section className="gallery" id="gallery" aria-label="Photo gallery">
+      <section className="gallery" id="gallery" aria-label="From Campus to Career highlights">
         <div className="gallery__track" id="galleryTrack" ref={galleryRef}>
-          <div className="gallery__card gallery__card--photo" data-index="0" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-photo.png')" }} />
-          <div className="gallery__card gallery__card--photo" data-index="1" style={{ '--card-bg': '#E8A838', '--card-image': "url('/images/gallery-collage-azul.jpg')" }} />
-          <div className="gallery__card" data-index="2" style={{ '--card-bg': '#3A7D6B' }}>
-            <svg className="gallery__card-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="40" cy="36" r="14" fill="#fff" opacity=".3"/><path d="M40 22v28M28 36h24" stroke="#fff" strokeWidth="4" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <div className="gallery__card" data-index="3" style={{ '--card-bg': '#5B8EC2' }}>
-            <svg className="gallery__card-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="18" y="20" width="18" height="40" rx="9" stroke="#F2E4CE" strokeWidth="3"/><rect x="44" y="20" width="18" height="40" rx="9" stroke="#F2E4CE" strokeWidth="3"/>
-            </svg>
-          </div>
-          <div className="gallery__card" data-index="4" style={{ '--card-bg': '#162B44' }}>
-            <svg className="gallery__card-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M24 56V36c0-8.8 7.2-16 16-16s16 7.2 16 16v20" stroke="#E8A838" strokeWidth="3.5" strokeLinecap="round"/><circle cx="40" cy="36" r="6" fill="#E8A838"/>
-            </svg>
-          </div>
-          <div className="gallery__card" data-index="5" style={{ '--card-bg': '#F2E4CE' }}>
-            <svg className="gallery__card-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22 28h14v24H22zM44 28h14v24H44z" fill="#3A7D6B" />
-            </svg>
-          </div>
+          <div className="gallery__card gallery__card--photo" data-index="0" role="img" aria-label="From Campus to Career launches May 31 — join the founding 1,000 waitlist" style={{ '--card-bg': '#E8A838', '--card-image': "url('/images/gallery-launch-may31.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="1" role="img" aria-label="Some people learn the rules early: study how referrals, networking, and recruiter conversations work" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-learn-the-rules.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="2" role="img" aria-label="Your rejection isn't the end: what first-gen students need to hear right now" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-rejection.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="3" role="img" aria-label="Your degree isn't enough: here's why" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-degree.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="4" role="img" aria-label="Millennial vs Gen Z career tips" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-millennial-vs-genz.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="5" role="img" aria-label="Rejection is redirection: your rejection is not a reflection of your worth" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-rejection-redirection.png')" }} />
         </div>
       </section>
 
