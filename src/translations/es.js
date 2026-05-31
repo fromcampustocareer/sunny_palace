@@ -2001,99 +2001,133 @@ export const es = {
         ctaLabel: 'Abrir Rastreador', ctaIcon: 'external',
       },
       {
-        id: 1, cat: 'outreach', stage: 'outreach', author: 'jose',
+        id: 18, cat: 'outreach', stage: 'outreach', author: 'both',
         num: '02',
+        title: 'Pitch Personal / Presentación de Networking',
+        desc: 'Un pitch de ascensor para rellenar, para presentaciones, sesiones informativas y contacto en frío, con una versión completa y una más corta para decir en un pasillo.',
+        body: `Pitch Personal / Presentación de Networking
+
+VERSIÓN COMPLETA
+¡Hola! Soy [Nombre]. Estudio [X] y ahora mismo estoy [construyendo / investigando / liderando] [algo específico]. Me importa [X] porque he visto lo que pasa cuando nadie hace [razón real y específica]. A través de mis experiencias en [X, Y y Z], me he convertido en la persona que [habilidad específica que te distingue en un equipo], y me encantaría aportar eso a su trabajo en [XYZ]. ¿Hay alguna oportunidad para que un estudiante como yo se una a su equipo? Ninguna tarea es demasiado grande ni demasiado pequeña. ¡Solo quiero aprender!
+
+VERSIÓN CORTA
+¡Hola! Soy [Nombre], estudio [X] y actualmente estoy [construyendo / investigando] [algo específico]. Me importa mucho [X] porque [razón real y específica]. A través de [X y Y], me he convertido en la persona que [habilidad específica], y me encantaría aportar eso a [XYZ]. ¿Habrá espacio para que un estudiante como yo ayude? Ninguna tarea es demasiado grande ni demasiado pequeña, ¡solo quiero aprender!`,
+        ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
+      },
+      {
+        id: 19, cat: 'outreach', stage: 'outreach', author: 'both',
+        num: '03',
+        title: 'Contacto en LinkedIn',
+        desc: 'Mensajes de conexión e introducción para reclutadores y empleados, después de aplicar, en frío, o al pedir una recomendación.',
+        body: `Contacto en LinkedIn
+
+A UN RECLUTADOR (DESPUÉS DE APLICAR)
+Hola [Nombre del Reclutador], me llamo [Tu Nombre] y hace poco apliqué para el puesto de [Nombre del Rol] [pasantía/rol] en [Nombre de la Empresa]. Estoy muy emocionado/a porque creo que se alinea con mi interés en [1 o 2 Intereses], y sé que podría aportar [1 Habilidad o Experiencia] al equipo. ¡Me encantaría conectar y saber más!
+
+A UN RECLUTADOR (PRESENTACIÓN EN FRÍO)
+Hola [Nombre del Reclutador], ¡un gusto conocerte! Me llamo [Tu Nombre] y soy estudiante de [Carrera] en [Universidad] '2X. Me encantaría conectar y saber más sobre tu rol, la cultura de la empresa y las futuras oportunidades en tu organización. Si te parece bien, dime tu disponibilidad y haré lo posible por ajustarme a tu horario. ¡Quedo atento/a a tu respuesta!
+
+A UN EMPLEADO (PRESENTACIÓN EN FRÍO)
+Hola [Nombre del Empleado], ¡un gusto conocerte! Me llamo [Tu Nombre] y soy estudiante de [Carrera] en [Universidad] '2X. Me encantaría conectar y conocer más sobre tu rol, la cultura de la empresa y tu experiencia como [Identidad Compartida] en [Nombre de la Empresa]. Si te parece bien, dime tu disponibilidad y con gusto me ajusto a tu horario. ¡Quedo atento/a a conectar!
+
+A UN EMPLEADO (PIDIENDO UNA RECOMENDACIÓN)
+Hola [Nombre del Empleado], ¡un gusto conocerte en [Evento]! Me llamo [Tu Nombre] y soy estudiante de [Carrera] en [Universidad] '2X. Me interesa aplicar al puesto de [Título del Rol] en tu empresa, y quería saber si estarías dispuesto/a a recomendarme. Adjunto mi currículum y abajo copié el enlace a la vacante. ¡Muchas gracias de antemano por tu ayuda y consideración!`,
+        ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
+      },
+      {
+        id: 1, cat: 'outreach', stage: 'outreach', author: 'jose',
+        num: '04',
         title: 'DM en Frío en LinkedIn, Estudiante a Profesional',
         desc: 'Tres versiones: para un reclutador, para un ingeniero y para un egresado. Corto, específico, sin desesperación. Los mensajes exactos que realmente obtienen respuestas.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 2, cat: 'outreach', stage: 'outreach', author: 'jose',
-        num: '03',
+        num: '05',
         title: 'Correo de Solicitud de Coffee Chat',
         desc: 'Una plantilla con campos personalizables: introducción, solicitud específica y bloque de disponibilidad. Convierte el contacto en frío en conversaciones cálidas sin sonar transaccional.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 3, cat: 'outreach', stage: 'outreach', author: 'jose',
-        num: '04',
+        num: '06',
         title: 'Seguimiento Sin Respuesta (Secuencia de 3 Pasos)',
         desc: 'Mensajes de seguimiento para el Día 1, Día 7 y Día 14 que no suenan necesitados ni desesperados. El sistema que usa Jose para hacer seguimiento de cada contacto sin quemar puentes.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 4, cat: 'outreach', stage: 'outreach', author: 'both',
-        num: '05',
+        num: '07',
         title: 'Contacto a Reclutador en LinkedIn',
         desc: 'Específico para inicio de carrera: cómo expresar interés genuino en un rol sin aplicar formalmente aún, y cómo posicionarte antes de que abra el portal de aplicación.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 6, cat: 'apply', stage: 'apply', author: 'both',
-        num: '06',
+        num: '08',
         title: 'Fórmula de Puntos para el Currículum',
         desc: 'Una fórmula STAR simplificada con 10 ejemplos completados de roles en CS, datos e ingeniería. Convierte descripciones de experiencia vagas en puntos específicos y medibles que los reclutadores realmente leen.',
         ctaLabel: 'Abrir Marco', ctaIcon: 'external',
       },
       {
         id: 7, cat: 'interview', stage: 'interview', author: 'both',
-        num: '07',
+        num: '09',
         title: 'Script "Háblame de Ti"',
         desc: 'Un marco de 3 partes: quién eres, qué has hecho, por qué este rol — con una versión para estudiante y una para egresado. Convierte las autointroducciones genéricas en narrativas seguras y específicas.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 8, cat: 'interview', stage: 'interview', author: 'both',
-        num: '08',
+        num: '10',
         title: 'Plantilla de Banco de Historias STAR',
         desc: 'Una plantilla en blanco para 6–8 historias sobre liderazgo, fracaso, trabajo en equipo y resolución de problemas. Construye toda tu biblioteca de historias una vez y úsala en cada entrevista.',
         ctaLabel: 'Abrir Marco', ctaIcon: 'external',
       },
       {
         id: 9, cat: 'interview', stage: 'interview', author: 'both',
-        num: '09',
+        num: '11',
         title: 'Nota de Agradecimiento Post-Entrevista',
         desc: 'Dos versiones: una para después de una pantalla de reclutador, otra para después de una ronda técnica o de panel. Específica, cálida y corta — el tipo que realmente se reenvía.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 10, cat: 'interview', stage: 'interview', author: 'jocelyn',
-        num: '10',
+        num: '12',
         title: 'Preguntas para Hacer al Final de una Entrevista',
         desc: '15 preguntas específicas y no genéricas organizadas por con quién estás hablando: reclutador, ingeniero o gerente de contratación. Las preguntas que realmente muestran que has pensado en el rol.',
         ctaLabel: 'Abrir Marco', ctaIcon: 'external',
       },
       {
         id: 11, cat: 'offers', stage: 'offers', author: 'jocelyn',
-        num: '11',
+        num: '13',
         title: 'Cómo Comparar Dos Ofertas',
         desc: 'Una plantilla de matriz de decisión ponderada: base, bono, capital, trayectoria de crecimiento, señales culturales y ubicación. Hace la decisión visible y menos impulsada por emociones.',
         ctaLabel: 'Abrir Rastreador', ctaIcon: 'external',
       },
       {
         id: 12, cat: 'offers', stage: 'offers', author: 'jocelyn',
-        num: '12',
+        num: '14',
         title: 'Correo de Negociación de Oferta',
         desc: 'Un script de copiar y pegar para pedir más compensación con un número específico ya incluido. Profesional, directo y cálido — la versión que no arriesga la oferta.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 13, cat: 'job', stage: 'job', author: 'jocelyn',
-        num: '13',
+        num: '15',
         title: 'Mensaje de Check-In de la Primera Semana al Gerente',
         desc: 'Cómo configurar tu primer 1:1, qué decir en él y cómo comenzar la relación con buen pie sin ser demasiado entusiasta ni estar poco preparado.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 14, cat: 'job', stage: 'job', author: 'jocelyn',
-        num: '14',
+        num: '16',
         title: 'Plantilla de Plan 30-60-90 Días',
         desc: 'Un plan de tres fases para tus primeros tres meses: objetivos, relaciones clave a construir y entregables en cada etapa. El documento que convierte una buena primera impresión en un primer año sólido.',
         ctaLabel: 'Abrir Marco', ctaIcon: 'external',
       },
       {
         id: 15, cat: 'job', stage: 'job', author: 'both',
-        num: '15',
+        num: '17',
         title: 'Documento de Reflexión de Fin de Pasantía',
         desc: 'Una plantilla de autoevaluación para completar antes de tu última semana: documentando tu impacto, las relaciones que construiste y cómo prepararte para la conversación sobre la oferta de regreso.',
         ctaLabel: 'Abrir Marco', ctaIcon: 'external',

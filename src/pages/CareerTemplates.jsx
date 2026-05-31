@@ -40,6 +40,7 @@ export default function CareerTemplates() {
 
   const [previewId, setPreviewId] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [copiedCardId, setCopiedCardId] = useState(null)
   const previewTriggerRef = useRef(null)
   const filtersRef = useRef(null)
 
@@ -99,6 +100,15 @@ export default function CareerTemplates() {
     navigator.clipboard.writeText(body).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2200)
+    })
+  }
+
+  // Copy an available template's body straight from its card.
+  const copyTemplate = tmpl => {
+    if (!tmpl.body) return
+    navigator.clipboard.writeText(tmpl.body).then(() => {
+      setCopiedCardId(tmpl.id)
+      setTimeout(() => setCopiedCardId(null), 2200)
     })
   }
 
@@ -808,6 +818,11 @@ export default function CareerTemplates() {
                     {tmpl.ctaLabel}
                     {tmpl.ctaIcon === 'copy' ? <CopyIcon /> : <ExternalIcon />}
                   </a>
+                ) : tmpl.body ? (
+                  <button type="button" className={`ct-card__cta ct-card__cta--${tmpl.stage}`} onClick={() => copyTemplate(tmpl)}>
+                    {copiedCardId === tmpl.id ? t.modalCopiedLabel : tmpl.ctaLabel}
+                    <CopyIcon />
+                  </button>
                 ) : (
                   <span className="ct-card__cta ct-card__cta--soon" aria-disabled="true">{t.comingSoon}</span>
                 )}
