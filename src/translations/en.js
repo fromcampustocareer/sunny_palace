@@ -1104,6 +1104,11 @@ export const en = {
     heroBody1: 'Every week, Jose and Jocelyn surface roles, programs, and apprenticeships on LinkedIn - from TikTok internship alerts to Pinterest apprenticeships to local research fellowships. The Opportunity Board pulls those into one place, with filters that actually make sense for students and early-career talent: stage, role type, eligibility, and timeline.',
     heroBodyStrong: 'This is where you go when you want to stop scrolling random feeds',
     heroBody2: ' and start seeing concrete options that match where you are in the campus-to-career journey.',
+    heroStats: [
+      { value: 'Weekly', label: 'Fresh roles added every week' },
+      { value: '5', label: 'Role categories, curated by hand' },
+      { value: 'Free', label: 'Always free to browse' },
+    ],
 
     // ── Board section ─────────────────────────────────────────────────────
     boardKicker: 'Section 01',

@@ -352,10 +352,11 @@ export default function OpportunityBoard() {
     }
   }
 
+  // Icons sit on the teal Source band, so tint them light or gold-fill for contrast.
   const SOURCE_ITEM_STYLES = [
-    {},
-    { background: 'rgba(22,43,68,.1)', color: 'var(--color-navy)' },
-    { background: 'rgba(232,168,56,.12)', color: 'var(--color-gold-dark)' },
+    { background: 'rgba(255,255,255,.14)', color: 'var(--color-cream)' },
+    { background: 'rgba(255,255,255,.14)', color: 'var(--color-cream)' },
+    { background: 'var(--color-gold)', color: 'var(--color-dark)' },
   ]
 
   return (
@@ -391,6 +392,11 @@ export default function OpportunityBoard() {
         .ob-hero__sub { font-family: var(--font-display); font-size: clamp(18px,2.5vw,26px); font-weight: 400; color: var(--color-dark); line-height: 1.4; max-width: 720px; margin-bottom: 24px; }
         .ob-hero__body { font-size: clamp(15px,1.8vw,17px); color: var(--color-muted); line-height: 1.8; max-width: 680px; margin-bottom: 40px; }
         .ob-hero__body strong { color: var(--color-dark); font-weight: 600; }
+        .ob-hero__stats { display: flex; flex-wrap: wrap; gap: 0; border-top: 1px solid rgba(26,25,22,.12); padding-top: 26px; }
+        .ob-hero__stat { padding-right: clamp(24px,4vw,52px); margin-right: clamp(24px,4vw,52px); border-right: 1px solid rgba(26,25,22,.12); }
+        .ob-hero__stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+        .ob-hero__stat-value { font-family: var(--font-display); font-size: clamp(28px,4vw,40px); font-weight: 700; color: var(--color-accent); line-height: 1; margin-bottom: 6px; }
+        .ob-hero__stat-label { font-size: 13px; font-weight: 500; color: var(--color-muted); line-height: 1.35; max-width: 18ch; }
 
         .ob-board { max-width: 1240px; margin: 0 auto; padding: 72px clamp(20px,5vw,56px) 80px; }
         .ob-board__head { margin-bottom: 32px; }
@@ -494,16 +500,21 @@ export default function OpportunityBoard() {
         .ob-archive-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .ob-archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; }
 
-        .ob-source { max-width: 1240px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
+        .ob-source { background: var(--color-teal); padding: 80px clamp(20px,5vw,56px); position: relative; overflow: hidden; }
+        .ob-source::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 12% 14%, rgba(255,255,255,.07) 0%, transparent 48%); pointer-events: none; }
+        .ob-source__inner { max-width: 1240px; margin: 0 auto; position: relative; }
+        .ob-source .ob-kicker { color: rgba(242,228,206,.72); }
+        .ob-source .ob-section-title { color: var(--color-cream); }
+        .ob-source .ob-section-sub { color: var(--color-gold); }
         .ob-source__layout { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: flex-start; margin-top: 32px; }
-        .ob-source__body { font-size: clamp(14px,1.6vw,15px); color: var(--color-muted); line-height: 1.8; }
-        .ob-source__body strong { color: var(--color-dark); font-weight: 600; }
+        .ob-source__body { font-size: clamp(14px,1.6vw,15px); color: rgba(242,228,206,.8); line-height: 1.8; }
+        .ob-source__body strong { color: #fff; font-weight: 600; }
         .ob-source__body + .ob-source__body { margin-top: 16px; }
         .ob-source__list { display: flex; flex-direction: column; gap: 14px; }
         .ob-source__item { display: flex; align-items: flex-start; gap: 12px; }
-        .ob-source__item-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(58,125,107,.1); color: var(--color-teal); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
-        .ob-source__item-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--color-dark); margin-bottom: 2px; }
-        .ob-source__item-desc { font-size: 13px; color: var(--color-muted); line-height: 1.55; }
+        .ob-source__item-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,.14); color: var(--color-cream); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+        .ob-source__item-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--color-cream); margin-bottom: 2px; }
+        .ob-source__item-desc { font-size: 13px; color: rgba(242,228,206,.66); line-height: 1.55; }
 
         .ob-submit { max-width: 1240px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
         .ob-submit__layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; align-items: flex-start; }
@@ -566,6 +577,16 @@ export default function OpportunityBoard() {
         <p className="ob-hero__body">
           {t.heroBody1} <strong>{t.heroBodyStrong}</strong>{t.heroBody2}
         </p>
+        {t.heroStats?.length > 0 && (
+          <div className="ob-hero__stats">
+            {t.heroStats.map(stat => (
+              <div key={stat.label} className="ob-hero__stat">
+                <div className="ob-hero__stat-value">{stat.value}</div>
+                <div className="ob-hero__stat-label">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </header>
 
       <hr className="ob-divider" />
@@ -661,32 +682,30 @@ export default function OpportunityBoard() {
         </div>
       </section>
 
-      <hr className="ob-divider" />
-
       <section className="ob-source" id="source">
-        <p className="ob-kicker">{t.sourceKicker}</p>
-        <h2 className="ob-section-title">{t.sourceTitle}</h2>
-        <p className="ob-section-sub">{t.sourceSub}</p>
-        <div className="ob-source__layout">
-          <div>
-            <p className="ob-source__body">{t.sourceBody1Part1} <strong>{t.sourceBody1Strong}</strong>{t.sourceBody1Part2}</p>
-            <p className="ob-source__body" style={{ marginTop: '16px' }}>{t.sourceBody2Part1} <strong>{t.sourceBody2Strong}</strong>{t.sourceBody2Part2}</p>
-          </div>
-          <div className="ob-source__list">
-            {t.sourceItems.map((s, i) => (
-              <div key={s.title} className="ob-source__item">
-                <span className="ob-source__item-icon" style={SOURCE_ITEM_STYLES[i]}>{s.icon}</span>
-                <div>
-                  <div className="ob-source__item-title">{s.title}</div>
-                  <div className="ob-source__item-desc">{s.desc}</div>
+        <div className="ob-source__inner">
+          <p className="ob-kicker">{t.sourceKicker}</p>
+          <h2 className="ob-section-title">{t.sourceTitle}</h2>
+          <p className="ob-section-sub">{t.sourceSub}</p>
+          <div className="ob-source__layout">
+            <div>
+              <p className="ob-source__body">{t.sourceBody1Part1} <strong>{t.sourceBody1Strong}</strong>{t.sourceBody1Part2}</p>
+              <p className="ob-source__body" style={{ marginTop: '16px' }}>{t.sourceBody2Part1} <strong>{t.sourceBody2Strong}</strong>{t.sourceBody2Part2}</p>
+            </div>
+            <div className="ob-source__list">
+              {t.sourceItems.map((s, i) => (
+                <div key={s.title} className="ob-source__item">
+                  <span className="ob-source__item-icon" style={SOURCE_ITEM_STYLES[i]}>{s.icon}</span>
+                  <div>
+                    <div className="ob-source__item-title">{s.title}</div>
+                    <div className="ob-source__item-desc">{s.desc}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
-
-      <hr className="ob-divider" />
 
       <section className="ob-submit" id="submit">
         <div className="ob-submit__layout">

@@ -1104,6 +1104,11 @@ export const es = {
     heroBody1: 'Cada semana, Jose y Jocelyn destacan roles, programas y aprendizajes en LinkedIn — desde alertas de pasantías en TikTok hasta aprendizajes en Pinterest y becas de investigación locales. El Tablero de Oportunidades los reúne en un solo lugar, con filtros que realmente tienen sentido para estudiantes y talento al inicio de carrera: etapa, tipo de rol, elegibilidad y tiempo.',
     heroBodyStrong: 'Aquí es donde vas cuando quieres dejar de desplazarte por feeds aleatorios',
     heroBody2: ' y empezar a ver opciones concretas que coincidan con donde estás en tu camino del campus a la carrera.',
+    heroStats: [
+      { value: 'Cada semana', label: 'Nuevos roles agregados cada semana' },
+      { value: '5', label: 'Categorías de roles, curadas a mano' },
+      { value: 'Gratis', label: 'Siempre gratis para explorar' },
+    ],
 
     // ── Board section ─────────────────────────────────────────────────────
     boardKicker: 'Sección 01',
