@@ -23,12 +23,11 @@ export default function ArticleLayout({ children, title, footerWidth = 680, sign
     { to: '/articles',         label: t.navLaVoz },
     { to: '/linkedin-series',  label: t.navLinkedIn },
     { to: '/career-templates', label: t.navTemplates },
-    { to: '/bridge-year',      label: t.navBridgeYear },
     { to: '/coffee-chat',      label: t.navCoffeeChat },
     { to: '/opportunity-board',label: t.navOpportunities },
-    { to: '/interview-prep',   label: t.navInterviewPrep },
     { to: '/partner-panels',   label: t.navPanels },
     { to: '/resume-reviews',   label: t.navResumes },
+    // Bridge Year + Interview Prep sprints are gated "coming soon" pre-launch.
   ]
 
   const [menuOpen, setMenuOpen] = useState(false)
