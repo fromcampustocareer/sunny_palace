@@ -222,7 +222,7 @@ export default function ResumeBuilder() {
           display: grid;
           grid-template-columns: ${sidebarCollapsed ? '52px' : '260px'} 1fr 1fr;
           gap: 0;
-          height: calc(100vh - 64px);
+          height: calc(100vh - 120px);
           min-height: 600px;
           background: var(--color-cream);
           border-top: 1px solid rgba(0,0,0,.08);
