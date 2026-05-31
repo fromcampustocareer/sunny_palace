@@ -529,14 +529,14 @@ export default function Home() {
     const panels = loader?.querySelectorAll('.loader__panel')
 
     function afterLoader() {
-      let last = 0
-      const onScroll = () => {
-        const cur = window.scrollY
-        setNavHidden(cur > last && cur > 300)
-        last = cur
-      }
-      window.addEventListener('scroll', onScroll, { passive: true })
-      cleanupScroll = () => window.removeEventListener('scroll', onScroll)
+      // Hide nav on scroll-down past 300px, reveal on scroll-up.
+      // Driven by ScrollTrigger (RAF-batched) instead of a per-frame scroll listener.
+      const navTrigger = ScrollTrigger.create({
+        start: 0,
+        end: 'max',
+        onUpdate: (self) => setNavHidden(self.direction === 1 && self.scroll() > 300),
+      })
+      cleanupScroll = () => navTrigger.kill()
 
       const navOffset = 80
       const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
