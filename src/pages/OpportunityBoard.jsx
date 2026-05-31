@@ -500,7 +500,7 @@ export default function OpportunityBoard() {
         .ob-archive-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .ob-archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; }
 
-        .ob-source { background: var(--color-teal); padding: 80px clamp(20px,5vw,56px); position: relative; overflow: hidden; }
+        .ob-source { background: var(--color-accent); padding: 80px clamp(20px,5vw,56px); position: relative; overflow: hidden; }
         .ob-source::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 12% 14%, rgba(255,255,255,.07) 0%, transparent 48%); pointer-events: none; }
         .ob-source__inner { max-width: 1240px; margin: 0 auto; position: relative; }
         .ob-source .ob-kicker { color: rgba(242,228,206,.72); }
