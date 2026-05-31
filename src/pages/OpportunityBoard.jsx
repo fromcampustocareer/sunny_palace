@@ -3,114 +3,9 @@ import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import { OPPORTUNITIES, ARCHIVED_OPPORTUNITIES } from '../data/opportunities'
 
-const FEATURED = [
-  {
-    id: 'f1', logo: 'TT', logoStyle: {}, deadlineLabel: 'Closes May 15', deadlineCls: 'urgent',
-    title: 'GPU/AI Application Platform Engineer Intern', company: 'TikTok · Server Platform',
-    tags: [{ l: 'Internship', c: 'ob-tag--intern' }, { l: 'PhD', c: 'ob-tag--muted' }, { l: 'AI/ML', c: 'ob-tag--muted' }, { l: 'Fall 2026', c: 'ob-tag--muted' }],
-    meta: ['Remote / US', 'Competitive salary'],
-    desc: <span>Fall 2026 PhD-level GPU/AI internship focused on server platform applications. <strong>Strong fit for students doing research in systems, ML infra, or high-performance computing.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'internship', stage: 'phd', location: 'us', deadline: 'this-month', bridge: false,
-    keywords: 'tiktok gpu ai intern phd ml systems server platform',
-  },
-  {
-    id: 'f2', logo: 'Pi', logoStyle: { background: 'rgba(179,69,57,.08)', color: 'var(--color-accent)' }, deadlineLabel: 'Rolling', deadlineCls: 'rolling',
-    title: 'Apprenticeship Program - Software Engineering', company: 'Pinterest',
-    tags: [{ l: 'Apprenticeship', c: 'ob-tag--apprent' }, { l: 'Bridge Year Friendly', c: 'ob-tag--bridge' }, { l: 'No Degree Required', c: 'ob-tag--muted' }],
-    meta: ['Remote / US', 'Paid, competitive'],
-    desc: <span>Pinterest's apprenticeship is one of the best entry points in tech for candidates without a traditional CS degree. <strong>Especially strong for career changers and nontraditional students.</strong></span>,
-    source: 'Bridge Year Hub', viewLink: '#', postLink: '/bridge-year', postLabel: 'Bridge Year Hub',
-    type: 'apprenticeship', stage: 'recent-grad transition', location: 'us', deadline: 'rolling', bridge: true,
-    keywords: 'pinterest apprenticeship software engineering swe early career',
-  },
-  {
-    id: 'f3', logo: 'Ms', logoStyle: { background: 'rgba(91,142,194,.12)', color: 'var(--color-blue)' }, deadlineLabel: 'Rolling', deadlineCls: 'rolling',
-    title: 'LEAP Apprenticeship Program', company: 'Microsoft',
-    tags: [{ l: 'Apprenticeship', c: 'ob-tag--apprent' }, { l: 'Bridge Year Friendly', c: 'ob-tag--bridge' }, { l: 'Open to Non-CS', c: 'ob-tag--muted' }],
-    meta: ['US (various)', 'Paid + benefits'],
-    desc: <span>LEAP is Microsoft's flagship apprenticeship for people transitioning into tech. <strong>Open to people without a CS degree, including career changers and self-taught developers.</strong></span>,
-    source: 'Bridge Year Hub', viewLink: '#', postLink: '/bridge-year', postLabel: 'Bridge Year Hub',
-    type: 'apprenticeship', stage: 'recent-grad transition', location: 'us', deadline: 'rolling', bridge: true,
-    keywords: 'microsoft leap apprenticeship software engineering career change',
-  },
-]
-
-const MAIN_CARDS = [
-  {
-    id: 'm1', logo: 'G', logoStyle: { background: 'rgba(58,125,107,.1)', color: 'var(--color-teal)' }, deadlineLabel: 'Closes May 1', deadlineCls: 'urgent',
-    title: 'STEP Internship - Software Engineering', company: 'Google',
-    tags: [{ l: 'Internship', c: 'ob-tag--intern' }, { l: 'Sophomore / First Year', c: 'ob-tag--muted' }, { l: 'Summer 2026', c: 'ob-tag--muted' }],
-    meta: ['US (various)', '$7,000–$8,000/mo'],
-    desc: <span>Google's STEP program is built for first- and second-year CS students. <strong>One of the most competitive early-stage internships in tech - apply early.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'internship', stage: 'first-second junior', location: 'us', deadline: 'this-month', bridge: false,
-    keywords: 'google step internship sophomore first year cs early experience',
-  },
-  {
-    id: 'm2', logo: 'Sf', logoStyle: { background: 'rgba(91,142,194,.12)', color: 'var(--color-blue)' }, deadlineLabel: 'Closes May 10', deadlineCls: 'urgent',
-    title: 'Futureforce Summer Internship - SWE', company: 'Salesforce',
-    tags: [{ l: 'Internship', c: 'ob-tag--intern' }, { l: 'Junior / Senior', c: 'ob-tag--muted' }, { l: 'Summer 2026', c: 'ob-tag--muted' }],
-    meta: ['San Francisco / Remote', '$50/hr'],
-    desc: <span>Salesforce Futureforce is a great pipeline into full-time roles. <strong>Strong return offer rate and well-regarded rotational program post-internship.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'internship', stage: 'junior senior', location: 'us', deadline: 'this-month', bridge: false,
-    keywords: 'salesforce futureforce intern summer software engineering early career',
-  },
-  {
-    id: 'm3', logo: 'St', logoStyle: { background: 'rgba(22,43,68,.08)', color: 'var(--color-navy)' }, deadlineLabel: 'Rolling', deadlineCls: 'rolling',
-    title: 'New Grad - Software Engineer', company: 'Stripe',
-    tags: [{ l: 'New Grad', c: 'ob-tag--newgrad' }, { l: 'Recent Grad', c: 'ob-tag--muted' }, { l: 'Full-Time', c: 'ob-tag--muted' }],
-    meta: ['Remote / US', '$180k–$220k TC'],
-    desc: <span>Stripe's new grad SWE role is highly competitive but worth the prep. <strong>Strong culture, high bar for writing and systems thinking - not just leetcode.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'new-grad', stage: 'recent-grad', location: 'us', deadline: 'rolling', bridge: false,
-    keywords: 'stripe new grad software engineer full-time early career fintech',
-  },
-  {
-    id: 'm4', logo: 'Sp', logoStyle: { background: 'rgba(58,125,107,.1)', color: 'var(--color-teal)' }, deadlineLabel: 'Rolling', deadlineCls: 'rolling',
-    title: 'Tech Fellowship - Early Career Engineering', company: 'Spotify',
-    tags: [{ l: 'Fellowship', c: 'ob-tag--fellowship' }, { l: 'Bridge Year Friendly', c: 'ob-tag--bridge' }, { l: 'Non-Traditional Welcome', c: 'ob-tag--muted' }],
-    meta: ['Remote / Stockholm', 'Paid'],
-    desc: <span>Spotify's early-career fellowship welcomes engineers from nontraditional backgrounds. <strong>Good option for bridge year candidates still building their portfolio.</strong></span>,
-    source: 'Bridge Year Hub', viewLink: '#', postLink: '/bridge-year', postLabel: 'Bridge Year Hub',
-    type: 'apprenticeship', stage: 'recent-grad transition', location: 'us', deadline: 'rolling', bridge: true,
-    keywords: 'spotify tech fellowship apprenticeship music early career non-traditional',
-  },
-  {
-    id: 'm5', logo: 'Me', logoStyle: { background: 'rgba(91,142,194,.12)', color: 'var(--color-blue)' }, deadlineLabel: 'Closes Apr 30', deadlineCls: 'urgent',
-    title: 'Meta University Research Program', company: 'Meta',
-    tags: [{ l: 'Program', c: 'ob-tag--program' }, { l: 'Undergraduate', c: 'ob-tag--muted' }, { l: 'Underrepresented Students', c: 'ob-tag--muted' }],
-    meta: ['Menlo Park / Remote', '$7,500/mo + housing'],
-    desc: <span>Meta University is specifically designed for underrepresented undergrads. <strong>Pairing research mentorship with SWE/PM internship tracks - exceptional for first-gen students.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'program', stage: 'junior senior', location: 'us', deadline: 'this-month', bridge: false,
-    keywords: 'meta university research program undergraduate first-gen underrepresented',
-  },
-  {
-    id: 'm6', logo: 'IB', logoStyle: { background: 'rgba(22,43,68,.08)', color: 'var(--color-navy)' }, deadlineLabel: 'Closes May 20', deadlineCls: '',
-    title: 'Data Science Summer Intern', company: 'IBM',
-    tags: [{ l: 'Internship', c: 'ob-tag--intern' }, { l: 'Data', c: 'ob-tag--muted' }, { l: 'Junior / Senior', c: 'ob-tag--muted' }, { l: 'Open to Non-CS', c: 'ob-tag--muted' }],
-    meta: ['Austin, TX / Hybrid', '$38/hr'],
-    desc: <span>IBM's data science intern track is one of the more accessible pipelines for non-CS students in STEM. <strong>Statistics, math, and econ majors encouraged to apply.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'internship', stage: 'junior senior', location: 'us', deadline: 'this-month', bridge: false,
-    keywords: 'ibm data science intern summer undergraduate analytics',
-  },
-  {
-    id: 'm7', logo: 'Fi', logoStyle: { background: 'rgba(179,69,57,.08)', color: 'var(--color-accent)' }, deadlineLabel: 'Rolling', deadlineCls: 'rolling',
-    title: 'Research Fellowship - Design & Product', company: 'Figma',
-    tags: [{ l: 'Fellowship', c: 'ob-tag--fellowship' }, { l: 'Bridge Year Friendly', c: 'ob-tag--bridge' }, { l: 'Design / PM', c: 'ob-tag--muted' }],
-    meta: ['San Francisco / Remote', 'Paid, competitive'],
-    desc: <span>Figma's research fellowship is a great stepping stone for students pursuing design or PM. <strong>Especially strong for underrepresented designers without traditional portfolios yet.</strong></span>,
-    source: 'Bridge Year Hub', viewLink: '#', postLink: '/bridge-year', postLabel: 'Bridge Year Hub',
-    type: 'program', stage: 'junior senior recent-grad', location: 'us', deadline: 'rolling', bridge: true,
-    keywords: 'figma research fellowship design product research underrepresented',
-  },
-]
-
-const TAB_KEYS = ['all', 'internship', 'apprenticeship', 'new-grad', 'program', 'bridge']
+const TAB_KEYS = ['all', 'internship', 'research', 'program', 'scholarship']
 
 function matchCard(card, { tab, query, stage, location, deadline }) {
   if (tab !== 'all') {
@@ -176,16 +71,16 @@ function OBCard({ card, featured, t, idx = 0 }) {
         {card.tags.map(tag => <span key={tag.l} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
       </div>
       <div className="ob-card__meta">
-        {card.meta.map(m => { const chars = [...m]; return <span key={m} className="ob-card__meta-item"><span aria-hidden="true">{chars[0]}</span>{chars.slice(1).join('')}</span> })}
+        {card.meta.map(m => <span key={m} className="ob-card__meta-item">{m}</span>)}
       </div>
       <div className="ob-card__desc">{card.desc}</div>
       <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>
       <div className="ob-card__actions">
-        <a href={card.viewLink} className="ob-card__cta-primary" target="_blank" rel="noopener">{t.cardViewRole}</a>
-        {isExternal
+        <a href={card.viewLink} className="ob-card__cta-primary" target="_blank" rel="noopener">{card.viewLabel || t.cardViewRole}</a>
+        {card.postLink && (isExternal
           ? <a href={card.postLink} className="ob-card__cta-secondary" target="_blank" rel="noopener">{card.postLabel}</a>
           : <Link to={card.postLink} className="ob-card__cta-secondary">{card.postLabel}</Link>
-        }
+        )}
       </div>
     </article>
   )
@@ -270,8 +165,8 @@ export default function OpportunityBoard() {
 
   const filters = { tab, query: search.toLowerCase().trim(), stage, location, deadline }
 
-  const allFeatured = [...FEATURED, ...dbOpportunities.filter(c => c._featured)]
-  const allMain = [...MAIN_CARDS, ...dbOpportunities.filter(c => !c._featured)]
+  const allFeatured = dbOpportunities.filter(c => c._featured)
+  const allMain = [...OPPORTUNITIES, ...dbOpportunities.filter(c => !c._featured)]
   const visibleFeatured = allFeatured.filter(c => matchCard(c, filters))
   const visibleMain = allMain.filter(c => matchCard(c, filters))
   const totalVisible = visibleFeatured.length + visibleMain.length
@@ -535,7 +430,7 @@ export default function OpportunityBoard() {
 
         <div className="ob-tabs" role="group" aria-label={t.tabGroupAriaLabel}>
           {TAB_KEYS.map(key => {
-            const labelMap = { all: t.tabAll, internship: t.tabInternship, apprenticeship: t.tabApprenticeship, 'new-grad': t.tabNewGrad, program: t.tabProgram, bridge: t.tabBridge }
+            const labelMap = { all: t.tabAll, internship: t.tabInternship, research: t.tabResearch, program: t.tabProgram, scholarship: t.tabScholarship }
             return (
               <button key={key} id={`ob-tab-${key}`} className={`ob-tab${tab === key ? ' active' : ''}`} aria-pressed={tab === key} onClick={() => setTab(key)}>{labelMap[key]}</button>
             )
@@ -592,7 +487,7 @@ export default function OpportunityBoard() {
             {t.archiveLabel}
           </p>
           <div className="ob-archive-grid">
-            {t.archiveCards.map(a => (
+            {ARCHIVED_OPPORTUNITIES.map(a => (
               <article key={a.id} className="ob-card archived">
                 <div className="ob-card__top">
                   <div className="ob-card__company-logo" style={{ background: 'rgba(0,0,0,.05)', color: 'var(--color-muted)' }}>{a.logo}</div>
