@@ -38,7 +38,7 @@ const HITS_TO_BREAK = 7
 
 // Pre-launch waitlist mode: hides nav links, search, and every section after the hero,
 // and replaces the Get in Touch CTA with a Waitlist button. Flip to false to restore the full site.
-const WAITLIST_MODE = false
+const WAITLIST_MODE = true
 
 export default function Home() {
   const navigate = useNavigate()
