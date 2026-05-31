@@ -19,6 +19,12 @@ const ExternalIcon = () => (
   </svg>
 )
 
+// Templates that are actually live (id → URL). Everything else shows "coming soon".
+// #5 = the Internship Application Tracker → the real "Career Chisme Sheet" Google Sheet.
+const TEMPLATE_LINKS = {
+  5: 'https://docs.google.com/spreadsheets/d/1O3AkqZiVSXUMq2qfj3tIsy-mWNLgCi3MiNwyNrSFIJM/edit?gid=617684609#gid=617684609',
+}
+
 export default function CareerTemplates() {
   const t = useT('careerTemplates')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -423,6 +429,14 @@ export default function CareerTemplates() {
         .ct-card__cta--offers:hover    { background: var(--color-accent); color: var(--color-cream); border-color: var(--color-accent); box-shadow: 0 8px 16px -8px rgba(179,69,57,.5); }
         .ct-card__cta--job:hover       { background: var(--color-navy);   color: var(--color-cream); border-color: var(--color-navy);   box-shadow: 0 8px 16px -8px rgba(22,43,68,.5); }
         .ct-card__cta:active { transform: translateY(0); }
+        /* Not-yet-available templates: muted, non-interactive badge in place of the CTA */
+        .ct-card__cta--soon {
+          background: rgba(26,25,22,.04);
+          color: var(--color-muted);
+          border-color: rgba(26,25,22,.16);
+          cursor: default;
+        }
+        .ct-card__cta--soon:hover { transform: none; }
 
         /* card actions row — Copy Template + Preview side by side */
         .ct-card__actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; }
@@ -789,10 +803,14 @@ export default function CareerTemplates() {
               <h2 className="ct-card__title">{tmpl.title}</h2>
               <p className="ct-card__desc">{tmpl.desc}</p>
               <div className="ct-card__actions">
-                <a href="#" className={`ct-card__cta ct-card__cta--${tmpl.stage}`}>
-                  {tmpl.ctaLabel}
-                  {tmpl.ctaIcon === 'copy' ? <CopyIcon /> : <ExternalIcon />}
-                </a>
+                {TEMPLATE_LINKS[tmpl.id] ? (
+                  <a href={TEMPLATE_LINKS[tmpl.id]} target="_blank" rel="noopener noreferrer" className={`ct-card__cta ct-card__cta--${tmpl.stage}`}>
+                    {tmpl.ctaLabel}
+                    {tmpl.ctaIcon === 'copy' ? <CopyIcon /> : <ExternalIcon />}
+                  </a>
+                ) : (
+                  <span className="ct-card__cta ct-card__cta--soon" aria-disabled="true">{t.comingSoon}</span>
+                )}
                 <button
                   type="button"
                   className="ct-card__preview"

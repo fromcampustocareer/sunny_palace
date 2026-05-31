@@ -1989,6 +1989,7 @@ export const es = {
 
     // ── Empty state ───────────────────────────────────────────────────────────
     emptyState: 'No hay plantillas en esta categoría todavía.',
+    comingSoon: 'Próximamente',
 
     // ── Templates ─────────────────────────────────────────────────────────────
     templates: [

@@ -1989,6 +1989,7 @@ export const en = {
 
     // ── Empty state ───────────────────────────────────────────────────────────
     emptyState: 'No templates in this category yet.',
+    comingSoon: 'Coming soon',
 
     // ── Templates ─────────────────────────────────────────────────────────────
     templates: [
