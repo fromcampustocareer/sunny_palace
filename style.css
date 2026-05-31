@@ -1905,6 +1905,30 @@ ul { list-style: none; }
   transform: translateY(-2px);
 }
 
+/* Not-yet-live sprints: muted, non-interactive, with a "coming soon" tag */
+.services__list-btn--soon {
+  gap: 10px;
+  cursor: default;
+  color: var(--color-muted);
+  border-color: rgba(26, 25, 22, 0.18);
+}
+.services__list-btn--soon:hover {
+  background: transparent;
+  color: var(--color-muted);
+  border-color: rgba(26, 25, 22, 0.18);
+  transform: none;
+}
+.services__list-soon {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(232, 168, 56, 0.16);
+  color: var(--color-gold-dark);
+}
+
 .services__list-btn:focus-visible {
   outline: 2px solid var(--color-dark);
   outline-offset: 3px;

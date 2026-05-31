@@ -1204,8 +1204,14 @@ export default function Home() {
             <p className="services__body">{t.servicesSprintsBody}</p>
             <div className="services__list">
               <div className="services__list-col services__list-col--inline">
-                <Link to="/bridge-year" className="services__list-btn">{tNav.bridgeYearSprint} →</Link>
-                <Link to="/interview-prep" className="services__list-btn">{tNav.interviewPrep} →</Link>
+                <span className="services__list-btn services__list-btn--soon" aria-disabled="true">
+                  {tNav.bridgeYearSprint}
+                  <span className="services__list-soon">{t.editorialComingSoon}</span>
+                </span>
+                <span className="services__list-btn services__list-btn--soon" aria-disabled="true">
+                  {tNav.interviewPrep}
+                  <span className="services__list-soon">{t.editorialComingSoon}</span>
+                </span>
               </div>
             </div>
           </div>
