@@ -71,6 +71,9 @@ const PUBLISHED_GROUPS = [
   },
 ]
 
+// Total published posts on the page — drives the hero stat so it never desyncs from the data.
+const PUBLISHED_COUNT = LIVE_POSTS.length + PUBLISHED_GROUPS.reduce((n, g) => n + g.posts.length, 0)
+
 function lensClass(a) {
   return a === 'jose' ? 'ls-ep__lens--jose' : a === 'jocelyn' ? 'ls-ep__lens--jocelyn' : 'ls-ep__lens--both'
 }
@@ -461,7 +464,7 @@ export default function LinkedInSeries() {
         </div>
         <div className="ls-hero__aside">
           <div className="ls-stats">
-            <div className="ls-stat"><div className="ls-stat__num">{t.stat1Num}</div><div className="ls-stat__label">{t.stat1Label}</div></div>
+            <div className="ls-stat"><div className="ls-stat__num">{PUBLISHED_COUNT}</div><div className="ls-stat__label">{t.stat1Label}</div></div>
             <div className="ls-stat"><div className="ls-stat__num">{t.stat3Num}</div><div className="ls-stat__label">{t.stat3Label}</div></div>
             <div className="ls-stat ls-stat--lead"><div className="ls-stat__num">{t.stat4Num}</div><div className="ls-stat__label">{t.stat4Label}</div></div>
           </div>
