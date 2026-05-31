@@ -42,7 +42,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/coffee-chat" element={<CoffeeChat />} />
         <Route path="/opportunity-board" element={<OpportunityBoard />} />
-        <Route path="/interview-prep" element={<InterviewPrep />} />
+        {/* Sprint not open yet — redirect direct visits home. Restore <InterviewPrep /> at launch. */}
+        <Route path="/interview-prep" element={<Navigate to="/" replace />} />
         <Route path="/resume-reviews" element={<ResumeReviews />} />
         <Route path="/resume-reviews/companies" element={<ResumeCompanies />} />
         <Route path="/resume-reviews/builder" element={<ResumeBuilder />} />
