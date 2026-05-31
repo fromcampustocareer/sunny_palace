@@ -538,18 +538,18 @@ export default function OpportunityBoard() {
         .ob-form-success__title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--color-dark); margin-bottom: 8px; }
         .ob-form-success__body { font-size: 14px; color: var(--color-muted); line-height: 1.7; }
 
-        .ob-eco { background: var(--color-dark); padding: 72px clamp(20px,5vw,56px); position: relative; overflow: hidden; }
-        .ob-eco::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 84% 76%, rgba(232,168,56,.12) 0%, transparent 50%); pointer-events: none; }
+        .ob-eco { background: var(--color-gold); padding: 72px clamp(20px,5vw,56px); position: relative; overflow: hidden; }
+        .ob-eco::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 84% 76%, rgba(179,69,57,.16) 0%, transparent 52%); pointer-events: none; }
         .ob-eco__inner { max-width: 1240px; margin: 0 auto; position: relative; }
-        .ob-eco__kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-gold); margin-bottom: 10px; display: inline-flex; align-items: center; gap: 10px; }
-        .ob-eco__kicker::after { content: ''; width: 24px; height: 1px; background: currentColor; opacity: .5; }
-        .ob-eco__title { font-family: var(--font-display); font-size: clamp(20px,3vw,28px); font-weight: 700; color: var(--color-cream); margin-bottom: 8px; line-height: 1.25; }
-        .ob-eco__body { font-size: clamp(14px,1.6vw,15px); color: rgba(242,228,206,.55); line-height: 1.75; max-width: 680px; margin-bottom: 36px; }
+        .ob-eco__kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 10px; display: inline-flex; align-items: center; gap: 10px; }
+        .ob-eco__kicker::after { content: ''; width: 24px; height: 1px; background: currentColor; opacity: .55; }
+        .ob-eco__title { font-family: var(--font-display); font-size: clamp(20px,3vw,28px); font-weight: 700; color: var(--color-dark); margin-bottom: 8px; line-height: 1.25; }
+        .ob-eco__body { font-size: clamp(14px,1.6vw,15px); color: rgba(26,25,22,.72); line-height: 1.75; max-width: 680px; margin-bottom: 36px; }
         .ob-eco__grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 14px; }
-        .ob-eco__link { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); border-radius: 12px; padding: 18px 20px; text-decoration: none; transition: background .2s, transform .2s cubic-bezier(.16,1,.3,1); display: block; }
-        .ob-eco__link:hover { background: rgba(255,255,255,.09); transform: translateY(-2px); }
-        .ob-eco__link-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--color-cream); margin-bottom: 4px; }
-        .ob-eco__link-desc { font-size: 12px; color: rgba(242,228,206,.45); line-height: 1.5; }
+        .ob-eco__link { background: rgba(26,25,22,.055); border: 1px solid rgba(26,25,22,.14); border-radius: 12px; padding: 18px 20px; text-decoration: none; transition: background .2s, transform .2s cubic-bezier(.16,1,.3,1); display: block; }
+        .ob-eco__link:hover { background: rgba(26,25,22,.1); transform: translateY(-2px); }
+        .ob-eco__link-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--color-dark); margin-bottom: 4px; }
+        .ob-eco__link-desc { font-size: 12px; color: rgba(26,25,22,.6); line-height: 1.5; }
 
         @media (max-width: 560px) { .ob-featured-grid, .ob-main-grid, .ob-archive-grid { grid-template-columns: 1fr; } }
         @media (max-width: 680px) { .ob-source__layout { grid-template-columns: 1fr; gap: 32px; } }
