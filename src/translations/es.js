@@ -1994,39 +1994,39 @@ export const es = {
     // ── Templates ─────────────────────────────────────────────────────────────
     templates: [
       {
-        id: 1, cat: 'outreach', stage: 'outreach', author: 'jose',
+        id: 5, cat: 'apply', stage: 'apply', author: 'both',
         num: '01',
+        title: 'Rastreador de Solicitudes de Pasantía',
+        desc: 'Diseño de hoja de cálculo: empresa, rol, fecha límite, estado de la solicitud, nombre de contacto, fecha de seguimiento y columna de notas. El sistema que convierte una aplicación caótica en un pipeline real.',
+        ctaLabel: 'Abrir Rastreador', ctaIcon: 'external',
+      },
+      {
+        id: 1, cat: 'outreach', stage: 'outreach', author: 'jose',
+        num: '02',
         title: 'DM en Frío en LinkedIn, Estudiante a Profesional',
         desc: 'Tres versiones: para un reclutador, para un ingeniero y para un egresado. Corto, específico, sin desesperación. Los mensajes exactos que realmente obtienen respuestas.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 2, cat: 'outreach', stage: 'outreach', author: 'jose',
-        num: '02',
+        num: '03',
         title: 'Correo de Solicitud de Coffee Chat',
         desc: 'Una plantilla con campos personalizables: introducción, solicitud específica y bloque de disponibilidad. Convierte el contacto en frío en conversaciones cálidas sin sonar transaccional.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 3, cat: 'outreach', stage: 'outreach', author: 'jose',
-        num: '03',
+        num: '04',
         title: 'Seguimiento Sin Respuesta (Secuencia de 3 Pasos)',
         desc: 'Mensajes de seguimiento para el Día 1, Día 7 y Día 14 que no suenan necesitados ni desesperados. El sistema que usa Jose para hacer seguimiento de cada contacto sin quemar puentes.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
       },
       {
         id: 4, cat: 'outreach', stage: 'outreach', author: 'both',
-        num: '04',
+        num: '05',
         title: 'Contacto a Reclutador en LinkedIn',
         desc: 'Específico para inicio de carrera: cómo expresar interés genuino en un rol sin aplicar formalmente aún, y cómo posicionarte antes de que abra el portal de aplicación.',
         ctaLabel: 'Copiar Plantilla', ctaIcon: 'copy',
-      },
-      {
-        id: 5, cat: 'apply', stage: 'apply', author: 'both',
-        num: '05',
-        title: 'Rastreador de Solicitudes de Pasantía',
-        desc: 'Diseño de hoja de cálculo: empresa, rol, fecha límite, estado de la solicitud, nombre de contacto, fecha de seguimiento y columna de notas. El sistema que convierte una aplicación caótica en un pipeline real.',
-        ctaLabel: 'Abrir Rastreador', ctaIcon: 'external',
       },
       {
         id: 6, cat: 'apply', stage: 'apply', author: 'both',

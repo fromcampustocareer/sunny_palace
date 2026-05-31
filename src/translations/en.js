@@ -1994,39 +1994,39 @@ export const en = {
     // ── Templates ─────────────────────────────────────────────────────────────
     templates: [
       {
-        id: 1, cat: 'outreach', stage: 'outreach', author: 'jose',
+        id: 5, cat: 'apply', stage: 'apply', author: 'both',
         num: '01',
+        title: 'Internship Application Tracker',
+        desc: 'Spreadsheet layout: company, role, deadline, application status, contact name, follow-up date, and notes column. The system that turns chaotic applying into a real pipeline.',
+        ctaLabel: 'Open Tracker', ctaIcon: 'external',
+      },
+      {
+        id: 1, cat: 'outreach', stage: 'outreach', author: 'jose',
+        num: '02',
         title: 'Cold LinkedIn DM, Student to Professional',
         desc: 'Three versions: to a recruiter, to an engineer, and to an alum. Short, specific, non-desperate. The exact messages that actually get replies.',
         ctaLabel: 'Copy Template', ctaIcon: 'copy',
       },
       {
         id: 2, cat: 'outreach', stage: 'outreach', author: 'jose',
-        num: '02',
+        num: '03',
         title: 'Coffee Chat Request Email',
         desc: 'One template with customizable fields, intro, specific ask, and availability block. Turns cold outreach into warm conversations without sounding transactional.',
         ctaLabel: 'Copy Template', ctaIcon: 'copy',
       },
       {
         id: 3, cat: 'outreach', stage: 'outreach', author: 'jose',
-        num: '03',
+        num: '04',
         title: 'Follow-Up After No Response (3-Step Sequence)',
         desc: 'Day 1, Day 7, Day 14 follow-up messages that don\'t sound needy or desperate. The system Jose uses to follow up on every outreach without burning bridges.',
         ctaLabel: 'Copy Template', ctaIcon: 'copy',
       },
       {
         id: 4, cat: 'outreach', stage: 'outreach', author: 'both',
-        num: '04',
+        num: '05',
         title: 'Recruiter Outreach on LinkedIn',
         desc: 'Specific to early-career, how to express genuine interest in a role without formally applying yet, and how to position yourself before the application portal even opens.',
         ctaLabel: 'Copy Template', ctaIcon: 'copy',
-      },
-      {
-        id: 5, cat: 'apply', stage: 'apply', author: 'both',
-        num: '05',
-        title: 'Internship Application Tracker',
-        desc: 'Spreadsheet layout: company, role, deadline, application status, contact name, follow-up date, and notes column. The system that turns chaotic applying into a real pipeline.',
-        ctaLabel: 'Open Tracker', ctaIcon: 'external',
       },
       {
         id: 6, cat: 'apply', stage: 'apply', author: 'both',
