@@ -1611,7 +1611,7 @@ export const en = {
     stat3Num: '2',
     stat3Label: 'Lenses',
     stat4Num: 'Weekly',
-    stat4Label: 'Updated',
+    stat4Label: 'Topics covered',
 
     // ── Filters ───────────────────────────────────────────────────────────────
     filtersAriaLabel: 'Filter episodes',
@@ -1693,7 +1693,7 @@ export const en = {
           },
           {
             kicker: 'Milestone · Intern Tips',
-            title: 'We hit 67 followers, so naturally, here are 6–7 internship tips.',
+            title: 'We hit 67 followers, so naturally, here are 6-7 internship tips.',
             preview: '6 things every intern should track: projects you worked on, feedback you received, people you connected with, metrics or results, skills you practiced, and moments you felt proud of. And the 7th? Keep your receipts. 🧾',
             dateLabel: 'May 20, 2026',
           },

@@ -71,6 +71,9 @@ const PUBLISHED_GROUPS = [
   },
 ]
 
+// Total published posts on the page — drives the hero stat so it never desyncs from the data.
+const PUBLISHED_COUNT = LIVE_POSTS.length + PUBLISHED_GROUPS.reduce((n, g) => n + g.posts.length, 0)
+
 function lensClass(a) {
   return a === 'jose' ? 'ls-ep__lens--jose' : a === 'jocelyn' ? 'ls-ep__lens--jocelyn' : 'ls-ep__lens--both'
 }
@@ -151,7 +154,7 @@ const PAGE_CSS = `
   .ls-ep__title { font-family:var(--font-display);font-size:clamp(22px,3vw,32px);font-weight:700;color:var(--color-dark);line-height:1.15;letter-spacing:-0.02em;text-wrap:balance;margin-bottom:10px; }
   .ls-ep__summary { font-size:15px;color:var(--color-muted);line-height:1.65;text-wrap:pretty;max-width:640px;margin-bottom:10px; }
   .ls-ep__why { font-size:13px;color:var(--color-teal);font-weight:500;font-style:italic;font-family:var(--font-serif,var(--font-body));line-height:1.55; }
-  .ls-ep__why::before { content:'— ';color:rgba(58,125,107,.7);font-style:normal;font-weight:600;margin-right:2px; }
+  .ls-ep__why::before { content:'- ';color:rgba(58,125,107,.7);font-style:normal;font-weight:600;margin-right:2px; }
   .ls-ep__posts { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;min-width:0; }
   @media (max-width:960px) { .ls-ep__posts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
   @media (max-width:560px) { .ls-ep__posts { grid-template-columns:1fr; } }
@@ -348,6 +351,8 @@ export default function LinkedInSeries() {
   const filtersRef = useRef(null)
 
   useEffect(() => {
+    // The "/" shortcut focuses the filter bar, which only exists when the episode browser is shown.
+    if (!SHOW_EPISODES) return
     const onKeyDown = e => {
       if (e.key !== '/') return
       const el = document.activeElement
@@ -461,9 +466,9 @@ export default function LinkedInSeries() {
         </div>
         <div className="ls-hero__aside">
           <div className="ls-stats">
-            <div className="ls-stat"><div className="ls-stat__num">{t.stat1Num}</div><div className="ls-stat__label">{t.stat1Label}</div></div>
+            <div className="ls-stat"><div className="ls-stat__num">{PUBLISHED_COUNT}</div><div className="ls-stat__label">{t.stat1Label}</div></div>
             <div className="ls-stat"><div className="ls-stat__num">{t.stat3Num}</div><div className="ls-stat__label">{t.stat3Label}</div></div>
-            <div className="ls-stat ls-stat--lead"><div className="ls-stat__num">{t.stat4Num}</div><div className="ls-stat__label">{t.stat4Label}</div></div>
+            <div className="ls-stat ls-stat--lead"><div className="ls-stat__num">{PUBLISHED_GROUPS.length}</div><div className="ls-stat__label">{t.stat4Label}</div></div>
           </div>
         </div>
       </header>
@@ -697,7 +702,6 @@ export default function LinkedInSeries() {
       <div className="ls-form-wrap" id="suggest">
         <div className="ls-form-layout">
           <div className="ls-form-intro">
-            <p className="ls-form-box__kicker">{t.formKicker}</p>
             <h2 className="ls-form-box__title">{t.formTitle}</h2>
             <p className="ls-form-box__sub">{t.formSub}</p>
             <ul className="ls-form-perks">

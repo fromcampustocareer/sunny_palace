@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, Fragment } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { supabase } from '../lib/supabase'
@@ -529,14 +529,14 @@ export default function Home() {
     const panels = loader?.querySelectorAll('.loader__panel')
 
     function afterLoader() {
-      let last = 0
-      const onScroll = () => {
-        const cur = window.scrollY
-        setNavHidden(cur > last && cur > 300)
-        last = cur
-      }
-      window.addEventListener('scroll', onScroll, { passive: true })
-      cleanupScroll = () => window.removeEventListener('scroll', onScroll)
+      // Hide nav on scroll-down past 300px, reveal on scroll-up.
+      // Driven by ScrollTrigger (RAF-batched) instead of a per-frame scroll listener.
+      const navTrigger = ScrollTrigger.create({
+        start: 0,
+        end: 'max',
+        onUpdate: (self) => setNavHidden(self.direction === 1 && self.scroll() > 300),
+      })
+      cleanupScroll = () => navTrigger.kill()
 
       const navOffset = 80
       const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -957,10 +957,9 @@ export default function Home() {
           if (next) { setAboutTab(next); setTimeout(() => document.getElementById(`about-tab-${next}`)?.focus(), 0) }
         }}>
           {['who-we-are', 'mission', 'vision'].map((tab, i) => (
-            <>
-              {i > 0 && <span key={`sep-${tab}`} className="about__tab-sep" aria-hidden="true">|</span>}
+            <Fragment key={tab}>
+              {i > 0 && <span className="about__tab-sep" aria-hidden="true">|</span>}
               <button
-                key={tab}
                 id={`about-tab-${tab}`}
                 role="tab"
                 className={`about__tab${aboutTab === tab ? ' about__tab--active' : ''}`}
@@ -971,7 +970,7 @@ export default function Home() {
               >
                 {tab === 'who-we-are' ? t.aboutTabWhoWeAre : tab === 'mission' ? t.aboutTabMission : t.aboutTabVision}
               </button>
-            </>
+            </Fragment>
           ))}
         </div>
 
@@ -1129,10 +1128,9 @@ export default function Home() {
             if (next) { setServicesTab(next); setTimeout(() => document.getElementById(`services-tab-${next}`)?.focus(), 0) }
           }}>
             {[['content', t.servicesTabContent], ['sprints', t.servicesTabSprints], ['community', t.servicesTabCommunity]].map(([key, label], i) => (
-              <>
-                {i > 0 && <span key={`sep-${key}`} className="services__tab-sep" aria-hidden="true">|</span>}
+              <Fragment key={key}>
+                {i > 0 && <span className="services__tab-sep" aria-hidden="true">|</span>}
                 <button
-                  key={key}
                   id={`services-tab-${key}`}
                   role="tab"
                   className={`services__tab${servicesTab === key ? ' services__tab--active' : ''}`}
@@ -1143,7 +1141,7 @@ export default function Home() {
                 >
                   {label}
                 </button>
-              </>
+              </Fragment>
             ))}
           </div>
 
@@ -1276,10 +1274,6 @@ export default function Home() {
         <p className="footer__signoff" lang="es">{t.footerSignoff}</p>
         <div className="footer__bottom">
           <span className="footer__credit">{t.footerCredit}</span>
-          <div className="footer__legal">
-            <a href="#" className="footer__legal-link">{t.footerPrivacy}</a>
-            <a href="#" className="footer__legal-link">{t.footerTerms}</a>
-          </div>
         </div>
       </footer>
       </>)}

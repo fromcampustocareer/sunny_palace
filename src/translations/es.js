@@ -1611,7 +1611,7 @@ export const es = {
     stat3Num: '2',
     stat3Label: 'Perspectivas',
     stat4Num: 'Semanal',
-    stat4Label: 'Actualizado',
+    stat4Label: 'Temas cubiertos',
 
     // ── Filters ───────────────────────────────────────────────────────────────
     filtersAriaLabel: 'Filtrar episodios',
@@ -1693,7 +1693,7 @@ export const es = {
           },
           {
             kicker: 'Logro · Tips de pasantía',
-            title: 'Llegamos a 67 seguidores, así que aquí van 6–7 tips de pasantía.',
+            title: 'Llegamos a 67 seguidores, así que aquí van 6-7 tips de pasantía.',
             preview: '6 cosas que toda persona en pasantía debe registrar: los proyectos en los que trabajaste, la retroalimentación que recibiste, la gente con la que conectaste, las métricas o resultados, las habilidades que practicaste, y los momentos en que te sentiste orgulloso. ¿Y el 7º? Guarda tus pruebas. 🧾',
             dateLabel: '20 de mayo, 2026',
           },
