@@ -442,6 +442,10 @@ ul { list-style: none; }
 }
 .search-palette__result-type--page { background: var(--color-accent); color: #fff; }
 .search-palette__result-type--section { background: var(--color-navy); color: #fff; }
+.search-palette__result-type--soon { background: rgba(232, 168, 56, 0.18); color: var(--color-gold-dark); }
+/* Coming-soon results: visible but not selectable, never navigate */
+.search-palette__result--soon { cursor: default; opacity: 0.6; }
+.search-palette__result--soon:hover { background: none; }
 .search-palette__empty {
   padding: 20px 18px;
   font-family: var(--font-body); font-size: 14px; color: var(--color-muted);
