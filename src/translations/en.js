@@ -1611,7 +1611,7 @@ export const en = {
     stat3Num: '2',
     stat3Label: 'Lenses',
     stat4Num: 'Weekly',
-    stat4Label: 'Updated',
+    stat4Label: 'Topics covered',
 
     // ── Filters ───────────────────────────────────────────────────────────────
     filtersAriaLabel: 'Filter episodes',

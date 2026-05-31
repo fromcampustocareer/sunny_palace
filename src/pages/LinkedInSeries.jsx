@@ -468,7 +468,7 @@ export default function LinkedInSeries() {
           <div className="ls-stats">
             <div className="ls-stat"><div className="ls-stat__num">{PUBLISHED_COUNT}</div><div className="ls-stat__label">{t.stat1Label}</div></div>
             <div className="ls-stat"><div className="ls-stat__num">{t.stat3Num}</div><div className="ls-stat__label">{t.stat3Label}</div></div>
-            <div className="ls-stat ls-stat--lead"><div className="ls-stat__num">{t.stat4Num}</div><div className="ls-stat__label">{t.stat4Label}</div></div>
+            <div className="ls-stat ls-stat--lead"><div className="ls-stat__num">{PUBLISHED_GROUPS.length}</div><div className="ls-stat__label">{t.stat4Label}</div></div>
           </div>
         </div>
       </header>

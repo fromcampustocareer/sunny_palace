@@ -1611,7 +1611,7 @@ export const es = {
     stat3Num: '2',
     stat3Label: 'Perspectivas',
     stat4Num: 'Semanal',
-    stat4Label: 'Actualizado',
+    stat4Label: 'Temas cubiertos',
 
     // ── Filters ───────────────────────────────────────────────────────────────
     filtersAriaLabel: 'Filtrar episodios',
