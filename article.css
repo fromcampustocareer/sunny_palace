@@ -147,7 +147,7 @@ body {
   margin-left: 6px;
   background: var(--color-accent);
   color: var(--color-cream);
-  border-radius: 999px;
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .02em;
