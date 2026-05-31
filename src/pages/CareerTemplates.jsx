@@ -960,7 +960,9 @@ export default function CareerTemplates() {
         {(() => {
           const tmpl = previewId != null ? TEMPLATES.find(x => x.id === previewId) : null
           if (!tmpl) return null
-          const body = tmpl.body || tmpl.desc
+          const hasContent = !!(tmpl.body || tmpl.variants)
+          const body = tmpl.body
+            || (tmpl.variants ? tmpl.variants.map(v => `${v.label}\n${v.text}`).join('\n\n') : tmpl.desc)
           return (
             <div
               className="ct-modal"
@@ -979,7 +981,7 @@ export default function CareerTemplates() {
               </div>
               <h2 className="ct-modal__title">{tmpl.title}</h2>
               <p className="ct-modal__intro">{t.previewIntro}</p>
-              <div className={`ct-modal__body${tmpl.body ? '' : ' ct-modal__body--placeholder'}`}>{body}</div>
+              <div className={`ct-modal__body${hasContent ? '' : ' ct-modal__body--placeholder'}`}>{body}</div>
               <button
                 type="button"
                 className={`ct-modal__copy-btn${copied ? ' copied' : ''}`}
