@@ -700,7 +700,6 @@ export default function LinkedInSeries() {
       <div className="ls-form-wrap" id="suggest">
         <div className="ls-form-layout">
           <div className="ls-form-intro">
-            <p className="ls-form-box__kicker">{t.formKicker}</p>
             <h2 className="ls-form-box__title">{t.formTitle}</h2>
             <p className="ls-form-box__sub">{t.formSub}</p>
             <ul className="ls-form-perks">
