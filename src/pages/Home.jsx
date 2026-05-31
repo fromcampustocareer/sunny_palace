@@ -1128,10 +1128,9 @@ export default function Home() {
             if (next) { setServicesTab(next); setTimeout(() => document.getElementById(`services-tab-${next}`)?.focus(), 0) }
           }}>
             {[['content', t.servicesTabContent], ['sprints', t.servicesTabSprints], ['community', t.servicesTabCommunity]].map(([key, label], i) => (
-              <>
-                {i > 0 && <span key={`sep-${key}`} className="services__tab-sep" aria-hidden="true">|</span>}
+              <Fragment key={key}>
+                {i > 0 && <span className="services__tab-sep" aria-hidden="true">|</span>}
                 <button
-                  key={key}
                   id={`services-tab-${key}`}
                   role="tab"
                   className={`services__tab${servicesTab === key ? ' services__tab--active' : ''}`}
@@ -1142,7 +1141,7 @@ export default function Home() {
                 >
                   {label}
                 </button>
-              </>
+              </Fragment>
             ))}
           </div>
 
