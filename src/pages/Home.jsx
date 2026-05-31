@@ -1081,6 +1081,7 @@ export default function Home() {
           <div className="gallery__card gallery__card--photo" data-index="2" role="img" aria-label="Your rejection isn't the end: what first-gen students need to hear right now" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-rejection.png')" }} />
           <div className="gallery__card gallery__card--photo" data-index="3" role="img" aria-label="Your degree isn't enough: here's why" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-degree.png')" }} />
           <div className="gallery__card gallery__card--photo" data-index="4" role="img" aria-label="Millennial vs Gen Z career tips" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-millennial-vs-genz.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="5" role="img" aria-label="Rejection is redirection: your rejection is not a reflection of your worth" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-rejection-redirection.png')" }} />
         </div>
       </section>
 
