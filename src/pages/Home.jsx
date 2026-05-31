@@ -66,6 +66,12 @@ export default function Home() {
   const [waitlistLoading, setWaitlistLoading] = useState(false)
   const [waitlistError, setWaitlistError] = useState('')
   const waitlistRef = useRef(null)
+  const [newsletterOpen, setNewsletterOpen] = useState(false)
+  const [newsletterSent, setNewsletterSent] = useState(false)
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+  const [newsletterLoading, setNewsletterLoading] = useState(false)
+  const [newsletterError, setNewsletterError] = useState('')
+  const newsletterRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [navOnHero, setNavOnHero] = useState(true)
   const [navHidden, setNavHidden] = useState(false)
@@ -152,9 +158,9 @@ export default function Home() {
   }, [modalOpen, closeModal])
 
   useEffect(() => {
-    document.body.style.overflow = (modalOpen || waitlistOpen || menuOpen) ? 'hidden' : ''
+    document.body.style.overflow = (modalOpen || waitlistOpen || newsletterOpen || menuOpen) ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
-  }, [modalOpen, waitlistOpen, menuOpen])
+  }, [modalOpen, waitlistOpen, newsletterOpen, menuOpen])
 
   const openWaitlist = useCallback((e) => {
     e?.preventDefault()
@@ -223,6 +229,62 @@ export default function Home() {
       return () => document.removeEventListener('keydown', onKey)
     }
   }, [waitlistOpen, closeWaitlist])
+
+  const openNewsletter = useCallback((e) => {
+    e?.preventDefault()
+    setNewsletterOpen(true)
+  }, [])
+
+  const closeNewsletter = useCallback(() => {
+    setNewsletterOpen(false)
+    setTimeout(() => {
+      setNewsletterSent(false)
+      setNewsletterEmail('')
+      setNewsletterError('')
+    }, 400)
+  }, [])
+
+  const handleNewsletterSubmit = useCallback(async () => {
+    if (!newsletterEmail.trim()) return
+    setNewsletterLoading(true)
+    setNewsletterError('')
+    // Collect emails into the shared subscribers list so we can notify them when articles drop.
+    const { error } = await supabase
+      .from('subscribers')
+      .insert({ email: newsletterEmail.trim(), source: 'home-la-voz' })
+    setNewsletterLoading(false)
+    if (error && error.code !== '23505') {
+      setNewsletterError(t.newsletterError)
+    } else {
+      setNewsletterSent(true)
+    }
+  }, [newsletterEmail, t])
+
+  const handleNewsletterKeyDown = useCallback((e) => {
+    if (e.key !== 'Tab' || !newsletterRef.current) return
+    const focusable = Array.from(
+      newsletterRef.current.querySelectorAll('input, button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+    ).filter(el => !el.closest('[aria-hidden="true"]'))
+    if (!focusable.length) return
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus() }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (newsletterOpen) {
+      setTimeout(() => {
+        newsletterRef.current?.querySelector('input, button:not([disabled])')?.focus()
+      }, 50)
+      const onKey = (e) => { if (e.key === 'Escape') closeNewsletter() }
+      document.addEventListener('keydown', onKey)
+      return () => document.removeEventListener('keydown', onKey)
+    }
+  }, [newsletterOpen, closeNewsletter])
 
   useEffect(() => {
     if (!waitlistSent) return
@@ -1191,48 +1253,55 @@ export default function Home() {
           </div>
         </div>
         <div className="editorial__grid">
-          <Link to="/articles/late-cycle-internships" className="editorial__card editorial__card--link">
+          <article className="editorial__card editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card1Tag}</div>
             <h3 className="editorial__card-title">{t.card1Title}</h3>
             <p className="editorial__card-excerpt">{t.card1Excerpt}</p>
-          </Link>
-          <Link to="/articles/first-90-days" className="editorial__card editorial__card--dark editorial__card--link">
+          </article>
+          <article className="editorial__card editorial__card--dark editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card2Tag}</div>
             <h3 className="editorial__card-title">{t.card2Title}</h3>
             <p className="editorial__card-excerpt">{t.card2Excerpt}</p>
-          </Link>
+          </article>
         </div>
         <div className="editorial__grid">
-          <Link to="/articles/first-gen-internship-playbook" className="editorial__card editorial__card--dark editorial__card--link">
+          <article className="editorial__card editorial__card--dark editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card3Tag}</div>
             <h3 className="editorial__card-title">{t.card3Title}</h3>
             <p className="editorial__card-excerpt">{t.card3Excerpt}</p>
-          </Link>
-          <Link to="/articles/coffee-chat-framework" className="editorial__card editorial__card--link">
+          </article>
+          <article className="editorial__card editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card4Tag}</div>
             <h3 className="editorial__card-title">{t.card4Title}</h3>
             <p className="editorial__card-excerpt">{t.card4Excerpt}</p>
-          </Link>
+          </article>
         </div>
         <div className="editorial__grid">
-          <Link to="/articles/negotiate-salary" className="editorial__card editorial__card--link">
+          <article className="editorial__card editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card5Tag}</div>
             <h3 className="editorial__card-title">{t.card5Title}</h3>
             <p className="editorial__card-excerpt">{t.card5Excerpt}</p>
-          </Link>
-          <Link to="/articles/rejection" className="editorial__card editorial__card--dark editorial__card--link">
+          </article>
+          <article className="editorial__card editorial__card--dark editorial__card--soon">
+            <span className="editorial__card-soon">{t.editorialComingSoon}</span>
             <div className="editorial__card-tag">{t.card6Tag}</div>
             <h3 className="editorial__card-title">{t.card6Title}</h3>
             <p className="editorial__card-excerpt">{t.card6Excerpt}</p>
-          </Link>
+          </article>
         </div>
         <div className="editorial__more">
-          <Link to="/articles" className="editorial__more-btn">
-            {t.editorialViewAll}
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          <button type="button" className="editorial__more-btn" onClick={openNewsletter} aria-haspopup="dialog" aria-controls="newsletterModal">
+            {t.editorialNotify}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
             </svg>
-          </Link>
+          </button>
         </div>
       </section>
       </>)}
@@ -1357,6 +1426,51 @@ export default function Home() {
               <p className="modal__signature modal__signature--celebrate">{t.waitlistSentSignature}</p>
               <button className="modal__btn modal__btn--ghost modal__btn--celebrate" onClick={closeWaitlist}>{t.modalClose}</button>
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* NEWSLETTER MODAL — notify-me signup for La Voz del Día (saved to subscribers) */}
+      <div className={`modal${newsletterOpen ? ' modal--open' : ''}`} id="newsletterModal">
+        <div className="modal__bg" onClick={closeNewsletter} />
+        <div className="modal__box" role="dialog" aria-modal="true" aria-labelledby="newsletter-title" ref={newsletterRef} onKeyDown={handleNewsletterKeyDown}>
+          <button className="modal__close" onClick={closeNewsletter} aria-label={t.modalClose}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true">
+              <line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>
+            </svg>
+          </button>
+          {!newsletterSent ? (
+            <>
+              <p className="modal__kicker">{t.newsletterKicker}</p>
+              <h3 className="modal__title" id="newsletter-title">{t.newsletterTitle}</h3>
+              <p className="modal__msg">{t.newsletterSub}</p>
+              <div className="modal__field">
+                <label className="modal__label" htmlFor="newsletterEmail">{t.newsletterEmailLabel}</label>
+                <input
+                  type="email"
+                  id="newsletterEmail"
+                  className="modal__input"
+                  placeholder={t.newsletterEmailPlaceholder}
+                  value={newsletterEmail}
+                  onChange={e => setNewsletterEmail(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleNewsletterSubmit() }}
+                />
+              </div>
+              {newsletterError && <p role="alert" className="modal__error">{newsletterError}</p>}
+              <div className="modal__footer">
+                <button className="modal__btn" disabled={newsletterLoading || !newsletterEmail.trim()} onClick={handleNewsletterSubmit}>
+                  {newsletterLoading ? t.newsletterSubmitting : t.newsletterSubmit}
+                </button>
+                <span className="modal__reassurance">{t.newsletterReassurance}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="modal__kicker">{t.newsletterKicker}</p>
+              <h3 className="modal__title modal__title--sent" id="newsletter-title">{t.newsletterSentTitle}</h3>
+              <p className="modal__msg">{t.newsletterSentMsg}</p>
+              <button className="modal__btn modal__btn--ghost" onClick={closeNewsletter}>{t.modalClose}</button>
+            </>
           )}
         </div>
       </div>
