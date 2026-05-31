@@ -1274,10 +1274,6 @@ export default function Home() {
         <p className="footer__signoff" lang="es">{t.footerSignoff}</p>
         <div className="footer__bottom">
           <span className="footer__credit">{t.footerCredit}</span>
-          <div className="footer__legal">
-            <a href="#" className="footer__legal-link">{t.footerPrivacy}</a>
-            <a href="#" className="footer__legal-link">{t.footerTerms}</a>
-          </div>
         </div>
       </footer>
       </>)}
