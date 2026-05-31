@@ -191,6 +191,44 @@ function OBCard({ card, featured, t, idx = 0 }) {
   )
 }
 
+// Large editorial spotlight for the top featured opportunity.
+function OBSpotlight({ card, t }) {
+  const isExternal = card.postLink.startsWith('http')
+  const typeKey = (card.type || '').split(' ')[0]
+  return (
+    <article className={`ob-spotlight${typeKey ? ' ob-spotlight--' + typeKey : ''}`}>
+      <div className="ob-spotlight__main">
+        <p className="ob-spotlight__eyebrow"><span aria-hidden="true" />{t.featuredLabel}</p>
+        <div className="ob-spotlight__head">
+          <div className="ob-card__company-logo ob-spotlight__logo" style={card.logoStyle}>{card.logo}</div>
+          <div>
+            <h3 className="ob-spotlight__title">{card.title}</h3>
+            <div className="ob-spotlight__company">{card.company}</div>
+          </div>
+        </div>
+        <p className="ob-spotlight__desc">{card.desc}</p>
+        <div className="ob-card__tags">
+          {card.tags.map(tag => <span key={tag.l} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
+        </div>
+        <div className="ob-spotlight__meta">
+          {card.meta.map(m => { const chars = [...m]; return <span key={m} className="ob-card__meta-item"><span aria-hidden="true">{chars[0]}</span>{chars.slice(1).join('')}</span> })}
+        </div>
+        <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>
+      </div>
+      <div className="ob-spotlight__aside">
+        <span className={`ob-card__deadline${card.deadlineCls ? ' ' + card.deadlineCls : ''}`}>{card.deadlineLabel}</span>
+        <div className="ob-spotlight__actions">
+          <a href={card.viewLink} className="ob-card__cta-primary" target="_blank" rel="noopener">{t.cardViewRole}</a>
+          {isExternal
+            ? <a href={card.postLink} className="ob-card__cta-secondary" target="_blank" rel="noopener">{card.postLabel}</a>
+            : <Link to={card.postLink} className="ob-card__cta-secondary">{card.postLabel}</Link>
+          }
+        </div>
+      </div>
+    </article>
+  )
+}
+
 export default function OpportunityBoard() {
   const t = useT('opportunityBoard')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -341,7 +379,7 @@ export default function OpportunityBoard() {
         .ob-section-body strong { color: var(--color-dark); font-weight: 600; }
         .ob-divider { border: none; border-top: 1px solid rgba(0,0,0,.08); margin: 0; }
 
-        .ob-hero { padding: 120px clamp(20px,5vw,56px) 64px; max-width: 1040px; margin: 0 auto; position: relative; overflow: hidden; }
+        .ob-hero { padding: 96px clamp(20px,5vw,56px) 64px; max-width: 1240px; margin: 0 auto; position: relative; overflow: hidden; }
         .ob-hero::before { content: ''; position: absolute; top: 96px; left: clamp(20px,5vw,56px); width: 56px; height: 4px; background: var(--color-accent); border-radius: 2px; z-index: 1; }
         .ob-hero::after { content: ''; position: absolute; top: -14%; right: -10%; width: 520px; height: 520px; background: radial-gradient(closest-side, rgba(179,69,57,.1), transparent 70%); pointer-events: none; z-index: 0; }
         .ob-hero > * { position: relative; z-index: 1; }
@@ -354,7 +392,7 @@ export default function OpportunityBoard() {
         .ob-hero__body { font-size: clamp(15px,1.8vw,17px); color: var(--color-muted); line-height: 1.8; max-width: 680px; margin-bottom: 40px; }
         .ob-hero__body strong { color: var(--color-dark); font-weight: 600; }
 
-        .ob-board { max-width: 1040px; margin: 0 auto; padding: 72px clamp(20px,5vw,56px) 80px; }
+        .ob-board { max-width: 1240px; margin: 0 auto; padding: 72px clamp(20px,5vw,56px) 80px; }
         .ob-board__head { margin-bottom: 32px; }
         .ob-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid rgba(0,0,0,.08); }
         .ob-tab { padding: 13px 18px; border-radius: 20px; border: 1.5px solid rgba(0,0,0,.1); background: transparent; font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--color-muted); cursor: pointer; transition: background .18s, border-color .18s, color .18s; }
@@ -375,7 +413,32 @@ export default function OpportunityBoard() {
         .ob-featured-strip { margin-bottom: 40px; }
         .ob-featured-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--color-gold); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .ob-featured-label::before { content: ''; display: inline-block; width: 20px; height: 2px; background: var(--color-gold); border-radius: 1px; }
-        .ob-featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; }
+        .ob-featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; margin-top: 16px; }
+
+        /* Featured spotlight — large editorial focal card for the top featured role */
+        .ob-spotlight { display: grid; grid-template-columns: minmax(0,1fr) 300px; border-radius: 18px; border: 1.5px solid rgba(232,168,56,.4); background: linear-gradient(180deg, rgba(232,168,56,.09) 0%, rgba(255,250,242,.6) 62%); overflow: hidden; box-shadow: 0 1px 0 rgba(255,255,255,.55) inset, 0 22px 54px -26px rgba(var(--ob-shadow-warm),.3); }
+        .ob-spotlight--internship    { border-color: rgba(22,43,68,.3);  background: linear-gradient(180deg, rgba(22,43,68,.09) 0%, rgba(255,250,242,.6) 62%); }
+        .ob-spotlight--apprenticeship{ border-color: rgba(58,125,107,.3); background: linear-gradient(180deg, rgba(58,125,107,.09) 0%, rgba(255,250,242,.6) 62%); }
+        .ob-spotlight--new-grad      { border-color: rgba(232,168,56,.42); }
+        .ob-spotlight--fellowship    { border-color: rgba(91,142,194,.3); background: linear-gradient(180deg, rgba(91,142,194,.09) 0%, rgba(255,250,242,.6) 62%); }
+        .ob-spotlight--program       { border-color: rgba(179,69,57,.3);  background: linear-gradient(180deg, rgba(179,69,57,.08) 0%, rgba(255,250,242,.6) 62%); }
+        .ob-spotlight__main { padding: clamp(24px,3.2vw,40px); display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+        .ob-spotlight__eyebrow { display: inline-flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--color-gold-dark); }
+        .ob-spotlight__eyebrow span { width: 20px; height: 2px; background: var(--color-gold); border-radius: 1px; }
+        .ob-spotlight__head { display: flex; align-items: flex-start; gap: 16px; }
+        .ob-spotlight__logo { width: 52px; height: 52px; border-radius: 12px; font-size: 18px; }
+        .ob-spotlight__title { font-family: var(--font-display); font-size: clamp(22px,2.9vw,32px); font-weight: 700; line-height: 1.12; letter-spacing: -.012em; color: var(--color-dark); }
+        .ob-spotlight__company { font-size: 14px; color: var(--color-muted); font-weight: 500; margin-top: 4px; }
+        .ob-spotlight__desc { font-size: 15px; color: var(--color-muted); line-height: 1.7; max-width: 62ch; }
+        .ob-spotlight__meta { display: flex; flex-wrap: wrap; gap: 16px; }
+        .ob-spotlight__aside { background: rgba(26,25,22,.035); border-left: 1px solid rgba(26,25,22,.08); padding: clamp(24px,3vw,40px) 28px; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+        .ob-spotlight__aside .ob-card__deadline { font-size: 13px; }
+        .ob-spotlight__actions { display: flex; flex-direction: column; gap: 10px; }
+        .ob-spotlight__actions > * { width: 100%; flex: none; }
+        @media (max-width: 680px) {
+          .ob-spotlight { grid-template-columns: 1fr; }
+          .ob-spotlight__aside { border-left: none; border-top: 1px solid rgba(26,25,22,.08); }
+        }
 
         .ob-card { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.1); border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(var(--ob-shadow-warm),.12); transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s, border-color .22s; position: relative; }
         .ob-card:hover { transform: translateY(-3px); border-color: rgba(26,25,22,.22); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 16px 32px -12px rgba(var(--ob-shadow-warm),.22); }
@@ -430,7 +493,7 @@ export default function OpportunityBoard() {
         .ob-archive-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .ob-archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; }
 
-        .ob-source { max-width: 1040px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
+        .ob-source { max-width: 1240px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
         .ob-source__layout { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: flex-start; margin-top: 32px; }
         .ob-source__body { font-size: clamp(14px,1.6vw,15px); color: var(--color-muted); line-height: 1.8; }
         .ob-source__body strong { color: var(--color-dark); font-weight: 600; }
@@ -441,7 +504,7 @@ export default function OpportunityBoard() {
         .ob-source__item-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--color-dark); margin-bottom: 2px; }
         .ob-source__item-desc { font-size: 13px; color: var(--color-muted); line-height: 1.55; }
 
-        .ob-submit { max-width: 1040px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
+        .ob-submit { max-width: 1240px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
         .ob-submit__layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; align-items: flex-start; }
         .ob-submit__intro-kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 12px; display: inline-flex; align-items: center; gap: 10px; }
         .ob-submit__intro-kicker::after { content: ''; width: 24px; height: 1px; background: currentColor; opacity: .5; }
@@ -476,7 +539,7 @@ export default function OpportunityBoard() {
 
         .ob-eco { background: var(--color-dark); padding: 72px clamp(20px,5vw,56px); position: relative; overflow: hidden; }
         .ob-eco::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 84% 76%, rgba(232,168,56,.12) 0%, transparent 50%); pointer-events: none; }
-        .ob-eco__inner { max-width: 1040px; margin: 0 auto; position: relative; }
+        .ob-eco__inner { max-width: 1240px; margin: 0 auto; position: relative; }
         .ob-eco__kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-gold); margin-bottom: 10px; display: inline-flex; align-items: center; gap: 10px; }
         .ob-eco__kicker::after { content: ''; width: 24px; height: 1px; background: currentColor; opacity: .5; }
         .ob-eco__title { font-family: var(--font-display); font-size: clamp(20px,3vw,28px); font-weight: 700; color: var(--color-cream); margin-bottom: 8px; line-height: 1.25; }
@@ -558,10 +621,12 @@ export default function OpportunityBoard() {
 
         {visibleFeatured.length > 0 && (
           <div className="ob-featured-strip">
-            <p className="ob-featured-label">{t.featuredLabel}</p>
-            <div className="ob-featured-grid">
-              {visibleFeatured.map((c, i) => <OBCard key={c.id} card={c} featured t={t} idx={i} />)}
-            </div>
+            <OBSpotlight card={visibleFeatured[0]} t={t} />
+            {visibleFeatured.length > 1 && (
+              <div className="ob-featured-grid">
+                {visibleFeatured.slice(1).map((c, i) => <OBCard key={c.id} card={c} featured t={t} idx={i} />)}
+              </div>
+            )}
           </div>
         )}
 
