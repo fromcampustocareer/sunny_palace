@@ -92,6 +92,11 @@ const FUNC_HEADLINE_MAP = {
   'Customer Success': 'Customer success',
 }
 
+// Columns the public grid is allowed to read. The anon role is intentionally
+// NOT granted SELECT on `email` or `consented_at` (PII), so `select('*')` is
+// denied (Postgres 42501) — we must request only these granted columns.
+const PUBLIC_PROFILE_COLUMNS = 'id,name,pronouns,linkedin_url,role_title,location,role_function,identity_tags,topics,capacity,public_profile,status,created_at,avatar_url'
+
 function dbProfileToCard(row) {
   const funcColorMap = {
     'Software Engineering': 'cc-tag--blue',
@@ -250,7 +255,7 @@ export default function CoffeeChat() {
 
   useEffect(() => {
     supabase.from('coffee_chat_profiles')
-      .select('*')
+      .select(PUBLIC_PROFILE_COLUMNS)
       .eq('status', 'approved')
       .eq('public_profile', true)
       .order('created_at', { ascending: false })
@@ -367,7 +372,7 @@ export default function CoffeeChat() {
     }
     const processedFuncChips = funcChips.map(c => c === 'Other' ? (funcOtherText.trim() || 'Other') : c)
     const processedIdentityChips = identityChips.map(c => c === 'Other' ? (identityOtherText.trim() || 'Other') : c)
-    const { error } = await supabase.from('coffee_chat_profiles').insert({
+    const { data: inserted, error } = await supabase.from('coffee_chat_profiles').insert({
       name: formData.name,
       pronouns: formData.pronouns || null,
       email: formData.email,
@@ -382,11 +387,13 @@ export default function CoffeeChat() {
       status: 'approved',
       public_profile: true,
       avatar_url,
-    })
+    }).select(PUBLIC_PROFILE_COLUMNS).single()
     setFormLoading(false)
     if (error) {
       setFormError(t.formErrorGeneric)
     } else {
+      // Show the new card immediately instead of waiting for a page reload.
+      if (inserted) setDbProfiles(prev => [dbProfileToCard(inserted), ...prev])
       setFormSubmitted(true)
     }
   }
