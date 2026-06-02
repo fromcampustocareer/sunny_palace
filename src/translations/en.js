@@ -1084,7 +1084,7 @@ export const en = {
 
     // ── Template modal ────────────────────────────────────────────────────
     modalKicker: 'Coffee Chat Templates',
-    modalTitlePrefix: 'Coffee Chat Request — Reaching out to',
+    modalTitlePrefix: 'Coffee Chat Request: Reaching out to',
     modalSub: 'Personalize the bracketed fields before sending. Keep your final message under 80 words.',
     modalCopyBtn: 'Copy to clipboard',
     modalCopied: 'Copied!',

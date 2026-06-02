@@ -7,9 +7,9 @@ import { useT } from '../hooks/useT'
 
 const TEMPLATE_TEXT = `Hi [Name],
 
-I came across your profile on the Coffee Chat Network and your path from [their background] really stood out to me — I'm currently [your situation, e.g. a first-gen CS junior trying to break into data roles].
+I came across your profile on the From Campus to Career Coffee Chat Network and your path from [their background] really stood out to me. I'm currently [your situation, e.g. a first-gen CS junior trying to break into data roles].
 
-Would you be open to a 15–30 minute chat sometime in the next few weeks? I have specific questions about [topic you read on their card].
+Would you be open to a 15 to 30 minute chat sometime in the next few weeks? I have specific questions about [topic you read on their card].
 
 No worries at all if your schedule is full. Thank you either way!`
 
