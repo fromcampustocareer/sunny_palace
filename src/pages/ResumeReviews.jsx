@@ -2,30 +2,12 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import ResumeSubNav from '../components/ResumeSubNav'
+import CompanyLogo from '../components/CompanyLogo'
+import { COMPANIES } from '../data/companies'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
 
 const LIKES_KEY = 'jxj_resume_likes_v1'
-
-const COMPANIES = {
-  google:    { name: 'Google',    slug: 'google',    hex: '4285F4' },
-  apple:     { name: 'Apple',     slug: 'apple',     hex: '555555' },
-  microsoft: { name: 'Microsoft', slug: 'microsoft', hex: '5E5E5E' },
-  meta:      { name: 'Meta',      slug: 'meta',      hex: '0082FB' },
-  amazon:    { name: 'Amazon',    slug: 'amazon',    hex: 'FF9900' },
-  tiktok:    { name: 'TikTok',   slug: 'tiktok',    hex: '010101' },
-  pinterest: { name: 'Pinterest', slug: 'pinterest', hex: 'E60023' },
-  reddit:    { name: 'Reddit',   slug: 'reddit',    hex: 'FF4500' },
-  discord:   { name: 'Discord',  slug: 'discord',   hex: '5865F2' },
-  stripe:    { name: 'Stripe',   slug: 'stripe',    hex: '635BFF' },
-  figma:     { name: 'Figma',    slug: 'figma',     hex: 'F24E1E' },
-  dropbox:   { name: 'Dropbox',  slug: 'dropbox',   hex: '0061FF' },
-  ibm:       { name: 'IBM',      slug: 'ibm',       hex: '052FAD' },
-  airbnb:    { name: 'Airbnb',   slug: 'airbnb',    hex: 'FF5A5F' },
-  fidelity:  { name: 'Fidelity', slug: null, letter: 'F',  color: '#006633', bg: 'rgba(0,102,51,.1)' },
-  jpmorgan:  { name: 'JPMorgan', slug: null, letter: 'JP', color: '#003087', bg: 'rgba(0,48,135,.1)' },
-  anthropic: { name: 'Anthropic',slug: null, letter: 'A',  color: '#C4602D', bg: 'rgba(196,96,45,.1)' },
-}
 
 const STAGE_META_STYLE = {
   intern:        { cls: 'intern',        tagCls: 'rr-tag--blue' },
@@ -93,17 +75,29 @@ const TAG_COLOR_MAP = {
 
 
 
-const SIDEBAR_COMPANIES = ['google','microsoft','meta','apple','amazon','stripe','pinterest','reddit','dropbox','fidelity','jpmorgan','anthropic']
+const SIDEBAR_COMPANIES = [
+  'google','microsoft','meta','apple','amazon','netflix','nvidia','tesla',
+  'stripe','openai','anthropic','salesforce','adobe','uber','airbnb','spotify',
+  'pinterest','reddit','discord','dropbox','figma','jpmorgan','goldman','mckinsey','fidelity',
+]
 
 
 function CoLogo({ coKey, size = 18, fullColor = false }) {
   const c = COMPANIES[coKey]
-  if (!c) return <span className="rr-co-letter" style={{ background: 'rgba(0,0,0,.08)', color: 'var(--color-muted)', fontSize: '8px', width: size, height: size }}>{(coKey[0] || '?').toUpperCase()}</span>
-  if (c.slug) {
-    const url = fullColor ? `https://cdn.simpleicons.org/${c.slug}` : `https://cdn.simpleicons.org/${c.slug}/8A7E72`
-    return <img className="rr-co-logo" style={{ width: size, height: size }} src={url} alt={c.name} width={size} height={size} loading="lazy" onError={e => { e.target.outerHTML = `<span class="rr-co-letter" style="background:rgba(0,0,0,.08);color:var(--color-muted);font-size:${Math.round(size * 0.44)}px;width:${size}px;height:${size}px;">${c.name[0]}</span>` }} />
-  }
-  return <span className="rr-co-letter" style={{ background: c.bg, color: c.color, fontSize: Math.round(size * 0.44), width: size, height: size }}>{c.letter}</span>
+  if (!c) return <span className="rr-co-letter" style={{ background: 'rgba(0,0,0,.08)', color: 'var(--color-muted)', fontSize: Math.round(size * 0.44), width: size, height: size }}>{(coKey[0] || '?').toUpperCase()}</span>
+  // Tinted monochrome in muted contexts; full color where requested. Removed
+  // brands (Microsoft, Amazon) recover to a real favicon, then a letter mark.
+  return (
+    <CompanyLogo
+      company={c}
+      size={size}
+      tint={fullColor ? null : '8A7E72'}
+      muted={!fullColor}
+      className="rr-co-logo"
+      letterClassName="rr-co-letter"
+      letterStyle={{ background: 'rgba(0,0,0,.08)', color: c.color || 'var(--color-muted)', fontSize: Math.round(size * 0.44) }}
+    />
+  )
 }
 
 function TagPill({ tag, small = false, labelMap = TAG_LABELS }) {
@@ -146,10 +140,7 @@ function SidebarFilters({ filter, onFilter, t }) {
         <div className="rr-co-chips">
           {visibleCos.map(co => (
             <button key={co} type="button" className={`rr-co-chip${filter.companies.includes(co) ? ' active' : ''}`} aria-pressed={filter.companies.includes(co)} onClick={() => onFilter(f => ({ ...f, companies: toggle(f.companies, co) }))}>
-              {COMPANIES[co]?.slug
-                ? <img src={`https://cdn.simpleicons.org/${COMPANIES[co].slug}/8A7E72`} alt={COMPANIES[co]?.name || co} width="13" height="13" loading="lazy" />
-                : null
-              }
+              <CoLogo coKey={co} size={13} />
               {COMPANIES[co]?.name || co}
             </button>
           ))}
