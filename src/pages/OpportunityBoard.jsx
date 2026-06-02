@@ -3,114 +3,9 @@ import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import { OPPORTUNITIES, ARCHIVED_OPPORTUNITIES } from '../data/opportunities'
 
-const FEATURED = [
-  {
-    id: 'f1', logo: 'TT', logoStyle: {}, deadlineLabel: 'Closes May 15', deadlineCls: 'urgent',
-    title: 'GPU/AI Application Platform Engineer Intern', company: 'TikTok · Server Platform',
-    tags: [{ l: 'Internship', c: 'ob-tag--intern' }, { l: 'PhD', c: 'ob-tag--muted' }, { l: 'AI/ML', c: 'ob-tag--muted' }, { l: 'Fall 2026', c: 'ob-tag--muted' }],
-    meta: ['Remote / US', 'Competitive salary'],
-    desc: <span>Fall 2026 PhD-level GPU/AI internship focused on server platform applications. <strong>Strong fit for students doing research in systems, ML infra, or high-performance computing.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'internship', stage: 'phd', location: 'us', deadline: 'this-month', bridge: false,
-    keywords: 'tiktok gpu ai intern phd ml systems server platform',
-  },
-  {
-    id: 'f2', logo: 'Pi', logoStyle: { background: 'rgba(179,69,57,.08)', color: 'var(--color-accent)' }, deadlineLabel: 'Rolling', deadlineCls: 'rolling',
-    title: 'Apprenticeship Program - Software Engineering', company: 'Pinterest',
-    tags: [{ l: 'Apprenticeship', c: 'ob-tag--apprent' }, { l: 'Bridge Year Friendly', c: 'ob-tag--bridge' }, { l: 'No Degree Required', c: 'ob-tag--muted' }],
-    meta: ['Remote / US', 'Paid, competitive'],
-    desc: <span>Pinterest's apprenticeship is one of the best entry points in tech for candidates without a traditional CS degree. <strong>Especially strong for career changers and nontraditional students.</strong></span>,
-    source: 'Bridge Year Hub', viewLink: '#', postLink: '/bridge-year', postLabel: 'Bridge Year Hub',
-    type: 'apprenticeship', stage: 'recent-grad transition', location: 'us', deadline: 'rolling', bridge: true,
-    keywords: 'pinterest apprenticeship software engineering swe early career',
-  },
-  {
-    id: 'f3', logo: 'Ms', logoStyle: { background: 'rgba(91,142,194,.12)', color: 'var(--color-blue)' }, deadlineLabel: 'Rolling', deadlineCls: 'rolling',
-    title: 'LEAP Apprenticeship Program', company: 'Microsoft',
-    tags: [{ l: 'Apprenticeship', c: 'ob-tag--apprent' }, { l: 'Bridge Year Friendly', c: 'ob-tag--bridge' }, { l: 'Open to Non-CS', c: 'ob-tag--muted' }],
-    meta: ['US (various)', 'Paid + benefits'],
-    desc: <span>LEAP is Microsoft's flagship apprenticeship for people transitioning into tech. <strong>Open to people without a CS degree, including career changers and self-taught developers.</strong></span>,
-    source: 'Bridge Year Hub', viewLink: '#', postLink: '/bridge-year', postLabel: 'Bridge Year Hub',
-    type: 'apprenticeship', stage: 'recent-grad transition', location: 'us', deadline: 'rolling', bridge: true,
-    keywords: 'microsoft leap apprenticeship software engineering career change',
-  },
-]
-
-const MAIN_CARDS = [
-  {
-    id: 'm1', logo: 'G', logoStyle: { background: 'rgba(58,125,107,.1)', color: 'var(--color-teal)' }, deadlineLabel: 'Closes May 1', deadlineCls: 'urgent',
-    title: 'STEP Internship - Software Engineering', company: 'Google',
-    tags: [{ l: 'Internship', c: 'ob-tag--intern' }, { l: 'Sophomore / First Year', c: 'ob-tag--muted' }, { l: 'Summer 2026', c: 'ob-tag--muted' }],
-    meta: ['US (various)', '$7,000–$8,000/mo'],
-    desc: <span>Google's STEP program is built for first- and second-year CS students. <strong>One of the most competitive early-stage internships in tech - apply early.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'internship', stage: 'first-second junior', location: 'us', deadline: 'this-month', bridge: false,
-    keywords: 'google step internship sophomore first year cs early experience',
-  },
-  {
-    id: 'm2', logo: 'Sf', logoStyle: { background: 'rgba(91,142,194,.12)', color: 'var(--color-blue)' }, deadlineLabel: 'Closes May 10', deadlineCls: 'urgent',
-    title: 'Futureforce Summer Internship - SWE', company: 'Salesforce',
-    tags: [{ l: 'Internship', c: 'ob-tag--intern' }, { l: 'Junior / Senior', c: 'ob-tag--muted' }, { l: 'Summer 2026', c: 'ob-tag--muted' }],
-    meta: ['San Francisco / Remote', '$50/hr'],
-    desc: <span>Salesforce Futureforce is a great pipeline into full-time roles. <strong>Strong return offer rate and well-regarded rotational program post-internship.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'internship', stage: 'junior senior', location: 'us', deadline: 'this-month', bridge: false,
-    keywords: 'salesforce futureforce intern summer software engineering early career',
-  },
-  {
-    id: 'm3', logo: 'St', logoStyle: { background: 'rgba(22,43,68,.08)', color: 'var(--color-navy)' }, deadlineLabel: 'Rolling', deadlineCls: 'rolling',
-    title: 'New Grad - Software Engineer', company: 'Stripe',
-    tags: [{ l: 'New Grad', c: 'ob-tag--newgrad' }, { l: 'Recent Grad', c: 'ob-tag--muted' }, { l: 'Full-Time', c: 'ob-tag--muted' }],
-    meta: ['Remote / US', '$180k–$220k TC'],
-    desc: <span>Stripe's new grad SWE role is highly competitive but worth the prep. <strong>Strong culture, high bar for writing and systems thinking - not just leetcode.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'new-grad', stage: 'recent-grad', location: 'us', deadline: 'rolling', bridge: false,
-    keywords: 'stripe new grad software engineer full-time early career fintech',
-  },
-  {
-    id: 'm4', logo: 'Sp', logoStyle: { background: 'rgba(58,125,107,.1)', color: 'var(--color-teal)' }, deadlineLabel: 'Rolling', deadlineCls: 'rolling',
-    title: 'Tech Fellowship - Early Career Engineering', company: 'Spotify',
-    tags: [{ l: 'Fellowship', c: 'ob-tag--fellowship' }, { l: 'Bridge Year Friendly', c: 'ob-tag--bridge' }, { l: 'Non-Traditional Welcome', c: 'ob-tag--muted' }],
-    meta: ['Remote / Stockholm', 'Paid'],
-    desc: <span>Spotify's early-career fellowship welcomes engineers from nontraditional backgrounds. <strong>Good option for bridge year candidates still building their portfolio.</strong></span>,
-    source: 'Bridge Year Hub', viewLink: '#', postLink: '/bridge-year', postLabel: 'Bridge Year Hub',
-    type: 'apprenticeship', stage: 'recent-grad transition', location: 'us', deadline: 'rolling', bridge: true,
-    keywords: 'spotify tech fellowship apprenticeship music early career non-traditional',
-  },
-  {
-    id: 'm5', logo: 'Me', logoStyle: { background: 'rgba(91,142,194,.12)', color: 'var(--color-blue)' }, deadlineLabel: 'Closes Apr 30', deadlineCls: 'urgent',
-    title: 'Meta University Research Program', company: 'Meta',
-    tags: [{ l: 'Program', c: 'ob-tag--program' }, { l: 'Undergraduate', c: 'ob-tag--muted' }, { l: 'Underrepresented Students', c: 'ob-tag--muted' }],
-    meta: ['Menlo Park / Remote', '$7,500/mo + housing'],
-    desc: <span>Meta University is specifically designed for underrepresented undergrads. <strong>Pairing research mentorship with SWE/PM internship tracks - exceptional for first-gen students.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'program', stage: 'junior senior', location: 'us', deadline: 'this-month', bridge: false,
-    keywords: 'meta university research program undergraduate first-gen underrepresented',
-  },
-  {
-    id: 'm6', logo: 'IB', logoStyle: { background: 'rgba(22,43,68,.08)', color: 'var(--color-navy)' }, deadlineLabel: 'Closes May 20', deadlineCls: '',
-    title: 'Data Science Summer Intern', company: 'IBM',
-    tags: [{ l: 'Internship', c: 'ob-tag--intern' }, { l: 'Data', c: 'ob-tag--muted' }, { l: 'Junior / Senior', c: 'ob-tag--muted' }, { l: 'Open to Non-CS', c: 'ob-tag--muted' }],
-    meta: ['Austin, TX / Hybrid', '$38/hr'],
-    desc: <span>IBM's data science intern track is one of the more accessible pipelines for non-CS students in STEM. <strong>Statistics, math, and econ majors encouraged to apply.</strong></span>,
-    source: 'J&J LinkedIn post', viewLink: '#', postLink: 'https://www.linkedin.com/in/josegaelcruzlopez', postLabel: 'View post ↗',
-    type: 'internship', stage: 'junior senior', location: 'us', deadline: 'this-month', bridge: false,
-    keywords: 'ibm data science intern summer undergraduate analytics',
-  },
-  {
-    id: 'm7', logo: 'Fi', logoStyle: { background: 'rgba(179,69,57,.08)', color: 'var(--color-accent)' }, deadlineLabel: 'Rolling', deadlineCls: 'rolling',
-    title: 'Research Fellowship - Design & Product', company: 'Figma',
-    tags: [{ l: 'Fellowship', c: 'ob-tag--fellowship' }, { l: 'Bridge Year Friendly', c: 'ob-tag--bridge' }, { l: 'Design / PM', c: 'ob-tag--muted' }],
-    meta: ['San Francisco / Remote', 'Paid, competitive'],
-    desc: <span>Figma's research fellowship is a great stepping stone for students pursuing design or PM. <strong>Especially strong for underrepresented designers without traditional portfolios yet.</strong></span>,
-    source: 'Bridge Year Hub', viewLink: '#', postLink: '/bridge-year', postLabel: 'Bridge Year Hub',
-    type: 'program', stage: 'junior senior recent-grad', location: 'us', deadline: 'rolling', bridge: true,
-    keywords: 'figma research fellowship design product research underrepresented',
-  },
-]
-
-const TAB_KEYS = ['all', 'internship', 'apprenticeship', 'new-grad', 'program', 'bridge']
+const TAB_KEYS = ['all', 'internship', 'research', 'program', 'scholarship']
 
 function matchCard(card, { tab, query, stage, location, deadline }) {
   if (tab !== 'all') {
@@ -176,54 +71,16 @@ function OBCard({ card, featured, t, idx = 0 }) {
         {card.tags.map(tag => <span key={tag.l} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
       </div>
       <div className="ob-card__meta">
-        {card.meta.map(m => { const chars = [...m]; return <span key={m} className="ob-card__meta-item"><span aria-hidden="true">{chars[0]}</span>{chars.slice(1).join('')}</span> })}
+        {card.meta.map(m => <span key={m} className="ob-card__meta-item">{m}</span>)}
       </div>
       <div className="ob-card__desc">{card.desc}</div>
       <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>
       <div className="ob-card__actions">
-        <a href={card.viewLink} className="ob-card__cta-primary" target="_blank" rel="noopener">{t.cardViewRole}</a>
-        {isExternal
+        <a href={card.viewLink} className="ob-card__cta-primary" target="_blank" rel="noopener">{card.viewLabel || t.cardViewRole}</a>
+        {card.postLink && (isExternal
           ? <a href={card.postLink} className="ob-card__cta-secondary" target="_blank" rel="noopener">{card.postLabel}</a>
           : <Link to={card.postLink} className="ob-card__cta-secondary">{card.postLabel}</Link>
-        }
-      </div>
-    </article>
-  )
-}
-
-// Large editorial spotlight for the top featured opportunity.
-function OBSpotlight({ card, t }) {
-  const isExternal = card.postLink.startsWith('http')
-  const typeKey = (card.type || '').split(' ')[0]
-  return (
-    <article className={`ob-spotlight${typeKey ? ' ob-spotlight--' + typeKey : ''}`}>
-      <div className="ob-spotlight__main">
-        <p className="ob-spotlight__eyebrow"><span aria-hidden="true" />{t.featuredLabel}</p>
-        <div className="ob-spotlight__head">
-          <div className="ob-card__company-logo ob-spotlight__logo" style={card.logoStyle}>{card.logo}</div>
-          <div>
-            <h3 className="ob-spotlight__title">{card.title}</h3>
-            <div className="ob-spotlight__company">{card.company}</div>
-          </div>
-        </div>
-        <p className="ob-spotlight__desc">{card.desc}</p>
-        <div className="ob-card__tags">
-          {card.tags.map(tag => <span key={tag.l} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
-        </div>
-        <div className="ob-spotlight__meta">
-          {card.meta.map(m => { const chars = [...m]; return <span key={m} className="ob-card__meta-item"><span aria-hidden="true">{chars[0]}</span>{chars.slice(1).join('')}</span> })}
-        </div>
-        <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>
-      </div>
-      <div className="ob-spotlight__aside">
-        <span className={`ob-card__deadline${card.deadlineCls ? ' ' + card.deadlineCls : ''}`}>{card.deadlineLabel}</span>
-        <div className="ob-spotlight__actions">
-          <a href={card.viewLink} className="ob-card__cta-primary" target="_blank" rel="noopener">{t.cardViewRole}</a>
-          {isExternal
-            ? <a href={card.postLink} className="ob-card__cta-secondary" target="_blank" rel="noopener">{card.postLabel}</a>
-            : <Link to={card.postLink} className="ob-card__cta-secondary">{card.postLabel}</Link>
-          }
-        </div>
+        )}
       </div>
     </article>
   )
@@ -308,8 +165,8 @@ export default function OpportunityBoard() {
 
   const filters = { tab, query: search.toLowerCase().trim(), stage, location, deadline }
 
-  const allFeatured = [...FEATURED, ...dbOpportunities.filter(c => c._featured)]
-  const allMain = [...MAIN_CARDS, ...dbOpportunities.filter(c => !c._featured)]
+  const allFeatured = dbOpportunities.filter(c => c._featured)
+  const allMain = [...OPPORTUNITIES, ...dbOpportunities.filter(c => !c._featured)]
   const visibleFeatured = allFeatured.filter(c => matchCard(c, filters))
   const visibleMain = allMain.filter(c => matchCard(c, filters))
   const totalVisible = visibleFeatured.length + visibleMain.length
@@ -352,10 +209,11 @@ export default function OpportunityBoard() {
     }
   }
 
+  // Icons sit on the teal Source band, so tint them light or gold-fill for contrast.
   const SOURCE_ITEM_STYLES = [
-    {},
-    { background: 'rgba(22,43,68,.1)', color: 'var(--color-navy)' },
-    { background: 'rgba(232,168,56,.12)', color: 'var(--color-gold-dark)' },
+    { background: 'rgba(255,255,255,.14)', color: 'var(--color-cream)' },
+    { background: 'rgba(255,255,255,.14)', color: 'var(--color-cream)' },
+    { background: 'var(--color-gold)', color: 'var(--color-dark)' },
   ]
 
   return (
@@ -386,11 +244,16 @@ export default function OpportunityBoard() {
         .ob-hero__kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 18px; display: inline-flex; align-items: center; gap: 10px; }
         .ob-hero__kicker::after { content: ''; width: 24px; height: 1px; background: currentColor; opacity: .5; }
         .ob-hero__title { font-family: var(--font-display); font-size: clamp(42px,7vw,80px); font-weight: 700; line-height: 1.04; color: var(--color-dark); margin-bottom: 14px; }
-        .ob-hero__title em { font-style: italic; font-family: var(--font-serif, var(--font-display)); color: var(--color-gold-dark); font-weight: 500; padding-right: .04em; }
+        .ob-hero__title em { font-style: normal; font-family: var(--font-display); color: var(--color-gold-dark); font-weight: 700; }
         .ob-hero__tagline { font-family: var(--font-serif, var(--font-display)); font-size: clamp(18px,2.2vw,24px); font-style: italic; font-weight: 400; color: var(--color-accent); margin-bottom: 22px; letter-spacing: -.005em; max-width: 60ch; }
         .ob-hero__sub { font-family: var(--font-display); font-size: clamp(18px,2.5vw,26px); font-weight: 400; color: var(--color-dark); line-height: 1.4; max-width: 720px; margin-bottom: 24px; }
         .ob-hero__body { font-size: clamp(15px,1.8vw,17px); color: var(--color-muted); line-height: 1.8; max-width: 680px; margin-bottom: 40px; }
         .ob-hero__body strong { color: var(--color-dark); font-weight: 600; }
+        .ob-hero__stats { display: flex; flex-wrap: wrap; gap: 0; border-top: 1px solid rgba(26,25,22,.12); padding-top: 26px; }
+        .ob-hero__stat { padding-right: clamp(24px,4vw,52px); margin-right: clamp(24px,4vw,52px); border-right: 1px solid rgba(26,25,22,.12); }
+        .ob-hero__stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+        .ob-hero__stat-value { font-family: var(--font-display); font-size: clamp(28px,4vw,40px); font-weight: 700; color: var(--color-accent); line-height: 1; margin-bottom: 6px; }
+        .ob-hero__stat-label { font-size: 13px; font-weight: 500; color: var(--color-muted); line-height: 1.35; max-width: 18ch; }
 
         .ob-board { max-width: 1240px; margin: 0 auto; padding: 72px clamp(20px,5vw,56px) 80px; }
         .ob-board__head { margin-bottom: 32px; }
@@ -414,31 +277,6 @@ export default function OpportunityBoard() {
         .ob-featured-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--color-gold); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .ob-featured-label::before { content: ''; display: inline-block; width: 20px; height: 2px; background: var(--color-gold); border-radius: 1px; }
         .ob-featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; margin-top: 16px; }
-
-        /* Featured spotlight — large editorial focal card for the top featured role */
-        .ob-spotlight { display: grid; grid-template-columns: minmax(0,1fr) 300px; border-radius: 18px; border: 1.5px solid rgba(232,168,56,.4); background: linear-gradient(180deg, rgba(232,168,56,.09) 0%, rgba(255,250,242,.6) 62%); overflow: hidden; box-shadow: 0 1px 0 rgba(255,255,255,.55) inset, 0 22px 54px -26px rgba(var(--ob-shadow-warm),.3); }
-        .ob-spotlight--internship    { border-color: rgba(22,43,68,.3);  background: linear-gradient(180deg, rgba(22,43,68,.09) 0%, rgba(255,250,242,.6) 62%); }
-        .ob-spotlight--apprenticeship{ border-color: rgba(58,125,107,.3); background: linear-gradient(180deg, rgba(58,125,107,.09) 0%, rgba(255,250,242,.6) 62%); }
-        .ob-spotlight--new-grad      { border-color: rgba(232,168,56,.42); }
-        .ob-spotlight--fellowship    { border-color: rgba(91,142,194,.3); background: linear-gradient(180deg, rgba(91,142,194,.09) 0%, rgba(255,250,242,.6) 62%); }
-        .ob-spotlight--program       { border-color: rgba(179,69,57,.3);  background: linear-gradient(180deg, rgba(179,69,57,.08) 0%, rgba(255,250,242,.6) 62%); }
-        .ob-spotlight__main { padding: clamp(24px,3.2vw,40px); display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-        .ob-spotlight__eyebrow { display: inline-flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--color-gold-dark); }
-        .ob-spotlight__eyebrow span { width: 20px; height: 2px; background: var(--color-gold); border-radius: 1px; }
-        .ob-spotlight__head { display: flex; align-items: flex-start; gap: 16px; }
-        .ob-spotlight__logo { width: 52px; height: 52px; border-radius: 12px; font-size: 18px; }
-        .ob-spotlight__title { font-family: var(--font-display); font-size: clamp(22px,2.9vw,32px); font-weight: 700; line-height: 1.12; letter-spacing: -.012em; color: var(--color-dark); }
-        .ob-spotlight__company { font-size: 14px; color: var(--color-muted); font-weight: 500; margin-top: 4px; }
-        .ob-spotlight__desc { font-size: 15px; color: var(--color-muted); line-height: 1.7; max-width: 62ch; }
-        .ob-spotlight__meta { display: flex; flex-wrap: wrap; gap: 16px; }
-        .ob-spotlight__aside { background: rgba(26,25,22,.035); border-left: 1px solid rgba(26,25,22,.08); padding: clamp(24px,3vw,40px) 28px; display: flex; flex-direction: column; justify-content: center; gap: 18px; }
-        .ob-spotlight__aside .ob-card__deadline { font-size: 13px; }
-        .ob-spotlight__actions { display: flex; flex-direction: column; gap: 10px; }
-        .ob-spotlight__actions > * { width: 100%; flex: none; }
-        @media (max-width: 680px) {
-          .ob-spotlight { grid-template-columns: 1fr; }
-          .ob-spotlight__aside { border-left: none; border-top: 1px solid rgba(26,25,22,.08); }
-        }
 
         .ob-card { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.1); border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(var(--ob-shadow-warm),.12); transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s, border-color .22s; position: relative; }
         .ob-card:hover { transform: translateY(-3px); border-color: rgba(26,25,22,.22); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 16px 32px -12px rgba(var(--ob-shadow-warm),.22); }
@@ -480,7 +318,7 @@ export default function OpportunityBoard() {
         .ob-card__desc strong { color: var(--color-dark); font-weight: 600; }
         .ob-card__source { font-size: 11px; color: rgba(0,0,0,.35); display: flex; align-items: center; gap: 5px; }
         .ob-card__source-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-gold-dark); flex-shrink: 0; }
-        .ob-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+        .ob-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 4px; }
         .ob-card__cta-primary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 16px; background: var(--color-dark); color: var(--color-cream); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: background .2s, transform .15s; flex: 1; justify-content: center; }
         .ob-card__cta-primary:hover { background: var(--color-accent-hover); transform: translateY(-1px); }
         .ob-card__cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 14px; background: transparent; color: var(--color-muted); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: 1.5px solid rgba(0,0,0,.12); cursor: pointer; transition: border-color .2s, color .2s; flex-shrink: 0; }
@@ -493,16 +331,21 @@ export default function OpportunityBoard() {
         .ob-archive-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         .ob-archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; }
 
-        .ob-source { max-width: 1240px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
+        .ob-source { background: var(--color-accent); padding: 80px clamp(20px,5vw,56px); position: relative; overflow: hidden; }
+        .ob-source::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 12% 14%, rgba(255,255,255,.07) 0%, transparent 48%); pointer-events: none; }
+        .ob-source__inner { max-width: 1240px; margin: 0 auto; position: relative; }
+        .ob-source .ob-kicker { color: rgba(242,228,206,.72); }
+        .ob-source .ob-section-title { color: var(--color-cream); }
+        .ob-source .ob-section-sub { color: var(--color-gold); }
         .ob-source__layout { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: flex-start; margin-top: 32px; }
-        .ob-source__body { font-size: clamp(14px,1.6vw,15px); color: var(--color-muted); line-height: 1.8; }
-        .ob-source__body strong { color: var(--color-dark); font-weight: 600; }
+        .ob-source__body { font-size: clamp(14px,1.6vw,15px); color: rgba(242,228,206,.8); line-height: 1.8; }
+        .ob-source__body strong { color: #fff; font-weight: 600; }
         .ob-source__body + .ob-source__body { margin-top: 16px; }
         .ob-source__list { display: flex; flex-direction: column; gap: 14px; }
         .ob-source__item { display: flex; align-items: flex-start; gap: 12px; }
-        .ob-source__item-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(58,125,107,.1); color: var(--color-teal); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
-        .ob-source__item-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--color-dark); margin-bottom: 2px; }
-        .ob-source__item-desc { font-size: 13px; color: var(--color-muted); line-height: 1.55; }
+        .ob-source__item-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,.14); color: var(--color-cream); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+        .ob-source__item-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--color-cream); margin-bottom: 2px; }
+        .ob-source__item-desc { font-size: 13px; color: rgba(242,228,206,.66); line-height: 1.55; }
 
         .ob-submit { max-width: 1240px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
         .ob-submit__layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; align-items: flex-start; }
@@ -537,18 +380,17 @@ export default function OpportunityBoard() {
         .ob-form-success__title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--color-dark); margin-bottom: 8px; }
         .ob-form-success__body { font-size: 14px; color: var(--color-muted); line-height: 1.7; }
 
-        .ob-eco { background: var(--color-dark); padding: 72px clamp(20px,5vw,56px); position: relative; overflow: hidden; }
-        .ob-eco::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 84% 76%, rgba(232,168,56,.12) 0%, transparent 50%); pointer-events: none; }
+        .ob-eco { background: var(--color-gold); padding: 72px clamp(20px,5vw,56px); position: relative; overflow: hidden; }
+        .ob-eco::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 84% 76%, rgba(179,69,57,.16) 0%, transparent 52%); pointer-events: none; }
         .ob-eco__inner { max-width: 1240px; margin: 0 auto; position: relative; }
-        .ob-eco__kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-gold); margin-bottom: 10px; display: inline-flex; align-items: center; gap: 10px; }
-        .ob-eco__kicker::after { content: ''; width: 24px; height: 1px; background: currentColor; opacity: .5; }
-        .ob-eco__title { font-family: var(--font-display); font-size: clamp(20px,3vw,28px); font-weight: 700; color: var(--color-cream); margin-bottom: 8px; line-height: 1.25; }
-        .ob-eco__body { font-size: clamp(14px,1.6vw,15px); color: rgba(242,228,206,.55); line-height: 1.75; max-width: 680px; margin-bottom: 36px; }
+        .ob-eco__kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 10px; display: inline-flex; align-items: center; gap: 10px; }
+        .ob-eco__kicker::after { content: ''; width: 24px; height: 1px; background: currentColor; opacity: .55; }
+        .ob-eco__title { font-family: var(--font-display); font-size: clamp(20px,3vw,28px); font-weight: 700; color: var(--color-dark); margin-bottom: 8px; line-height: 1.25; }
+        .ob-eco__body { font-size: clamp(14px,1.6vw,15px); color: rgba(26,25,22,.72); line-height: 1.75; max-width: 680px; margin-bottom: 36px; }
         .ob-eco__grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 14px; }
-        .ob-eco__link { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); border-radius: 12px; padding: 18px 20px; text-decoration: none; transition: background .2s, transform .2s cubic-bezier(.16,1,.3,1); display: block; }
-        .ob-eco__link:hover { background: rgba(255,255,255,.09); transform: translateY(-2px); }
-        .ob-eco__link-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--color-cream); margin-bottom: 4px; }
-        .ob-eco__link-desc { font-size: 12px; color: rgba(242,228,206,.45); line-height: 1.5; }
+        .ob-eco__link { background: rgba(26,25,22,.055); border: 1px solid rgba(26,25,22,.14); border-radius: 12px; padding: 18px 20px; display: block; }
+        .ob-eco__link-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--color-dark); margin-bottom: 4px; }
+        .ob-eco__link-desc { font-size: 12px; color: rgba(26,25,22,.6); line-height: 1.5; }
 
         @media (max-width: 560px) { .ob-featured-grid, .ob-main-grid, .ob-archive-grid { grid-template-columns: 1fr; } }
         @media (max-width: 680px) { .ob-source__layout { grid-template-columns: 1fr; gap: 32px; } }
@@ -565,6 +407,16 @@ export default function OpportunityBoard() {
         <p className="ob-hero__body">
           {t.heroBody1} <strong>{t.heroBodyStrong}</strong>{t.heroBody2}
         </p>
+        {t.heroStats?.length > 0 && (
+          <div className="ob-hero__stats">
+            {t.heroStats.map(stat => (
+              <div key={stat.label} className="ob-hero__stat">
+                <div className="ob-hero__stat-value">{stat.value}</div>
+                <div className="ob-hero__stat-label">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </header>
 
       <hr className="ob-divider" />
@@ -578,7 +430,7 @@ export default function OpportunityBoard() {
 
         <div className="ob-tabs" role="group" aria-label={t.tabGroupAriaLabel}>
           {TAB_KEYS.map(key => {
-            const labelMap = { all: t.tabAll, internship: t.tabInternship, apprenticeship: t.tabApprenticeship, 'new-grad': t.tabNewGrad, program: t.tabProgram, bridge: t.tabBridge }
+            const labelMap = { all: t.tabAll, internship: t.tabInternship, research: t.tabResearch, program: t.tabProgram, scholarship: t.tabScholarship }
             return (
               <button key={key} id={`ob-tab-${key}`} className={`ob-tab${tab === key ? ' active' : ''}`} aria-pressed={tab === key} onClick={() => setTab(key)}>{labelMap[key]}</button>
             )
@@ -619,21 +471,13 @@ export default function OpportunityBoard() {
 
         <div className="ob-results-count"><span>{totalVisible}</span>&nbsp;{t.opportunitiesShown}</div>
 
-        {visibleFeatured.length > 0 && (
-          <div className="ob-featured-strip">
-            <OBSpotlight card={visibleFeatured[0]} t={t} />
-            {visibleFeatured.length > 1 && (
-              <div className="ob-featured-grid">
-                {visibleFeatured.slice(1).map((c, i) => <OBCard key={c.id} card={c} featured t={t} idx={i} />)}
-              </div>
-            )}
-          </div>
-        )}
-
         <div className="ob-main-grid">
-          {visibleMain.length === 0 && visibleFeatured.length === 0
+          {totalVisible === 0
             ? <p className="ob-no-results">{t.noResults}</p>
-            : visibleMain.map((c, i) => <OBCard key={c.id} card={c} featured={false} t={t} idx={i} />)
+            : [
+                ...visibleFeatured.map(c => ({ c, featured: true })),
+                ...visibleMain.map(c => ({ c, featured: false })),
+              ].map(({ c, featured }, i) => <OBCard key={c.id} card={c} featured={featured} t={t} idx={i} />)
           }
         </div>
 
@@ -643,7 +487,7 @@ export default function OpportunityBoard() {
             {t.archiveLabel}
           </p>
           <div className="ob-archive-grid">
-            {t.archiveCards.map(a => (
+            {ARCHIVED_OPPORTUNITIES.map(a => (
               <article key={a.id} className="ob-card archived">
                 <div className="ob-card__top">
                   <div className="ob-card__company-logo" style={{ background: 'rgba(0,0,0,.05)', color: 'var(--color-muted)' }}>{a.logo}</div>
@@ -662,32 +506,30 @@ export default function OpportunityBoard() {
         </div>
       </section>
 
-      <hr className="ob-divider" />
-
       <section className="ob-source" id="source">
-        <p className="ob-kicker">{t.sourceKicker}</p>
-        <h2 className="ob-section-title">{t.sourceTitle}</h2>
-        <p className="ob-section-sub">{t.sourceSub}</p>
-        <div className="ob-source__layout">
-          <div>
-            <p className="ob-source__body">{t.sourceBody1Part1} <strong>{t.sourceBody1Strong}</strong>{t.sourceBody1Part2}</p>
-            <p className="ob-source__body" style={{ marginTop: '16px' }}>{t.sourceBody2Part1} <strong>{t.sourceBody2Strong}</strong>{t.sourceBody2Part2}</p>
-          </div>
-          <div className="ob-source__list">
-            {t.sourceItems.map((s, i) => (
-              <div key={s.title} className="ob-source__item">
-                <span className="ob-source__item-icon" style={SOURCE_ITEM_STYLES[i]}>{s.icon}</span>
-                <div>
-                  <div className="ob-source__item-title">{s.title}</div>
-                  <div className="ob-source__item-desc">{s.desc}</div>
+        <div className="ob-source__inner">
+          <p className="ob-kicker">{t.sourceKicker}</p>
+          <h2 className="ob-section-title">{t.sourceTitle}</h2>
+          <p className="ob-section-sub">{t.sourceSub}</p>
+          <div className="ob-source__layout">
+            <div>
+              <p className="ob-source__body">{t.sourceBody1Part1} <strong>{t.sourceBody1Strong}</strong>{t.sourceBody1Part2}</p>
+              <p className="ob-source__body" style={{ marginTop: '16px' }}>{t.sourceBody2Part1} <strong>{t.sourceBody2Strong}</strong>{t.sourceBody2Part2}</p>
+            </div>
+            <div className="ob-source__list">
+              {t.sourceItems.map((s, i) => (
+                <div key={s.title} className="ob-source__item">
+                  <span className="ob-source__item-icon" style={SOURCE_ITEM_STYLES[i]}>{s.icon}</span>
+                  <div>
+                    <div className="ob-source__item-title">{s.title}</div>
+                    <div className="ob-source__item-desc">{s.desc}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
-
-      <hr className="ob-divider" />
 
       <section className="ob-submit" id="submit">
         <div className="ob-submit__layout">
@@ -804,10 +646,10 @@ export default function OpportunityBoard() {
           <p className="ob-eco__body">{t.ecoBody}</p>
           <div className="ob-eco__grid">
             {t.ecoLinks.map(l => (
-              <Link key={l.to} to={l.to} className="ob-eco__link">
+              <div key={l.to} className="ob-eco__link">
                 <div className="ob-eco__link-title">{l.title}</div>
                 <div className="ob-eco__link-desc">{l.desc}</div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>

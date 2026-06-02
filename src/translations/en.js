@@ -1100,10 +1100,15 @@ export const en = {
     heroTitle: 'Opportunity',
     heroTitleEm: 'Board',
     heroTagline: 'The board we wish we’d had when we were applying.',
-    heroSub: 'A living board of internships, apprenticeships, new grad roles, and programs curated by J&J.',
+    heroSub: 'A living board of internships, research, programs, and scholarships curated for underclassmen by J&J.',
     heroBody1: 'Every week, Jose and Jocelyn surface roles, programs, and apprenticeships on LinkedIn - from TikTok internship alerts to Pinterest apprenticeships to local research fellowships. The Opportunity Board pulls those into one place, with filters that actually make sense for students and early-career talent: stage, role type, eligibility, and timeline.',
     heroBodyStrong: 'This is where you go when you want to stop scrolling random feeds',
     heroBody2: ' and start seeing concrete options that match where you are in the campus-to-career journey.',
+    heroStats: [
+      { value: 'Weekly', label: 'Fresh roles added every week' },
+      { value: '4', label: 'Categories: internships, research, programs, scholarships' },
+      { value: 'Free', label: 'Always free to browse' },
+    ],
 
     // ── Board section ─────────────────────────────────────────────────────
     boardKicker: 'Section 01',
@@ -1113,10 +1118,9 @@ export const en = {
     // Tabs
     tabAll: 'All',
     tabInternship: 'Internships',
-    tabApprenticeship: 'Apprenticeships & Fellowships',
-    tabNewGrad: 'New Grad / Early Career',
-    tabProgram: 'Campus Programs & Scholarships',
-    tabBridge: 'Bridge Year Friendly',
+    tabResearch: 'Research & Fellowships',
+    tabProgram: 'Programs & Accelerators',
+    tabScholarship: 'Scholarships',
     tabGroupAriaLabel: 'Filter by type',
 
     // Search & filters

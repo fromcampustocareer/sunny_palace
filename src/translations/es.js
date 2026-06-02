@@ -1100,10 +1100,15 @@ export const es = {
     heroTitle: 'Tablero de',
     heroTitleEm: 'Oportunidades',
     heroTagline: 'El tablero que hubiéramos querido tener cuando aplicábamos.',
-    heroSub: 'Un tablero vivo de pasantías, aprendizajes, roles para recién graduados y programas seleccionados por J&J.',
+    heroSub: 'Un tablero vivo de pasantías, investigación, programas y becas seleccionados para estudiantes de primeros años por J&J.',
     heroBody1: 'Cada semana, Jose y Jocelyn destacan roles, programas y aprendizajes en LinkedIn — desde alertas de pasantías en TikTok hasta aprendizajes en Pinterest y becas de investigación locales. El Tablero de Oportunidades los reúne en un solo lugar, con filtros que realmente tienen sentido para estudiantes y talento al inicio de carrera: etapa, tipo de rol, elegibilidad y tiempo.',
     heroBodyStrong: 'Aquí es donde vas cuando quieres dejar de desplazarte por feeds aleatorios',
     heroBody2: ' y empezar a ver opciones concretas que coincidan con donde estás en tu camino del campus a la carrera.',
+    heroStats: [
+      { value: 'Cada semana', label: 'Nuevos roles agregados cada semana' },
+      { value: '4', label: 'Categorías: pasantías, investigación, programas, becas' },
+      { value: 'Gratis', label: 'Siempre gratis para explorar' },
+    ],
 
     // ── Board section ─────────────────────────────────────────────────────
     boardKicker: 'Sección 01',
@@ -1113,10 +1118,9 @@ export const es = {
     // Tabs
     tabAll: 'Todas',
     tabInternship: 'Pasantías',
-    tabApprenticeship: 'Aprendizajes y Becas',
-    tabNewGrad: 'Recién Graduado / Inicio de Carrera',
-    tabProgram: 'Programas Universitarios y Becas',
-    tabBridge: 'Amigable con el Año Puente',
+    tabResearch: 'Investigación y Becas de Investigación',
+    tabProgram: 'Programas y Aceleradores',
+    tabScholarship: 'Becas',
     tabGroupAriaLabel: 'Filtrar por tipo',
 
     // Search & filters
