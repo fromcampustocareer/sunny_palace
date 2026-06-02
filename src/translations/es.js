@@ -1084,7 +1084,7 @@ export const es = {
 
     // ── Template modal ────────────────────────────────────────────────────
     modalKicker: 'Plantillas para Conversaciones Informativas',
-    modalTitlePrefix: 'Solicitud de Conversación — Contactando a',
+    modalTitlePrefix: 'Solicitud de Conversación: Contactando a',
     modalSub: 'Personaliza los campos entre corchetes antes de enviar. Mantén tu mensaje final en menos de 80 palabras.',
     modalCopyBtn: 'Copiar al portapapeles',
     modalCopied: '¡Copiado!',
