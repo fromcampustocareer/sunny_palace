@@ -3,10 +3,12 @@ import { useT } from '../hooks/useT'
 
 export default function ResumeSubNav() {
   const t = useT('resumeSubnav')
+  // Companies + Builder are planned features. They're shown as disabled
+  // "Coming soon" tabs (no link) until they're built.
   const tabs = [
-    { to: '/resume-reviews',          label: t.explore,   end: true },
-    { to: '/resume-reviews/companies', label: t.companies },
-    { to: '/resume-reviews/builder',   label: t.builder },
+    { to: '/resume-reviews', label: t.explore, end: true },
+    { label: t.companies, soon: true },
+    { label: t.builder, soon: true },
   ]
 
   return (
@@ -46,16 +48,49 @@ export default function ResumeSubNav() {
           background: var(--color-accent);
           border-radius: 2px 2px 0 0;
         }
+        .rsn__tab--soon {
+          color: var(--color-muted);
+          opacity: .55;
+          cursor: default;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .rsn__tab--soon:hover { color: var(--color-muted); }
+        .rsn__soon-badge {
+          font-family: var(--font-display);
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: .06em;
+          text-transform: uppercase;
+          color: var(--color-accent);
+          background: rgba(179,69,57,.1);
+          padding: 2px 6px;
+          border-radius: 999px;
+          white-space: nowrap;
+        }
       `}</style>
       {tabs.map(tab => (
-        <NavLink
-          key={tab.to}
-          to={tab.to}
-          end={tab.end}
-          className={({ isActive }) => `rsn__tab${isActive ? ' rsn__tab--active' : ''}`}
-        >
-          {tab.label}
-        </NavLink>
+        tab.soon ? (
+          <span
+            key={tab.label}
+            className="rsn__tab rsn__tab--soon"
+            aria-disabled="true"
+            title={t.soon}
+          >
+            {tab.label}
+            <span className="rsn__soon-badge">{t.soon}</span>
+          </span>
+        ) : (
+          <NavLink
+            key={tab.to}
+            to={tab.to}
+            end={tab.end}
+            className={({ isActive }) => `rsn__tab${isActive ? ' rsn__tab--active' : ''}`}
+          >
+            {tab.label}
+          </NavLink>
+        )
       ))}
     </nav>
   )

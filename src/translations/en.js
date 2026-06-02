@@ -1521,6 +1521,7 @@ export const en = {
     explore: 'Explore',
     companies: 'Companies',
     builder: 'Builder',
+    soon: 'Coming soon',
   },
 
   resumeCompanies: {

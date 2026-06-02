@@ -1521,6 +1521,7 @@ export const es = {
     explore: 'Explorar',
     companies: 'Empresas',
     builder: 'Generador',
+    soon: 'Próximamente',
   },
 
   resumeCompanies: {

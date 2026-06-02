@@ -45,8 +45,9 @@ export default function App() {
         {/* Sprint not open yet — redirect direct visits home. Restore <InterviewPrep /> at launch. */}
         <Route path="/interview-prep" element={<Navigate to="/" replace />} />
         <Route path="/resume-reviews" element={<ResumeReviews />} />
-        <Route path="/resume-reviews/companies" element={<ResumeCompanies />} />
-        <Route path="/resume-reviews/builder" element={<ResumeBuilder />} />
+        {/* Coming soon — shown as disabled "Coming soon" tabs in ResumeSubNav. Restore <ResumeCompanies /> / <ResumeBuilder /> at launch. */}
+        <Route path="/resume-reviews/companies" element={<Navigate to="/resume-reviews" replace />} />
+        <Route path="/resume-reviews/builder" element={<Navigate to="/resume-reviews" replace />} />
         {/* Not open yet — redirect direct visits home. Restore <PartnerPanels /> at launch. */}
         <Route path="/partner-panels" element={<Navigate to="/" replace />} />
         <Route path="/linkedin-series" element={<LinkedInSeries />} />
