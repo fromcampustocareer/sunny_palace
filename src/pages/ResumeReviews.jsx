@@ -191,11 +191,58 @@ function dbResumeToCard(row) {
   }
 }
 
+// Horizontal toolbar dropdown: a labeled button that opens a popover panel of
+// options. Keeps long option lists out of view until the category is opened.
+function FilterDropdown({ id, label, count = 0, open, setOpen, wide = false, align = 'left', children }) {
+  const isOpen = open === id
+  return (
+    <div className="rr-fdrop">
+      <button
+        type="button"
+        className={`rr-fdrop__btn${count ? ' has-active' : ''}${isOpen ? ' open' : ''}`}
+        onClick={() => setOpen(isOpen ? null : id)}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+      >
+        {label}
+        {count > 0 && <span className="rr-fdrop__count">{count}</span>}
+        <svg className="rr-fdrop__chev" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </button>
+      {isOpen && (
+        <div className={`rr-fdrop__panel${wide ? ' rr-fdrop__panel--wide' : ''}${align === 'right' ? ' rr-fdrop__panel--right' : ''}`} role="group" aria-label={label}>
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Company filter panel: searchable chip grid (used inside a FilterDropdown).
+function CompaniesPanel({ companies, onToggle, t }) {
+  const [coSearch, setCoSearch] = useState('')
+  const visible = SIDEBAR_COMPANIES.filter(co => !coSearch || co.includes(coSearch.toLowerCase()) || (COMPANIES[co]?.name || '').toLowerCase().includes(coSearch.toLowerCase()))
+  return (
+    <div className="rr-fdrop__companies">
+      <input className="rr-co-search" type="text" placeholder={t.filterCompanySearchPlaceholder} autoComplete="off" value={coSearch} onChange={e => setCoSearch(e.target.value)} />
+      <div className="rr-co-chips">
+        {visible.map(co => (
+          <button key={co} type="button" className={`rr-co-chip${companies.includes(co) ? ' active' : ''}`} aria-pressed={companies.includes(co)} onClick={() => onToggle(co)}>
+            <CoLogo coKey={co} size={13} />
+            {COMPANIES[co]?.name || co}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function ResumeReviews() {
   const t = useT('resumeReviews')
   const [dbResumes, setDbResumes] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState({ search: '', roles: [], stages: [], companies: [], tags: [], sort: 'newest' })
+  const [openDrop, setOpenDrop] = useState(null)
+  const toggleIn = (key, val) => setFilter(f => ({ ...f, [key]: f[key].includes(val) ? f[key].filter(v => v !== val) : [...f[key], val] }))
   const [panelId, setPanelId] = useState(null)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [submitSubmitted, setSubmitSubmitted] = useState(false)
@@ -454,7 +501,36 @@ export default function ResumeReviews() {
         .rr-stat__label { font-size: 12px; color: var(--color-muted); margin-top: 6px; letter-spacing: .04em; }
 
         /* LAYOUT */
-        .rr-layout { max-width: 1240px; margin: 0 auto; padding: 48px clamp(20px,5vw,56px) 80px; display: grid; grid-template-columns: 256px 1fr; gap: 40px; align-items: start; }
+        .rr-browse { max-width: 1240px; margin: 0 auto; padding: 40px clamp(20px,5vw,56px) 80px; }
+
+        /* FILTER TOOLBAR - horizontal, all categories visible as dropdowns */
+        .rr-toolbar { position: relative; z-index: 45; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+        .rr-toolbar__search { position: relative; flex: 1 1 280px; min-width: 200px; display: flex; align-items: center; }
+        .rr-toolbar__search > svg { position: absolute; left: 16px; color: var(--color-muted); pointer-events: none; }
+        .rr-toolbar__search input { width: 100%; font-family: var(--font-body); font-size: 15px; padding: 12px 16px 12px 44px; border: 1.5px solid rgba(26,25,22,.12); border-radius: 999px; background: rgba(255,255,255,.7); color: var(--color-dark); outline: none; transition: border-color .2s, background .2s, box-shadow .2s; box-sizing: border-box; }
+        .rr-toolbar__search input:focus { border-color: var(--color-gold); background: var(--color-white); box-shadow: 0 0 0 4px rgba(232,168,56,.16); }
+        .rr-toolbar__search input::placeholder { color: var(--color-muted); }
+        .rr-toolbar__drops { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        .rr-fdrop { position: relative; }
+        .rr-fdrop__btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1.5px solid rgba(26,25,22,.12); border-radius: 999px; background: rgba(255,255,255,.55); color: var(--color-dark); font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.005em; cursor: pointer; transition: border-color .18s, background .18s, transform .15s cubic-bezier(.16,1,.3,1); white-space: nowrap; }
+        .rr-fdrop__btn:hover { border-color: rgba(26,25,22,.24); background: rgba(255,255,255,.85); transform: translateY(-1px); }
+        .rr-fdrop__btn.open { border-color: var(--color-dark); background: var(--color-white); }
+        .rr-fdrop__btn.has-active { border-color: var(--color-navy); }
+        .rr-fdrop__count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--color-navy); color: var(--color-cream); font-size: 11px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .rr-fdrop__chev { color: var(--color-muted); transition: transform .2s; }
+        .rr-fdrop__btn.open .rr-fdrop__chev { transform: rotate(180deg); }
+        .rr-fdrop__panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 50; width: 260px; max-height: 340px; overflow-y: auto; background: var(--color-surface); border: 1px solid rgba(26,25,22,.12); border-radius: 14px; padding: 12px 14px; box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 18px 40px -16px rgba(58,38,22,.28); scrollbar-width: thin; }
+        .rr-fdrop__panel--wide { width: 320px; }
+        .rr-fdrop__panel--right { left: auto; right: 0; }
+        .rr-fdrop__list { display: flex; flex-direction: column; gap: 1px; }
+        .rr-fdrop__list .rr-check-row { margin-bottom: 0; padding: 7px 8px; border-radius: 7px; transition: background .15s; }
+        .rr-fdrop__list .rr-check-row:hover { background: rgba(26,25,22,.05); }
+        .rr-radio-line { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 7px; cursor: pointer; font-size: 14px; color: var(--color-dark); transition: background .15s; }
+        .rr-radio-line:hover { background: rgba(26,25,22,.05); }
+        .rr-radio-line input { accent-color: var(--color-dark); cursor: pointer; }
+        .rr-fdrop__companies .rr-co-search { margin-bottom: 10px; }
+        .rr-drop-backdrop { position: fixed; inset: 0; z-index: 40; background: transparent; }
         .rr-sidebar { position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.1) transparent; }
         .rr-sidebar::-webkit-scrollbar { width: 4px; }
         .rr-sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 4px; }
@@ -484,7 +560,7 @@ export default function ResumeReviews() {
         .rr-sort-select:focus { border-color: var(--color-gold); }
         .rr-filter-reset { display: block; margin-top: 12px; font-size: 12px; font-weight: 600; color: var(--color-accent); cursor: pointer; text-align: center; padding: 8px; background: rgba(179,69,57,.06); border-radius: 7px; border: none; width: 100%; font-family: var(--font-body); transition: background .2s; }
         .rr-filter-reset:hover { background: rgba(179,69,57,.12); }
-        .rr-mobile-filter-btn { display: none; align-items: center; gap: 8px; padding: 11px 18px; background: rgba(179,69,57,.06); border: 1.5px solid rgba(179,69,57,.18); border-radius: 999px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.005em; color: var(--color-accent); cursor: pointer; margin-bottom: 16px; transition: background .2s, border-color .2s, transform .18s cubic-bezier(.16,1,.3,1); }
+        .rr-mobile-filter-btn { display: none; align-items: center; gap: 8px; padding: 11px 18px; background: rgba(179,69,57,.06); border: 1.5px solid rgba(179,69,57,.18); border-radius: 999px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.005em; color: var(--color-accent); cursor: pointer; transition: background .2s, border-color .2s, transform .18s cubic-bezier(.16,1,.3,1); }
         .rr-mobile-filter-btn:hover { background: rgba(179,69,57,.1); border-color: rgba(179,69,57,.32); transform: translateY(-1px); }
         .rr-mobile-filter-btn:active { transform: translateY(0); }
 
@@ -501,7 +577,7 @@ export default function ResumeReviews() {
         .rr-grid-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
         .rr-grid-count { font-size: 13px; color: var(--color-muted); font-weight: 500; }
         .rr-grid-count strong { color: var(--color-dark); font-weight: 700; }
-        .rr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; contain: layout style; }
+        .rr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(248px, 1fr)); gap: 18px; contain: layout style; }
         .rr-grid > .rr-card { animation: rr-card-in .55s cubic-bezier(.16,1,.3,1) backwards; animation-delay: calc(var(--rr-i, 0) * 50ms); }
         @keyframes rr-card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @media (prefers-reduced-motion: reduce) { .rr-grid > .rr-card { animation: none; } }
@@ -717,13 +793,11 @@ export default function ResumeReviews() {
         .rr-closing__btn-s:hover { border-color: var(--color-cream); background: rgba(255,255,255,.1); transform: translateY(-1px); }
 
         /* RESPONSIVE */
-        @media (max-width: 960px) {
-          .rr-layout { grid-template-columns: 1fr; }
-          .rr-sidebar { position: static; max-height: none; display: none; }
+        @media (max-width: 760px) {
+          .rr-toolbar__drops { display: none; }
           .rr-mobile-filter-btn { display: inline-flex; }
-          .rr-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        @media (max-width: 560px) { .rr-grid { grid-template-columns: 1fr; } .rr-panel { width: 100vw; } }
+        @media (max-width: 560px) { .rr-panel { width: 100vw; } }
         @media (max-width: 768px) { .rr-hero { padding: 28px 20px 48px; } .rr-stats { gap: 20px; } .rr-hero__ctas { flex-wrap: wrap; } }
         @media (max-width: 480px) {
           .rr-hero { padding: 24px 16px 40px; }
@@ -767,45 +841,71 @@ export default function ResumeReviews() {
 
       <hr className="rr-divider" />
 
-      {/* MAIN LAYOUT */}
-      <div className="rr-layout" id="browse">
-        <aside className="rr-sidebar">
-          <SidebarFilters filter={filter} onFilter={setFilter} t={t} />
-        </aside>
-
-        <div className="rr-grid-area">
+      {/* BROWSE */}
+      <section className="rr-browse" id="browse">
+        <div className="rr-toolbar">
+          <div className="rr-toolbar__search">
+            <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.5" /><path d="M9.5 9.5L12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+            <input type="search" placeholder={t.filterSearchPlaceholder} value={filter.search} onChange={e => setFilter(f => ({ ...f, search: e.target.value }))} aria-label={t.filterSearchPlaceholder} />
+          </div>
+          <div className="rr-toolbar__drops">
+            <FilterDropdown id="roles" label={t.filterRoleTypeLabel} count={filter.roles.length} open={openDrop} setOpen={setOpenDrop}>
+              <div className="rr-fdrop__list">
+                {t.filterRoles.map(({ value, label }) => (
+                  <label key={value} className="rr-check-row"><input type="checkbox" checked={filter.roles.includes(value)} onChange={() => toggleIn('roles', value)} /><span>{label}</span></label>
+                ))}
+              </div>
+            </FilterDropdown>
+            <FilterDropdown id="stages" label={t.filterStageLabel} count={filter.stages.length} open={openDrop} setOpen={setOpenDrop}>
+              <div className="rr-fdrop__list">
+                {t.filterStages.map(({ value, label }) => (
+                  <label key={value} className="rr-check-row"><input type="checkbox" checked={filter.stages.includes(value)} onChange={() => toggleIn('stages', value)} /><span>{label}</span></label>
+                ))}
+              </div>
+            </FilterDropdown>
+            <FilterDropdown id="companies" label={t.filterCompaniesLabel} count={filter.companies.length} open={openDrop} setOpen={setOpenDrop} wide>
+              <CompaniesPanel companies={filter.companies} onToggle={(v) => toggleIn('companies', v)} t={t} />
+            </FilterDropdown>
+            <FilterDropdown id="tags" label={t.filterBackgroundLabel} count={filter.tags.length} open={openDrop} setOpen={setOpenDrop}>
+              <div className="rr-fdrop__list">
+                {t.filterBackgrounds.map(({ value, label }) => (
+                  <label key={value} className="rr-check-row"><input type="checkbox" checked={filter.tags.includes(value)} onChange={() => toggleIn('tags', value)} /><span>{label}</span></label>
+                ))}
+              </div>
+            </FilterDropdown>
+            <FilterDropdown id="sort" label={t.sortByLabel} open={openDrop} setOpen={setOpenDrop} align="right">
+              <div className="rr-fdrop__list">
+                {[['newest', t.sortNewlyAdded], ['screened', t.sortMostScreened], ['liked', t.sortMostLiked], ['viewed', t.sortMostViewed], ['featured', t.sortFeatured]].map(([val, label]) => (
+                  <label key={val} className="rr-radio-line"><input type="radio" name="rr-sort" checked={filter.sort === val} onChange={() => { setFilter(f => ({ ...f, sort: val })); setOpenDrop(null) }} /><span>{label}</span></label>
+                ))}
+              </div>
+            </FilterDropdown>
+          </div>
           <button className="rr-mobile-filter-btn" onClick={() => setSheetOpen(true)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 3h12M3 7h8M5 11h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
             {t.mobileFilterBtn}
           </button>
+        </div>
 
-          {activeFilters.length > 0 && (
-            <div className="rr-active-bar">
-              <span className="rr-active-bar__label">{t.activeFiltersLabel}</span>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
-                {activeFilters.map(item => (
-                  <button key={`${item.type}-${item.val}`} className="rr-active-chip" onClick={() => removeFilter(item.type, item.val)}>
-                    {item.label} <span className="rr-active-chip__x">×</span>
-                  </button>
-                ))}
-              </div>
-              <button className="rr-active-bar__clear" onClick={() => setFilter({ search: '', roles: [], stages: [], companies: [], tags: [], sort: 'newest' })}>{t.clearAll}</button>
+        {openDrop && <div className="rr-drop-backdrop" onClick={() => setOpenDrop(null)} aria-hidden="true" />}
+
+        {activeFilters.length > 0 && (
+          <div className="rr-active-bar">
+            <span className="rr-active-bar__label">{t.activeFiltersLabel}</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
+              {activeFilters.map(item => (
+                <button key={`${item.type}-${item.val}`} className="rr-active-chip" onClick={() => removeFilter(item.type, item.val)}>
+                  {item.label} <span className="rr-active-chip__x">×</span>
+                </button>
+              ))}
             </div>
-          )}
-
-          <div className="rr-grid-meta">
-            <p className="rr-grid-count"><strong>{visibleResumes.length}</strong> {t.foundCount}</p>
-            <label className="rr-sort-wrap">
-              {t.sortByLabel}
-              <select value={filter.sort} onChange={e => setFilter(f => ({ ...f, sort: e.target.value }))}>
-                <option value="newest">{t.sortNewlyAdded}</option>
-                <option value="screened">{t.sortMostScreened}</option>
-                <option value="liked">{t.sortMostLiked}</option>
-                <option value="viewed">{t.sortMostViewed}</option>
-                <option value="featured">{t.sortFeatured}</option>
-              </select>
-            </label>
+            <button className="rr-active-bar__clear" onClick={() => setFilter({ search: '', roles: [], stages: [], companies: [], tags: [], sort: 'newest' })}>{t.clearAll}</button>
           </div>
+        )}
+
+        <div className="rr-grid-meta">
+          <p className="rr-grid-count"><strong>{visibleResumes.length}</strong> {t.foundCount}</p>
+        </div>
 
           <div className="rr-grid">
             {isLoading ? (
@@ -919,8 +1019,7 @@ export default function ResumeReviews() {
               </>
             )}
           </div>
-        </div>
-      </div>
+      </section>
 
       <hr className="rr-divider" />
 
