@@ -705,7 +705,6 @@ export default function ResumeReviews() {
 
         /* CLOSING */
         .rr-closing { background: var(--color-teal); padding: 84px clamp(20px,5vw,56px) 76px; text-align: center; position: relative; overflow: hidden; }
-        .rr-closing::before { content: ''; position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 240px; height: 240px; background: radial-gradient(closest-side, rgba(232,168,56,.18), transparent 70%); pointer-events: none; }
         .rr-closing__inner { max-width: 640px; margin: 0 auto; position: relative; }
         .rr-closing__headline { font-family: var(--font-display); font-size: clamp(28px,5vw,46px); font-weight: 700; color: var(--color-cream); line-height: 1.08; letter-spacing: -.02em; margin-bottom: 32px; }
         .rr-closing__headline em { font-family: var(--font-serif, var(--font-display)); font-style: italic; font-weight: 500; color: var(--color-gold); padding: 0 .04em; }
