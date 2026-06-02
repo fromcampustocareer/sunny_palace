@@ -201,7 +201,7 @@ export default function ResumeReviews() {
   const [submitSubmitted, setSubmitSubmitted] = useState(false)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
-  const [submitForm, setSubmitForm] = useState({ handle: '', email: '', linkedin: '', roleTitle: '', roleType: '', stage: '', companies: '', bgTags: [], download: 'no', story: '', annotate: 'no' })
+  const [submitForm, setSubmitForm] = useState({ handle: '', email: '', linkedin: '', roleTitle: '', roleType: '', roleTypeOther: '', stage: '', stageOther: '', companies: '', bgTags: [], bgOther: '', download: 'no', story: '', annotate: 'no' })
   const [fileName, setFileName] = useState('')
   const [avatarFile, setAvatarFile] = useState(null)
   const [avatarPreview, setAvatarPreview] = useState(null)
@@ -338,6 +338,19 @@ export default function ResumeReviews() {
       setSubmitError(t.formErrorRequired)
       return
     }
+    // When "Other" is chosen, the typed value is required.
+    if (submitForm.roleType === 'other' && !submitForm.roleTypeOther.trim()) {
+      setSubmitError(t.formErrorRequired)
+      return
+    }
+    if (submitForm.stage === 'other' && !submitForm.stageOther.trim()) {
+      setSubmitError(t.formErrorRequired)
+      return
+    }
+    if (submitForm.bgTags.includes('other') && !submitForm.bgOther.trim()) {
+      setSubmitError(t.formErrorRequired)
+      return
+    }
     if (!file) {
       setSubmitError(t.formErrorNoFile)
       return
@@ -369,10 +382,10 @@ export default function ResumeReviews() {
       email: submitForm.email,
       linkedin_url: submitForm.linkedin || null,
       role_title: submitForm.roleTitle || null,
-      role_type: submitForm.roleType,
-      stage: submitForm.stage,
+      role_type: submitForm.roleType === 'other' ? submitForm.roleTypeOther.trim() : submitForm.roleType,
+      stage: submitForm.stage === 'other' ? submitForm.stageOther.trim() : submitForm.stage,
       target_companies: submitForm.companies,
-      background_tags: submitForm.bgTags,
+      background_tags: submitForm.bgTags.map(tag => tag === 'other' ? submitForm.bgOther.trim() : tag).filter(Boolean),
       allow_download: submitForm.download === 'yes',
       story: submitForm.story || null,
       allow_annotation: submitForm.annotate === 'yes',
@@ -991,6 +1004,9 @@ export default function ResumeReviews() {
                         <option key={value} value={value}>{label}</option>
                       ))}
                     </select>
+                    {submitForm.roleType === 'other' && (
+                      <input className="rr-form-input" type="text" style={{ marginTop: 10 }} placeholder={t.formPlaceholderRoleTypeOther} aria-label={t.formPlaceholderRoleTypeOther} value={submitForm.roleTypeOther} onChange={e => setSubmitForm(f => ({ ...f, roleTypeOther: e.target.value }))} />
+                    )}
                   </div>
                 </div>
                 <div className="rr-form-row">
@@ -1001,6 +1017,9 @@ export default function ResumeReviews() {
                       <option key={value} value={value}>{label}</option>
                     ))}
                   </select>
+                  {submitForm.stage === 'other' && (
+                    <input className="rr-form-input" type="text" style={{ marginTop: 10 }} placeholder={t.formPlaceholderStageOther} aria-label={t.formPlaceholderStageOther} value={submitForm.stageOther} onChange={e => setSubmitForm(f => ({ ...f, stageOther: e.target.value }))} />
+                  )}
                 </div>
                 <div className="rr-form-row">
                   <label className="rr-form-label" htmlFor="sfCompanies">{t.formLabelCompanies} <span>{t.formLabelCompaniesRequired}</span></label>
@@ -1013,6 +1032,9 @@ export default function ResumeReviews() {
                       <button key={value} type="button" className={`rr-tag-toggle${submitForm.bgTags.includes(value) ? ' active' : ''}`} aria-pressed={submitForm.bgTags.includes(value)} onClick={() => toggleBgTag(value)}>{label}</button>
                     ))}
                   </div>
+                  {submitForm.bgTags.includes('other') && (
+                    <input className="rr-form-input" type="text" style={{ marginTop: 10 }} placeholder={t.formPlaceholderBgOther} aria-label={t.formPlaceholderBgOther} value={submitForm.bgOther} onChange={e => setSubmitForm(f => ({ ...f, bgOther: e.target.value }))} />
+                  )}
                 </div>
                 <div className="rr-form-row">
                   <label className="rr-form-label">{t.formLabelAvatar} <em>{t.formLabelAvatarNote}</em></label>
