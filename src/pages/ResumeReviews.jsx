@@ -2,30 +2,12 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import ResumeSubNav from '../components/ResumeSubNav'
+import CompanyLogo from '../components/CompanyLogo'
+import { COMPANIES } from '../data/companies'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
 
 const LIKES_KEY = 'jxj_resume_likes_v1'
-
-const COMPANIES = {
-  google:    { name: 'Google',    slug: 'google',    hex: '4285F4' },
-  apple:     { name: 'Apple',     slug: 'apple',     hex: '555555' },
-  microsoft: { name: 'Microsoft', slug: 'microsoft', hex: '5E5E5E' },
-  meta:      { name: 'Meta',      slug: 'meta',      hex: '0082FB' },
-  amazon:    { name: 'Amazon',    slug: 'amazon',    hex: 'FF9900' },
-  tiktok:    { name: 'TikTok',   slug: 'tiktok',    hex: '010101' },
-  pinterest: { name: 'Pinterest', slug: 'pinterest', hex: 'E60023' },
-  reddit:    { name: 'Reddit',   slug: 'reddit',    hex: 'FF4500' },
-  discord:   { name: 'Discord',  slug: 'discord',   hex: '5865F2' },
-  stripe:    { name: 'Stripe',   slug: 'stripe',    hex: '635BFF' },
-  figma:     { name: 'Figma',    slug: 'figma',     hex: 'F24E1E' },
-  dropbox:   { name: 'Dropbox',  slug: 'dropbox',   hex: '0061FF' },
-  ibm:       { name: 'IBM',      slug: 'ibm',       hex: '052FAD' },
-  airbnb:    { name: 'Airbnb',   slug: 'airbnb',    hex: 'FF5A5F' },
-  fidelity:  { name: 'Fidelity', slug: null, letter: 'F',  color: '#006633', bg: 'rgba(0,102,51,.1)' },
-  jpmorgan:  { name: 'JPMorgan', slug: null, letter: 'JP', color: '#003087', bg: 'rgba(0,48,135,.1)' },
-  anthropic: { name: 'Anthropic',slug: null, letter: 'A',  color: '#C4602D', bg: 'rgba(196,96,45,.1)' },
-}
 
 const STAGE_META_STYLE = {
   intern:        { cls: 'intern',        tagCls: 'rr-tag--blue' },
@@ -93,17 +75,29 @@ const TAG_COLOR_MAP = {
 
 
 
-const SIDEBAR_COMPANIES = ['google','microsoft','meta','apple','amazon','stripe','pinterest','reddit','dropbox','fidelity','jpmorgan','anthropic']
+const SIDEBAR_COMPANIES = [
+  'google','microsoft','meta','apple','amazon','netflix','nvidia','tesla',
+  'stripe','openai','anthropic','salesforce','adobe','uber','airbnb','spotify',
+  'pinterest','reddit','discord','dropbox','figma','jpmorgan','goldman','mckinsey','fidelity',
+]
 
 
 function CoLogo({ coKey, size = 18, fullColor = false }) {
   const c = COMPANIES[coKey]
-  if (!c) return <span className="rr-co-letter" style={{ background: 'rgba(0,0,0,.08)', color: 'var(--color-muted)', fontSize: '8px', width: size, height: size }}>{(coKey[0] || '?').toUpperCase()}</span>
-  if (c.slug) {
-    const url = fullColor ? `https://cdn.simpleicons.org/${c.slug}` : `https://cdn.simpleicons.org/${c.slug}/8A7E72`
-    return <img className="rr-co-logo" style={{ width: size, height: size }} src={url} alt={c.name} width={size} height={size} loading="lazy" onError={e => { e.target.outerHTML = `<span class="rr-co-letter" style="background:rgba(0,0,0,.08);color:var(--color-muted);font-size:${Math.round(size * 0.44)}px;width:${size}px;height:${size}px;">${c.name[0]}</span>` }} />
-  }
-  return <span className="rr-co-letter" style={{ background: c.bg, color: c.color, fontSize: Math.round(size * 0.44), width: size, height: size }}>{c.letter}</span>
+  if (!c) return <span className="rr-co-letter" style={{ background: 'rgba(0,0,0,.08)', color: 'var(--color-muted)', fontSize: Math.round(size * 0.44), width: size, height: size }}>{(coKey[0] || '?').toUpperCase()}</span>
+  // Tinted monochrome in muted contexts; full color where requested. Removed
+  // brands (Microsoft, Amazon) recover to a real favicon, then a letter mark.
+  return (
+    <CompanyLogo
+      company={c}
+      size={size}
+      tint={fullColor ? null : '8A7E72'}
+      muted={!fullColor}
+      className="rr-co-logo"
+      letterClassName="rr-co-letter"
+      letterStyle={{ background: 'rgba(0,0,0,.08)', color: c.color || 'var(--color-muted)', fontSize: Math.round(size * 0.44) }}
+    />
+  )
 }
 
 function TagPill({ tag, small = false, labelMap = TAG_LABELS }) {
@@ -146,10 +140,7 @@ function SidebarFilters({ filter, onFilter, t }) {
         <div className="rr-co-chips">
           {visibleCos.map(co => (
             <button key={co} type="button" className={`rr-co-chip${filter.companies.includes(co) ? ' active' : ''}`} aria-pressed={filter.companies.includes(co)} onClick={() => onFilter(f => ({ ...f, companies: toggle(f.companies, co) }))}>
-              {COMPANIES[co]?.slug
-                ? <img src={`https://cdn.simpleicons.org/${COMPANIES[co].slug}/8A7E72`} alt={COMPANIES[co]?.name || co} width="13" height="13" loading="lazy" />
-                : null
-              }
+              <CoLogo coKey={co} size={13} />
               {COMPANIES[co]?.name || co}
             </button>
           ))}
@@ -200,17 +191,64 @@ function dbResumeToCard(row) {
   }
 }
 
+// Horizontal toolbar dropdown: a labeled button that opens a popover panel of
+// options. Keeps long option lists out of view until the category is opened.
+function FilterDropdown({ id, label, count = 0, open, setOpen, wide = false, align = 'left', children }) {
+  const isOpen = open === id
+  return (
+    <div className="rr-fdrop">
+      <button
+        type="button"
+        className={`rr-fdrop__btn${count ? ' has-active' : ''}${isOpen ? ' open' : ''}`}
+        onClick={() => setOpen(isOpen ? null : id)}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+      >
+        {label}
+        {count > 0 && <span className="rr-fdrop__count">{count}</span>}
+        <svg className="rr-fdrop__chev" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </button>
+      {isOpen && (
+        <div className={`rr-fdrop__panel${wide ? ' rr-fdrop__panel--wide' : ''}${align === 'right' ? ' rr-fdrop__panel--right' : ''}`} role="group" aria-label={label}>
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Company filter panel: searchable chip grid (used inside a FilterDropdown).
+function CompaniesPanel({ companies, onToggle, t }) {
+  const [coSearch, setCoSearch] = useState('')
+  const visible = SIDEBAR_COMPANIES.filter(co => !coSearch || co.includes(coSearch.toLowerCase()) || (COMPANIES[co]?.name || '').toLowerCase().includes(coSearch.toLowerCase()))
+  return (
+    <div className="rr-fdrop__companies">
+      <input className="rr-co-search" type="text" placeholder={t.filterCompanySearchPlaceholder} autoComplete="off" value={coSearch} onChange={e => setCoSearch(e.target.value)} />
+      <div className="rr-co-chips">
+        {visible.map(co => (
+          <button key={co} type="button" className={`rr-co-chip${companies.includes(co) ? ' active' : ''}`} aria-pressed={companies.includes(co)} onClick={() => onToggle(co)}>
+            <CoLogo coKey={co} size={13} />
+            {COMPANIES[co]?.name || co}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function ResumeReviews() {
   const t = useT('resumeReviews')
   const [dbResumes, setDbResumes] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [filter, setFilter] = useState({ search: '', roles: [], stages: [], companies: [], tags: [], sort: 'newest' })
+  const [openDrop, setOpenDrop] = useState(null)
+  const toggleIn = (key, val) => setFilter(f => ({ ...f, [key]: f[key].includes(val) ? f[key].filter(v => v !== val) : [...f[key], val] }))
   const [panelId, setPanelId] = useState(null)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [submitSubmitted, setSubmitSubmitted] = useState(false)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
-  const [submitForm, setSubmitForm] = useState({ handle: '', email: '', linkedin: '', roleTitle: '', roleType: '', stage: '', companies: '', bgTags: [], download: 'no', story: '', annotate: 'no' })
+  const [submitForm, setSubmitForm] = useState({ handle: '', email: '', linkedin: '', roleTitle: '', roleType: '', roleTypeOther: '', stage: '', stageOther: '', companies: '', bgTags: [], bgOther: '', download: 'no', story: '', annotate: 'no' })
   const [fileName, setFileName] = useState('')
   const [avatarFile, setAvatarFile] = useState(null)
   const [avatarPreview, setAvatarPreview] = useState(null)
@@ -347,6 +385,19 @@ export default function ResumeReviews() {
       setSubmitError(t.formErrorRequired)
       return
     }
+    // When "Other" is chosen, the typed value is required.
+    if (submitForm.roleType === 'other' && !submitForm.roleTypeOther.trim()) {
+      setSubmitError(t.formErrorRequired)
+      return
+    }
+    if (submitForm.stage === 'other' && !submitForm.stageOther.trim()) {
+      setSubmitError(t.formErrorRequired)
+      return
+    }
+    if (submitForm.bgTags.includes('other') && !submitForm.bgOther.trim()) {
+      setSubmitError(t.formErrorRequired)
+      return
+    }
     if (!file) {
       setSubmitError(t.formErrorNoFile)
       return
@@ -378,10 +429,10 @@ export default function ResumeReviews() {
       email: submitForm.email,
       linkedin_url: submitForm.linkedin || null,
       role_title: submitForm.roleTitle || null,
-      role_type: submitForm.roleType,
-      stage: submitForm.stage,
+      role_type: submitForm.roleType === 'other' ? submitForm.roleTypeOther.trim() : submitForm.roleType,
+      stage: submitForm.stage === 'other' ? submitForm.stageOther.trim() : submitForm.stage,
       target_companies: submitForm.companies,
-      background_tags: submitForm.bgTags,
+      background_tags: submitForm.bgTags.map(tag => tag === 'other' ? submitForm.bgOther.trim() : tag).filter(Boolean),
       allow_download: submitForm.download === 'yes',
       story: submitForm.story || null,
       allow_annotation: submitForm.annotate === 'yes',
@@ -423,21 +474,21 @@ export default function ResumeReviews() {
 
         .rr-tag--muted  { background: rgba(0,0,0,.06);       color: var(--color-muted); }
 
-        .rr-btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 15px 28px; background: var(--color-dark); color: var(--color-cream); border-radius: 10px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid var(--color-dark); cursor: pointer; box-shadow: 0 8px 20px -10px rgba(26,25,22,.4), inset 0 1px 0 rgba(255,255,255,.08); transition: background .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s, border-color .25s; }
+        .rr-btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; background: var(--color-dark); color: var(--color-cream); border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid var(--color-dark); cursor: pointer; box-shadow: 0 8px 20px -10px rgba(58,38,22,.4), inset 0 1px 0 rgba(255,255,255,.08); transition: background .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s, border-color .25s; }
         .rr-btn-primary:hover { background: var(--color-accent); border-color: var(--color-accent); transform: translateY(-2px); box-shadow: 0 14px 26px -12px rgba(179,69,57,.5), inset 0 1px 0 rgba(255,255,255,.12); }
-        .rr-btn-primary:active { transform: translateY(0); box-shadow: 0 4px 10px -4px rgba(26,25,22,.3); }
-        .rr-btn-secondary { display: inline-flex; align-items: center; gap: 10px; padding: 15px 28px; background: transparent; color: var(--color-dark); border-radius: 10px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid rgba(26,25,22,.22); cursor: pointer; transition: border-color .25s, color .25s, background .25s, transform .22s cubic-bezier(.16,1,.3,1); }
+        .rr-btn-primary:active { transform: translateY(0); box-shadow: 0 4px 10px -4px rgba(58,38,22,.3); }
+        .rr-btn-secondary { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; background: transparent; color: var(--color-dark); border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid rgba(26,25,22,.22); cursor: pointer; transition: border-color .25s, color .25s, background .25s, transform .22s cubic-bezier(.16,1,.3,1); }
         .rr-btn-secondary:hover { border-color: var(--color-dark); color: var(--color-accent); background: rgba(179,69,57,.04); transform: translateY(-2px); }
         .rr-btn-secondary:active { transform: translateY(0); }
 
-        /* HERO — asymmetric, lead with emotional hook */
-        .rr-hero { padding: 40px clamp(20px,5vw,56px) 56px; max-width: 1240px; margin: 0 auto; position: relative; overflow: hidden; }
-        .rr-hero::before { content: ''; position: absolute; top: 40px; left: clamp(20px,5vw,56px); width: 56px; height: 4px; background: var(--color-accent); border-radius: 2px; }
-        .rr-hero::after { content: ''; position: absolute; top: -20%; right: -8%; width: 380px; height: 380px; background: radial-gradient(closest-side, rgba(179,69,57,.13), transparent 70%); pointer-events: none; z-index: -1; }
+        /* HERO - asymmetric, lead with emotional hook */
+        .rr-hero { padding: 56px clamp(20px,5vw,56px) 64px; max-width: 1240px; margin: 0 auto; position: relative; overflow: hidden; }
+        .rr-hero::before { content: ''; position: absolute; top: 56px; left: clamp(20px,5vw,56px); width: 56px; height: 4px; background: var(--color-accent); border-radius: 2px; }
+        .rr-hero::after { content: ''; position: absolute; top: -14%; right: -10%; width: 520px; height: 520px; background: radial-gradient(closest-side, rgba(179,69,57,.1), transparent 70%); pointer-events: none; z-index: -1; }
         .rr-hero__kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-accent); margin: 28px 0 22px; display: inline-flex; align-items: center; gap: 10px; }
         .rr-hero__kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-accent); opacity: .5; }
         .rr-hero__title { font-family: var(--font-display); font-size: clamp(46px,7.6vw,92px); font-weight: 700; line-height: .98; letter-spacing: -.025em; color: var(--color-dark); margin-bottom: 22px; max-width: 18ch; }
-        .rr-hero__title em { font-style: italic; font-family: var(--font-serif, var(--font-display)); color: var(--color-gold-dark); font-weight: 500; padding-right: .04em; }
+        .rr-hero__title em { font-style: normal; color: var(--color-accent); }
         .rr-hero__sub { font-family: var(--font-display); font-size: clamp(18px,2.5vw,24px); font-weight: 400; color: var(--color-dark); line-height: 1.4; max-width: 580px; margin-bottom: 18px; }
         .rr-hero__body { font-size: clamp(15px,1.8vw,17px); color: var(--color-muted); line-height: 1.7; max-width: 560px; margin-bottom: 32px; }
         .rr-hero__body strong { color: var(--color-dark); font-weight: 600; }
@@ -450,7 +501,36 @@ export default function ResumeReviews() {
         .rr-stat__label { font-size: 12px; color: var(--color-muted); margin-top: 6px; letter-spacing: .04em; }
 
         /* LAYOUT */
-        .rr-layout { max-width: 1240px; margin: 0 auto; padding: 48px clamp(20px,5vw,56px) 80px; display: grid; grid-template-columns: 256px 1fr; gap: 40px; align-items: start; }
+        .rr-browse { max-width: 1240px; margin: 0 auto; padding: 40px clamp(20px,5vw,56px) 80px; }
+
+        /* FILTER TOOLBAR - horizontal, all categories visible as dropdowns */
+        .rr-toolbar { position: relative; z-index: 45; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+        .rr-toolbar__search { position: relative; flex: 1 1 280px; min-width: 200px; display: flex; align-items: center; }
+        .rr-toolbar__search > svg { position: absolute; left: 16px; color: var(--color-muted); pointer-events: none; }
+        .rr-toolbar__search input { width: 100%; font-family: var(--font-body); font-size: 15px; padding: 12px 16px 12px 44px; border: 1.5px solid rgba(26,25,22,.12); border-radius: 999px; background: rgba(255,255,255,.7); color: var(--color-dark); outline: none; transition: border-color .2s, background .2s, box-shadow .2s; box-sizing: border-box; }
+        .rr-toolbar__search input:focus { border-color: var(--color-gold); background: var(--color-white); box-shadow: 0 0 0 4px rgba(232,168,56,.16); }
+        .rr-toolbar__search input::placeholder { color: var(--color-muted); }
+        .rr-toolbar__drops { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        .rr-fdrop { position: relative; }
+        .rr-fdrop__btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1.5px solid rgba(26,25,22,.12); border-radius: 999px; background: rgba(255,255,255,.55); color: var(--color-dark); font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.005em; cursor: pointer; transition: border-color .18s, background .18s, transform .15s cubic-bezier(.16,1,.3,1); white-space: nowrap; }
+        .rr-fdrop__btn:hover { border-color: rgba(26,25,22,.24); background: rgba(255,255,255,.85); transform: translateY(-1px); }
+        .rr-fdrop__btn.open { border-color: var(--color-dark); background: var(--color-white); }
+        .rr-fdrop__btn.has-active { border-color: var(--color-navy); }
+        .rr-fdrop__count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--color-navy); color: var(--color-cream); font-size: 11px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .rr-fdrop__chev { color: var(--color-muted); transition: transform .2s; }
+        .rr-fdrop__btn.open .rr-fdrop__chev { transform: rotate(180deg); }
+        .rr-fdrop__panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 50; width: 260px; max-height: 340px; overflow-y: auto; background: var(--color-surface); border: 1px solid rgba(26,25,22,.12); border-radius: 14px; padding: 12px 14px; box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 18px 40px -16px rgba(58,38,22,.28); scrollbar-width: thin; }
+        .rr-fdrop__panel--wide { width: 320px; }
+        .rr-fdrop__panel--right { left: auto; right: 0; }
+        .rr-fdrop__list { display: flex; flex-direction: column; gap: 1px; }
+        .rr-fdrop__list .rr-check-row { margin-bottom: 0; padding: 7px 8px; border-radius: 7px; transition: background .15s; }
+        .rr-fdrop__list .rr-check-row:hover { background: rgba(26,25,22,.05); }
+        .rr-radio-line { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 7px; cursor: pointer; font-size: 14px; color: var(--color-dark); transition: background .15s; }
+        .rr-radio-line:hover { background: rgba(26,25,22,.05); }
+        .rr-radio-line input { accent-color: var(--color-dark); cursor: pointer; }
+        .rr-fdrop__companies .rr-co-search { margin-bottom: 10px; }
+        .rr-drop-backdrop { position: fixed; inset: 0; z-index: 40; background: transparent; }
         .rr-sidebar { position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.1) transparent; }
         .rr-sidebar::-webkit-scrollbar { width: 4px; }
         .rr-sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 4px; }
@@ -467,12 +547,12 @@ export default function ResumeReviews() {
         .rr-check-row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--color-dark); cursor: pointer; flex-shrink: 0; }
         .rr-check-row span { font-size: 13px; color: var(--color-dark); line-height: 1.3; cursor: pointer; }
         .rr-co-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-        .rr-co-chip { display: inline-flex; align-items: center; gap: 5px; padding: 16px 10px; border: 1.5px solid rgba(0,0,0,.1); border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--color-muted); transition: border-color .15s, color .15s, background .15s; user-select: none; }
-        .rr-co-chip:hover { border-color: var(--color-dark); color: var(--color-dark); }
+        .rr-co-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1.5px solid rgba(26,25,22,.1); border-radius: 999px; background: rgba(255,255,255,.55); cursor: pointer; font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: -.005em; color: var(--color-muted); transition: border-color .18s, color .18s, background .18s, transform .15s cubic-bezier(.16,1,.3,1); user-select: none; }
+        .rr-co-chip:hover { border-color: rgba(26,25,22,.22); color: var(--color-dark); background: rgba(255,255,255,.85); transform: translateY(-1px); }
         .rr-co-chip.active { border-color: var(--color-navy); background: var(--color-navy); color: var(--color-cream); }
         .rr-co-chip img { width: 13px; height: 13px; object-fit: contain; opacity: .7; }
         .rr-co-chip.active img { filter: brightness(10); opacity: 1; }
-        .rr-co-chip:focus-visible { outline: 2px solid var(--color-navy); outline-offset: 2px; border-radius: 20px; }
+        .rr-co-chip:focus-visible { outline: 2px solid var(--color-navy); outline-offset: 2px; border-radius: 999px; }
         .rr-co-search { width: 100%; font-family: var(--font-body); font-size: 12px; padding: 7px 10px; border: 1.5px solid rgba(0,0,0,.1); border-radius: 7px; background: var(--color-cream); color: var(--color-dark); outline: none; transition: border-color .2s; box-sizing: border-box; }
         .rr-co-search:focus { border-color: var(--color-gold); }
         .rr-co-search::placeholder { color: var(--color-muted); }
@@ -480,7 +560,7 @@ export default function ResumeReviews() {
         .rr-sort-select:focus { border-color: var(--color-gold); }
         .rr-filter-reset { display: block; margin-top: 12px; font-size: 12px; font-weight: 600; color: var(--color-accent); cursor: pointer; text-align: center; padding: 8px; background: rgba(179,69,57,.06); border-radius: 7px; border: none; width: 100%; font-family: var(--font-body); transition: background .2s; }
         .rr-filter-reset:hover { background: rgba(179,69,57,.12); }
-        .rr-mobile-filter-btn { display: none; align-items: center; gap: 8px; padding: 11px 18px; background: rgba(179,69,57,.06); border: 1.5px solid rgba(179,69,57,.18); border-radius: 999px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.005em; color: var(--color-accent); cursor: pointer; margin-bottom: 16px; transition: background .2s, border-color .2s, transform .18s cubic-bezier(.16,1,.3,1); }
+        .rr-mobile-filter-btn { display: none; align-items: center; gap: 8px; padding: 11px 18px; background: rgba(179,69,57,.06); border: 1.5px solid rgba(179,69,57,.18); border-radius: 999px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.005em; color: var(--color-accent); cursor: pointer; transition: background .2s, border-color .2s, transform .18s cubic-bezier(.16,1,.3,1); }
         .rr-mobile-filter-btn:hover { background: rgba(179,69,57,.1); border-color: rgba(179,69,57,.32); transform: translateY(-1px); }
         .rr-mobile-filter-btn:active { transform: translateY(0); }
 
@@ -497,23 +577,17 @@ export default function ResumeReviews() {
         .rr-grid-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
         .rr-grid-count { font-size: 13px; color: var(--color-muted); font-weight: 500; }
         .rr-grid-count strong { color: var(--color-dark); font-weight: 700; }
-        .rr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; contain: layout style; }
+        .rr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(248px, 1fr)); gap: 18px; contain: layout style; }
         .rr-grid > .rr-card { animation: rr-card-in .55s cubic-bezier(.16,1,.3,1) backwards; animation-delay: calc(var(--rr-i, 0) * 50ms); }
         @keyframes rr-card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @media (prefers-reduced-motion: reduce) { .rr-grid > .rr-card { animation: none; } }
         .rr-grid--empty { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--color-muted); font-size: 15px; line-height: 1.7; background: rgba(232,168,56,.05); border-radius: 16px; border: 1px dashed rgba(232,168,56,.25); }
         .rr-grid--empty strong { display: block; font-family: var(--font-display); font-size: 18px; color: var(--color-dark); margin-bottom: 6px; }
 
-        /* RESUME CARD — tinted surface blocks per stage (brand: no white-card + colored-border) */
-        .rr-card { background: var(--color-cream); border: 1px solid rgba(26,25,22,.06); border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .28s cubic-bezier(.16,1,.3,1), box-shadow .28s cubic-bezier(.16,1,.3,1), border-color .28s; position: relative; isolation: isolate; }
-        .rr-card:hover { transform: translateY(-3px); box-shadow: 0 14px 36px -12px rgba(63,42,28,.16); border-color: rgba(26,25,22,.12); }
+        /* RESUME CARD - uniform warm-editorial surface (stage shown via the pill, not the card bg) */
+        .rr-card { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.13); border-radius: 14px; overflow: hidden; cursor: pointer; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(58,38,22,.12); transition: transform .28s cubic-bezier(.16,1,.3,1), box-shadow .28s cubic-bezier(.16,1,.3,1), border-color .28s; position: relative; isolation: isolate; }
+        .rr-card:hover { transform: translateY(-3px); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 16px 36px -12px rgba(58,38,22,.22); border-color: rgba(26,25,22,.22); }
         .rr-card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: 14px; }
-        .rr-card--intern        { background: rgba(91,142,194,.07);  border-color: rgba(91,142,194,.18); }
-        .rr-card--newgrad       { background: rgba(179,69,57,.05);   border-color: rgba(179,69,57,.18); }
-        .rr-card--fulltime      { background: rgba(22,43,68,.05);    border-color: rgba(22,43,68,.16); }
-        .rr-card--apprenticeship{ background: rgba(232,168,56,.07);  border-color: rgba(232,168,56,.22); }
-        .rr-card--pivot         { background: rgba(179,69,57,.05);   border-color: rgba(179,69,57,.18); }
-        .rr-card--contract      { background: rgba(0,0,0,.03);       border-color: rgba(0,0,0,.1); }
 
         .rr-card__visual { position: relative; padding: 36px 18px 14px; }
         .rr-card__pill { position: absolute; top: 12px; left: 14px; font-family: var(--font-display); font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; backdrop-filter: blur(6px); }
@@ -537,7 +611,7 @@ export default function ResumeReviews() {
         .rr-card__story { font-size: 12px; color: var(--color-muted); line-height: 1.55; padding: 4px 4px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 38px; font-style: italic; }
         .rr-card__story::before { content: '“'; color: var(--color-gold); font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-right: 3px; line-height: 1; }
         .rr-card__story--empty { color: rgba(63,42,28,.3); font-style: normal; }
-        .rr-card__story--empty::before { content: '—'; color: rgba(63,42,28,.25); margin-right: 6px; }
+        .rr-card__story--empty::before { content: '·'; color: rgba(63,42,28,.3); margin-right: 6px; }
 
         .rr-card__info { padding: 14px 16px 16px; border-top: 1px solid rgba(26,25,22,.07); display: flex; align-items: center; gap: 10px; background: linear-gradient(180deg, transparent, rgba(255,255,255,.4)); }
         .rr-card__avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; object-fit: cover; box-shadow: 0 0 0 2px var(--color-cream), 0 1px 3px rgba(63,42,28,.1); }
@@ -555,7 +629,7 @@ export default function ResumeReviews() {
         .rr-co-extra { font-size: 10px; font-weight: 700; color: var(--color-muted); }
 
         /* Skeleton loader (matches card layout, no spinner) */
-        .rr-card-skel { background: var(--color-cream); border: 1px solid rgba(26,25,22,.06); border-radius: 14px; overflow: hidden; padding: 36px 18px 18px; }
+        .rr-card-skel { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.13); border-radius: 14px; overflow: hidden; padding: 36px 18px 18px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(58,38,22,.12); }
         .rr-card-skel__pill { width: 64px; height: 16px; border-radius: 999px; background: rgba(26,25,22,.06); margin-bottom: 18px; }
         .rr-card-skel__logos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
         .rr-card-skel__logo { aspect-ratio: 1 / 1; background: rgba(26,25,22,.04); border-radius: 10px; }
@@ -601,7 +675,8 @@ export default function ResumeReviews() {
         /* SUBMIT FORM */
         .rr-submit { max-width: 1240px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
         .rr-submit__layout { display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; align-items: flex-start; }
-        .rr-submit__intro-kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 12px; }
+        .rr-submit__intro-kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 10px; }
+        .rr-submit__intro-kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-accent); opacity: .5; }
         .rr-submit__intro-title { font-family: var(--font-display); font-size: clamp(22px,3vw,32px); font-weight: 700; color: var(--color-dark); line-height: 1.2; margin-bottom: 16px; }
         .rr-submit__intro-body { font-size: clamp(14px,1.6vw,15px); color: var(--color-muted); line-height: 1.75; }
         .rr-submit__intro-body strong { color: var(--color-dark); font-weight: 600; }
@@ -611,18 +686,18 @@ export default function ResumeReviews() {
         .rr-form-box { background: linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(232,168,56,.04) 100%); border: 1px solid rgba(26,25,22,.08); border-radius: 18px; padding: clamp(24px,4vw,44px); position: relative; box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 24px 48px -28px rgba(63,42,28,.18); }
         .rr-form-row { margin-bottom: 14px; }
         .rr-form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .rr-form-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--color-muted); margin-bottom: 6px; }
+        .rr-form-label { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: var(--color-muted); margin-bottom: 7px; }
         .rr-form-label span { color: var(--color-accent); }
         .rr-form-label em { font-weight: 400; text-transform: none; letter-spacing: 0; font-style: normal; }
-        .rr-form-input, .rr-form-select, .rr-form-textarea { width: 100%; font-family: var(--font-body); font-size: 14px; padding: 10px 13px; border: 1.5px solid rgba(0,0,0,.12); border-radius: 8px; background: var(--color-white); color: var(--color-dark); outline: none; transition: border-color .2s; box-sizing: border-box; }
-        .rr-form-input:focus, .rr-form-select:focus, .rr-form-textarea:focus { border-color: var(--color-gold); }
+        .rr-form-input, .rr-form-select, .rr-form-textarea { width: 100%; font-family: var(--font-body); font-size: 15px; padding: 12px 14px; border: 1.5px solid rgba(26,25,22,.12); border-radius: 10px; background: rgba(255,255,255,.85); color: var(--color-dark); outline: none; transition: border-color .2s, background-color .2s, box-shadow .2s; box-sizing: border-box; }
+        .rr-form-input:focus, .rr-form-select:focus, .rr-form-textarea:focus { border-color: var(--color-gold); background: var(--color-white); box-shadow: 0 0 0 4px rgba(232,168,56,.16); }
         .rr-form-textarea { min-height: 72px; resize: vertical; line-height: 1.6; }
         .rr-form-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238A7E72' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
         .rr-tag-toggles { display: flex; flex-wrap: wrap; gap: 7px; }
-        .rr-tag-toggle { display: inline-flex; align-items: center; padding: 16px 13px; border: 1.5px solid rgba(0,0,0,.12); border-radius: 20px; cursor: pointer; user-select: none; font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--color-muted); transition: all .15s; }
-        .rr-tag-toggle:hover { border-color: var(--color-dark); color: var(--color-dark); }
+        .rr-tag-toggle { display: inline-flex; align-items: center; padding: 8px 14px; border: 1.5px solid rgba(26,25,22,.12); border-radius: 999px; cursor: pointer; user-select: none; font-family: var(--font-display); font-size: 12px; font-weight: 600; letter-spacing: -.005em; color: var(--color-muted); transition: border-color .18s, color .18s, background .18s, transform .15s cubic-bezier(.16,1,.3,1); }
+        .rr-tag-toggle:hover { border-color: rgba(26,25,22,.24); color: var(--color-dark); transform: translateY(-1px); }
         .rr-tag-toggle.active { border-color: var(--color-navy); background: var(--color-navy); color: var(--color-cream); }
-        .rr-tag-toggle:focus-visible { outline: 2px solid var(--color-navy); outline-offset: 2px; border-radius: 20px; }
+        .rr-tag-toggle:focus-visible { outline: 2px solid var(--color-navy); outline-offset: 2px; border-radius: 999px; }
         .rr-upload-zone { width: 100%; border: 2px dashed rgba(0,0,0,.14); border-radius: 10px; padding: 24px 16px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; position: relative; }
         .rr-upload-zone:hover { border-color: var(--color-gold); background: rgba(232,168,56,.04); }
         .rr-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -634,8 +709,10 @@ export default function ResumeReviews() {
         .rr-radio-option { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 13px; color: var(--color-dark); }
         .rr-radio-option input[type="radio"] { accent-color: var(--color-dark); cursor: pointer; }
         .rr-form-note { font-size: 11px; color: var(--color-muted); line-height: 1.65; margin-top: 10px; font-style: italic; }
-        .rr-form-btn { width: 100%; padding: 14px 24px; background: var(--color-dark); color: var(--color-cream); border: none; border-radius: 8px; font-family: var(--font-display); font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s, transform .18s; margin-top: 6px; }
-        .rr-form-btn:hover { background: var(--color-teal); transform: translateY(-1px); }
+        .rr-form-btn { width: 100%; padding: 14px 28px; background: var(--color-dark); color: var(--color-cream); border: none; border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; cursor: pointer; box-shadow: 0 8px 20px -10px rgba(58,38,22,.4), inset 0 1px 0 rgba(255,255,255,.08); transition: background .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s; margin-top: 6px; }
+        .rr-form-btn:hover { background: var(--color-accent); transform: translateY(-2px); box-shadow: 0 14px 26px -12px rgba(179,69,57,.5), inset 0 1px 0 rgba(255,255,255,.12); }
+        .rr-form-btn:active { transform: translateY(0); }
+        .rr-form-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
         .rr-form-success { text-align: center; padding: 40px 20px; }
         .rr-form-success__icon { width: 54px; height: 54px; border-radius: 50%; background: rgba(58,125,107,.1); color: var(--color-teal); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px; }
         .rr-form-success__title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--color-dark); margin-bottom: 8px; }
@@ -692,9 +769,10 @@ export default function ResumeReviews() {
         .rr-sheet__body { padding: 16px 20px; }
 
         /* ECOSYSTEM */
-        .rr-eco { background: var(--color-dark); padding: 80px clamp(20px,5vw,56px); }
+        .rr-eco { background: var(--color-dark); padding: clamp(64px,8vw,104px) clamp(20px,5vw,56px); }
         .rr-eco__inner { max-width: 1240px; margin: 0 auto; }
-        .rr-eco__kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(242,228,206,.4); margin-bottom: 10px; }
+        .rr-eco__kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-gold); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 10px; }
+        .rr-eco__kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-gold); opacity: .5; }
         .rr-eco__title { font-family: var(--font-display); font-size: clamp(20px,3vw,30px); font-weight: 700; color: var(--color-cream); margin-bottom: 8px; line-height: 1.25; }
         .rr-eco__body { font-size: clamp(14px,1.6vw,15px); color: rgba(242,228,206,.55); line-height: 1.75; max-width: 680px; margin-bottom: 36px; }
         .rr-eco__grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(190px,1fr)); gap: 14px; }
@@ -709,19 +787,17 @@ export default function ResumeReviews() {
         .rr-closing__headline { font-family: var(--font-display); font-size: clamp(28px,5vw,46px); font-weight: 700; color: var(--color-cream); line-height: 1.08; letter-spacing: -.02em; margin-bottom: 32px; }
         .rr-closing__headline em { font-family: var(--font-serif, var(--font-display)); font-style: italic; font-weight: 500; color: var(--color-gold); padding: 0 .04em; }
         .rr-closing__btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-        .rr-closing__btn-p { display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; background: var(--color-cream); color: var(--color-teal); border-radius: 8px; font-family: var(--font-display); font-size: 14px; font-weight: 700; text-decoration: none; border: 1.5px solid var(--color-cream); transition: background .2s, color .2s, transform .18s; }
-        .rr-closing__btn-p:hover { background: var(--color-dark); color: var(--color-cream); border-color: var(--color-dark); transform: translateY(-1px); }
-        .rr-closing__btn-s { display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; background: transparent; color: var(--color-cream); border-radius: 8px; font-family: var(--font-display); font-size: 14px; font-weight: 700; text-decoration: none; border: 1.5px solid rgba(242,228,206,.5); transition: border-color .2s, background .2s, transform .18s; }
+        .rr-closing__btn-p { display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; background: var(--color-cream); color: var(--color-teal); border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid var(--color-cream); transition: background .2s, color .2s, transform .18s cubic-bezier(.16,1,.3,1); }
+        .rr-closing__btn-p:hover { background: var(--color-dark); color: var(--color-cream); border-color: var(--color-dark); transform: translateY(-2px); }
+        .rr-closing__btn-s { display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; background: transparent; color: var(--color-cream); border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid rgba(242,228,206,.5); transition: border-color .2s, background .2s, transform .18s cubic-bezier(.16,1,.3,1); }
         .rr-closing__btn-s:hover { border-color: var(--color-cream); background: rgba(255,255,255,.1); transform: translateY(-1px); }
 
         /* RESPONSIVE */
-        @media (max-width: 960px) {
-          .rr-layout { grid-template-columns: 1fr; }
-          .rr-sidebar { position: static; max-height: none; display: none; }
+        @media (max-width: 760px) {
+          .rr-toolbar__drops { display: none; }
           .rr-mobile-filter-btn { display: inline-flex; }
-          .rr-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        @media (max-width: 560px) { .rr-grid { grid-template-columns: 1fr; } .rr-panel { width: 100vw; } }
+        @media (max-width: 560px) { .rr-panel { width: 100vw; } }
         @media (max-width: 768px) { .rr-hero { padding: 28px 20px 48px; } .rr-stats { gap: 20px; } .rr-hero__ctas { flex-wrap: wrap; } }
         @media (max-width: 480px) {
           .rr-hero { padding: 24px 16px 40px; }
@@ -765,45 +841,71 @@ export default function ResumeReviews() {
 
       <hr className="rr-divider" />
 
-      {/* MAIN LAYOUT */}
-      <div className="rr-layout" id="browse">
-        <aside className="rr-sidebar">
-          <SidebarFilters filter={filter} onFilter={setFilter} t={t} />
-        </aside>
-
-        <div className="rr-grid-area">
+      {/* BROWSE */}
+      <section className="rr-browse" id="browse">
+        <div className="rr-toolbar">
+          <div className="rr-toolbar__search">
+            <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.5" /><path d="M9.5 9.5L12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+            <input type="search" placeholder={t.filterSearchPlaceholder} value={filter.search} onChange={e => setFilter(f => ({ ...f, search: e.target.value }))} aria-label={t.filterSearchPlaceholder} />
+          </div>
+          <div className="rr-toolbar__drops">
+            <FilterDropdown id="roles" label={t.filterRoleTypeLabel} count={filter.roles.length} open={openDrop} setOpen={setOpenDrop}>
+              <div className="rr-fdrop__list">
+                {t.filterRoles.map(({ value, label }) => (
+                  <label key={value} className="rr-check-row"><input type="checkbox" checked={filter.roles.includes(value)} onChange={() => toggleIn('roles', value)} /><span>{label}</span></label>
+                ))}
+              </div>
+            </FilterDropdown>
+            <FilterDropdown id="stages" label={t.filterStageLabel} count={filter.stages.length} open={openDrop} setOpen={setOpenDrop}>
+              <div className="rr-fdrop__list">
+                {t.filterStages.map(({ value, label }) => (
+                  <label key={value} className="rr-check-row"><input type="checkbox" checked={filter.stages.includes(value)} onChange={() => toggleIn('stages', value)} /><span>{label}</span></label>
+                ))}
+              </div>
+            </FilterDropdown>
+            <FilterDropdown id="companies" label={t.filterCompaniesLabel} count={filter.companies.length} open={openDrop} setOpen={setOpenDrop} wide>
+              <CompaniesPanel companies={filter.companies} onToggle={(v) => toggleIn('companies', v)} t={t} />
+            </FilterDropdown>
+            <FilterDropdown id="tags" label={t.filterBackgroundLabel} count={filter.tags.length} open={openDrop} setOpen={setOpenDrop}>
+              <div className="rr-fdrop__list">
+                {t.filterBackgrounds.map(({ value, label }) => (
+                  <label key={value} className="rr-check-row"><input type="checkbox" checked={filter.tags.includes(value)} onChange={() => toggleIn('tags', value)} /><span>{label}</span></label>
+                ))}
+              </div>
+            </FilterDropdown>
+            <FilterDropdown id="sort" label={t.sortByLabel} open={openDrop} setOpen={setOpenDrop} align="right">
+              <div className="rr-fdrop__list">
+                {[['newest', t.sortNewlyAdded], ['screened', t.sortMostScreened], ['liked', t.sortMostLiked], ['viewed', t.sortMostViewed], ['featured', t.sortFeatured]].map(([val, label]) => (
+                  <label key={val} className="rr-radio-line"><input type="radio" name="rr-sort" checked={filter.sort === val} onChange={() => { setFilter(f => ({ ...f, sort: val })); setOpenDrop(null) }} /><span>{label}</span></label>
+                ))}
+              </div>
+            </FilterDropdown>
+          </div>
           <button className="rr-mobile-filter-btn" onClick={() => setSheetOpen(true)}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 3h12M3 7h8M5 11h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
             {t.mobileFilterBtn}
           </button>
+        </div>
 
-          {activeFilters.length > 0 && (
-            <div className="rr-active-bar">
-              <span className="rr-active-bar__label">{t.activeFiltersLabel}</span>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
-                {activeFilters.map(item => (
-                  <button key={`${item.type}-${item.val}`} className="rr-active-chip" onClick={() => removeFilter(item.type, item.val)}>
-                    {item.label} <span className="rr-active-chip__x">×</span>
-                  </button>
-                ))}
-              </div>
-              <button className="rr-active-bar__clear" onClick={() => setFilter({ search: '', roles: [], stages: [], companies: [], tags: [], sort: 'newest' })}>{t.clearAll}</button>
+        {openDrop && <div className="rr-drop-backdrop" onClick={() => setOpenDrop(null)} aria-hidden="true" />}
+
+        {activeFilters.length > 0 && (
+          <div className="rr-active-bar">
+            <span className="rr-active-bar__label">{t.activeFiltersLabel}</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
+              {activeFilters.map(item => (
+                <button key={`${item.type}-${item.val}`} className="rr-active-chip" onClick={() => removeFilter(item.type, item.val)}>
+                  {item.label} <span className="rr-active-chip__x">×</span>
+                </button>
+              ))}
             </div>
-          )}
-
-          <div className="rr-grid-meta">
-            <p className="rr-grid-count"><strong>{visibleResumes.length}</strong> {t.foundCount}</p>
-            <label className="rr-sort-wrap">
-              {t.sortByLabel}
-              <select value={filter.sort} onChange={e => setFilter(f => ({ ...f, sort: e.target.value }))}>
-                <option value="newest">{t.sortNewlyAdded}</option>
-                <option value="screened">{t.sortMostScreened}</option>
-                <option value="liked">{t.sortMostLiked}</option>
-                <option value="viewed">{t.sortMostViewed}</option>
-                <option value="featured">{t.sortFeatured}</option>
-              </select>
-            </label>
+            <button className="rr-active-bar__clear" onClick={() => setFilter({ search: '', roles: [], stages: [], companies: [], tags: [], sort: 'newest' })}>{t.clearAll}</button>
           </div>
+        )}
+
+        <div className="rr-grid-meta">
+          <p className="rr-grid-count"><strong>{visibleResumes.length}</strong> {t.foundCount}</p>
+        </div>
 
           <div className="rr-grid">
             {isLoading ? (
@@ -917,8 +1019,7 @@ export default function ResumeReviews() {
               </>
             )}
           </div>
-        </div>
-      </div>
+      </section>
 
       <hr className="rr-divider" />
 
@@ -1000,6 +1101,9 @@ export default function ResumeReviews() {
                         <option key={value} value={value}>{label}</option>
                       ))}
                     </select>
+                    {submitForm.roleType === 'other' && (
+                      <input className="rr-form-input" type="text" style={{ marginTop: 10 }} placeholder={t.formPlaceholderRoleTypeOther} aria-label={t.formPlaceholderRoleTypeOther} value={submitForm.roleTypeOther} onChange={e => setSubmitForm(f => ({ ...f, roleTypeOther: e.target.value }))} />
+                    )}
                   </div>
                 </div>
                 <div className="rr-form-row">
@@ -1010,6 +1114,9 @@ export default function ResumeReviews() {
                       <option key={value} value={value}>{label}</option>
                     ))}
                   </select>
+                  {submitForm.stage === 'other' && (
+                    <input className="rr-form-input" type="text" style={{ marginTop: 10 }} placeholder={t.formPlaceholderStageOther} aria-label={t.formPlaceholderStageOther} value={submitForm.stageOther} onChange={e => setSubmitForm(f => ({ ...f, stageOther: e.target.value }))} />
+                  )}
                 </div>
                 <div className="rr-form-row">
                   <label className="rr-form-label" htmlFor="sfCompanies">{t.formLabelCompanies} <span>{t.formLabelCompaniesRequired}</span></label>
@@ -1022,6 +1129,9 @@ export default function ResumeReviews() {
                       <button key={value} type="button" className={`rr-tag-toggle${submitForm.bgTags.includes(value) ? ' active' : ''}`} aria-pressed={submitForm.bgTags.includes(value)} onClick={() => toggleBgTag(value)}>{label}</button>
                     ))}
                   </div>
+                  {submitForm.bgTags.includes('other') && (
+                    <input className="rr-form-input" type="text" style={{ marginTop: 10 }} placeholder={t.formPlaceholderBgOther} aria-label={t.formPlaceholderBgOther} value={submitForm.bgOther} onChange={e => setSubmitForm(f => ({ ...f, bgOther: e.target.value }))} />
+                  )}
                 </div>
                 <div className="rr-form-row">
                   <label className="rr-form-label">{t.formLabelAvatar} <em>{t.formLabelAvatarNote}</em></label>
