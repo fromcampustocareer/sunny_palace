@@ -2,47 +2,18 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import ResumeSubNav from '../components/ResumeSubNav'
+import CompanyLogo from '../components/CompanyLogo'
+import { COMPANIES as COMPANY_CATALOG } from '../data/companies'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
-
-const COMPANY_CATALOG = {
-  google:    { name: 'Google',    slug: 'google' },
-  apple:     { name: 'Apple',     slug: 'apple' },
-  microsoft: { name: 'Microsoft', slug: 'microsoft' },
-  meta:      { name: 'Meta',      slug: 'meta' },
-  amazon:    { name: 'Amazon',    slug: 'amazon' },
-  tiktok:    { name: 'TikTok',    slug: 'tiktok' },
-  pinterest: { name: 'Pinterest', slug: 'pinterest' },
-  reddit:    { name: 'Reddit',    slug: 'reddit' },
-  discord:   { name: 'Discord',   slug: 'discord' },
-  stripe:    { name: 'Stripe',    slug: 'stripe' },
-  figma:     { name: 'Figma',     slug: 'figma' },
-  dropbox:   { name: 'Dropbox',   slug: 'dropbox' },
-  ibm:       { name: 'IBM',       slug: 'ibm' },
-  airbnb:    { name: 'Airbnb',    slug: 'airbnb' },
-  spotify:   { name: 'Spotify',   slug: 'spotify' },
-  netflix:   { name: 'Netflix',   slug: 'netflix' },
-  uber:      { name: 'Uber',      slug: 'uber' },
-  lyft:      { name: 'Lyft',      slug: 'lyft' },
-  linkedin:  { name: 'LinkedIn',  slug: 'linkedin' },
-  openai:    { name: 'OpenAI',    slug: 'openai' },
-  anthropic: { name: 'Anthropic', slug: null, letter: 'A', color: '#C4602D' },
-  fidelity:  { name: 'Fidelity',  slug: null, letter: 'F', color: '#006633' },
-  jpmorgan:  { name: 'JPMorgan',  slug: null, letter: 'JP', color: '#003087' },
-}
 
 const TRENDING = ['google', 'amazon', 'discord', 'apple', 'microsoft', 'meta', 'spotify', 'reddit', 'openai']
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
-function CompanyMark({ slug, letter, color, size = 28 }) {
-  if (slug) {
-    return <img src={`https://cdn.simpleicons.org/${slug}`} alt="" width={size} height={size} loading="lazy" style={{ width: size, height: size, objectFit: 'contain' }} />
-  }
-  return (
-    <span style={{ width: size, height: size, borderRadius: 6, background: color || 'var(--color-muted)', color: 'var(--color-white)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: Math.round(size * 0.42) }}>
-      {letter || '?'}
-    </span>
-  )
+// Rounded letter-mark styling for the CompanyLogo fallback (page uses
+// full-color logos in white cards).
+function letterStyleFor(meta) {
+  return { background: meta?.color || 'var(--color-muted)', color: 'var(--color-white)', borderRadius: 6 }
 }
 
 export default function ResumeCompanies() {
@@ -116,7 +87,9 @@ export default function ResumeCompanies() {
     else { setReqStatus('success'); setReqName(''); setReqWebsite('') }
   }
 
-  const stackLogos = ['meta', 'figma', 'dropbox', 'amazon', 'lyft', 'uber', 'netflix', 'pinterest', 'spotify']
+  // Decorative blurred backdrop — Simple Icons slugs only (kept to ones that
+  // still exist on the CDN so the monochrome/white-invert effect holds).
+  const stackLogos = ['meta', 'figma', 'dropbox', 'airbnb', 'lyft', 'uber', 'netflix', 'pinterest', 'spotify']
 
   return (
     <ArticleLayout title={t.heroTitle}>
@@ -242,7 +215,7 @@ export default function ResumeCompanies() {
                     aria-label={`${t.viewCompanyAria} ${meta.name}`}
                   >
                     <span className="rc-trending__card-left">
-                      <CompanyMark slug={meta.slug} letter={meta.letter} color={meta.color} size={28} />
+                      <CompanyLogo company={meta} size={28} letterStyle={letterStyleFor(meta)} />
                       <span className="rc-trending__card-name">{meta.name}</span>
                     </span>
                     <svg className="rc-trending__card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -286,7 +259,7 @@ export default function ResumeCompanies() {
               <div className="rc-list__empty">{t.emptyForLetter} <strong>{activeLetter || `"${search}"`}</strong></div>
             ) : filteredCompanies.map(c => (
               <button key={c.key} type="button" className="rc-list__item" onClick={() => goToCompany(c.key)}>
-                <CompanyMark slug={c.slug} letter={c.letter} color={c.color} size={24} />
+                <CompanyLogo company={COMPANY_CATALOG[c.key]} size={24} letterStyle={letterStyleFor(c)} />
                 <span className="rc-list__item-name">{c.name}</span>
                 <span className="rc-list__item-count">{c.count} {c.count === 1 ? t.countResume : t.countResumes}</span>
               </button>
