@@ -427,17 +427,17 @@ export default function ResumeReviews() {
 
         .rr-tag--muted  { background: rgba(0,0,0,.06);       color: var(--color-muted); }
 
-        .rr-btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 15px 28px; background: var(--color-dark); color: var(--color-cream); border-radius: 10px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid var(--color-dark); cursor: pointer; box-shadow: 0 8px 20px -10px rgba(26,25,22,.4), inset 0 1px 0 rgba(255,255,255,.08); transition: background .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s, border-color .25s; }
+        .rr-btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; background: var(--color-dark); color: var(--color-cream); border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid var(--color-dark); cursor: pointer; box-shadow: 0 8px 20px -10px rgba(58,38,22,.4), inset 0 1px 0 rgba(255,255,255,.08); transition: background .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s, border-color .25s; }
         .rr-btn-primary:hover { background: var(--color-accent); border-color: var(--color-accent); transform: translateY(-2px); box-shadow: 0 14px 26px -12px rgba(179,69,57,.5), inset 0 1px 0 rgba(255,255,255,.12); }
-        .rr-btn-primary:active { transform: translateY(0); box-shadow: 0 4px 10px -4px rgba(26,25,22,.3); }
-        .rr-btn-secondary { display: inline-flex; align-items: center; gap: 10px; padding: 15px 28px; background: transparent; color: var(--color-dark); border-radius: 10px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid rgba(26,25,22,.22); cursor: pointer; transition: border-color .25s, color .25s, background .25s, transform .22s cubic-bezier(.16,1,.3,1); }
+        .rr-btn-primary:active { transform: translateY(0); box-shadow: 0 4px 10px -4px rgba(58,38,22,.3); }
+        .rr-btn-secondary { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; background: transparent; color: var(--color-dark); border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid rgba(26,25,22,.22); cursor: pointer; transition: border-color .25s, color .25s, background .25s, transform .22s cubic-bezier(.16,1,.3,1); }
         .rr-btn-secondary:hover { border-color: var(--color-dark); color: var(--color-accent); background: rgba(179,69,57,.04); transform: translateY(-2px); }
         .rr-btn-secondary:active { transform: translateY(0); }
 
-        /* HERO — asymmetric, lead with emotional hook */
-        .rr-hero { padding: 40px clamp(20px,5vw,56px) 56px; max-width: 1240px; margin: 0 auto; position: relative; overflow: hidden; }
-        .rr-hero::before { content: ''; position: absolute; top: 40px; left: clamp(20px,5vw,56px); width: 56px; height: 4px; background: var(--color-accent); border-radius: 2px; }
-        .rr-hero::after { content: ''; position: absolute; top: -20%; right: -8%; width: 380px; height: 380px; background: radial-gradient(closest-side, rgba(179,69,57,.13), transparent 70%); pointer-events: none; z-index: -1; }
+        /* HERO - asymmetric, lead with emotional hook */
+        .rr-hero { padding: 56px clamp(20px,5vw,56px) 64px; max-width: 1240px; margin: 0 auto; position: relative; overflow: hidden; }
+        .rr-hero::before { content: ''; position: absolute; top: 56px; left: clamp(20px,5vw,56px); width: 56px; height: 4px; background: var(--color-accent); border-radius: 2px; }
+        .rr-hero::after { content: ''; position: absolute; top: -14%; right: -10%; width: 520px; height: 520px; background: radial-gradient(closest-side, rgba(179,69,57,.1), transparent 70%); pointer-events: none; z-index: -1; }
         .rr-hero__kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-accent); margin: 28px 0 22px; display: inline-flex; align-items: center; gap: 10px; }
         .rr-hero__kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-accent); opacity: .5; }
         .rr-hero__title { font-family: var(--font-display); font-size: clamp(46px,7.6vw,92px); font-weight: 700; line-height: .98; letter-spacing: -.025em; color: var(--color-dark); margin-bottom: 22px; max-width: 18ch; }
@@ -471,12 +471,12 @@ export default function ResumeReviews() {
         .rr-check-row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--color-dark); cursor: pointer; flex-shrink: 0; }
         .rr-check-row span { font-size: 13px; color: var(--color-dark); line-height: 1.3; cursor: pointer; }
         .rr-co-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-        .rr-co-chip { display: inline-flex; align-items: center; gap: 5px; padding: 16px 10px; border: 1.5px solid rgba(0,0,0,.1); border-radius: 20px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--color-muted); transition: border-color .15s, color .15s, background .15s; user-select: none; }
-        .rr-co-chip:hover { border-color: var(--color-dark); color: var(--color-dark); }
+        .rr-co-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1.5px solid rgba(26,25,22,.1); border-radius: 999px; background: rgba(255,255,255,.55); cursor: pointer; font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: -.005em; color: var(--color-muted); transition: border-color .18s, color .18s, background .18s, transform .15s cubic-bezier(.16,1,.3,1); user-select: none; }
+        .rr-co-chip:hover { border-color: rgba(26,25,22,.22); color: var(--color-dark); background: rgba(255,255,255,.85); transform: translateY(-1px); }
         .rr-co-chip.active { border-color: var(--color-navy); background: var(--color-navy); color: var(--color-cream); }
         .rr-co-chip img { width: 13px; height: 13px; object-fit: contain; opacity: .7; }
         .rr-co-chip.active img { filter: brightness(10); opacity: 1; }
-        .rr-co-chip:focus-visible { outline: 2px solid var(--color-navy); outline-offset: 2px; border-radius: 20px; }
+        .rr-co-chip:focus-visible { outline: 2px solid var(--color-navy); outline-offset: 2px; border-radius: 999px; }
         .rr-co-search { width: 100%; font-family: var(--font-body); font-size: 12px; padding: 7px 10px; border: 1.5px solid rgba(0,0,0,.1); border-radius: 7px; background: var(--color-cream); color: var(--color-dark); outline: none; transition: border-color .2s; box-sizing: border-box; }
         .rr-co-search:focus { border-color: var(--color-gold); }
         .rr-co-search::placeholder { color: var(--color-muted); }
@@ -508,16 +508,10 @@ export default function ResumeReviews() {
         .rr-grid--empty { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--color-muted); font-size: 15px; line-height: 1.7; background: rgba(232,168,56,.05); border-radius: 16px; border: 1px dashed rgba(232,168,56,.25); }
         .rr-grid--empty strong { display: block; font-family: var(--font-display); font-size: 18px; color: var(--color-dark); margin-bottom: 6px; }
 
-        /* RESUME CARD — tinted surface blocks per stage (brand: no white-card + colored-border) */
-        .rr-card { background: var(--color-cream); border: 1px solid rgba(26,25,22,.06); border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .28s cubic-bezier(.16,1,.3,1), box-shadow .28s cubic-bezier(.16,1,.3,1), border-color .28s; position: relative; isolation: isolate; }
-        .rr-card:hover { transform: translateY(-3px); box-shadow: 0 14px 36px -12px rgba(63,42,28,.16); border-color: rgba(26,25,22,.12); }
+        /* RESUME CARD - uniform warm-editorial surface (stage shown via the pill, not the card bg) */
+        .rr-card { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.13); border-radius: 14px; overflow: hidden; cursor: pointer; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(58,38,22,.12); transition: transform .28s cubic-bezier(.16,1,.3,1), box-shadow .28s cubic-bezier(.16,1,.3,1), border-color .28s; position: relative; isolation: isolate; }
+        .rr-card:hover { transform: translateY(-3px); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 16px 36px -12px rgba(58,38,22,.22); border-color: rgba(26,25,22,.22); }
         .rr-card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: 14px; }
-        .rr-card--intern        { background: rgba(91,142,194,.07);  border-color: rgba(91,142,194,.18); }
-        .rr-card--newgrad       { background: rgba(179,69,57,.05);   border-color: rgba(179,69,57,.18); }
-        .rr-card--fulltime      { background: rgba(22,43,68,.05);    border-color: rgba(22,43,68,.16); }
-        .rr-card--apprenticeship{ background: rgba(232,168,56,.07);  border-color: rgba(232,168,56,.22); }
-        .rr-card--pivot         { background: rgba(179,69,57,.05);   border-color: rgba(179,69,57,.18); }
-        .rr-card--contract      { background: rgba(0,0,0,.03);       border-color: rgba(0,0,0,.1); }
 
         .rr-card__visual { position: relative; padding: 36px 18px 14px; }
         .rr-card__pill { position: absolute; top: 12px; left: 14px; font-family: var(--font-display); font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; backdrop-filter: blur(6px); }
@@ -541,7 +535,7 @@ export default function ResumeReviews() {
         .rr-card__story { font-size: 12px; color: var(--color-muted); line-height: 1.55; padding: 4px 4px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 38px; font-style: italic; }
         .rr-card__story::before { content: '“'; color: var(--color-gold); font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-right: 3px; line-height: 1; }
         .rr-card__story--empty { color: rgba(63,42,28,.3); font-style: normal; }
-        .rr-card__story--empty::before { content: '—'; color: rgba(63,42,28,.25); margin-right: 6px; }
+        .rr-card__story--empty::before { content: '·'; color: rgba(63,42,28,.3); margin-right: 6px; }
 
         .rr-card__info { padding: 14px 16px 16px; border-top: 1px solid rgba(26,25,22,.07); display: flex; align-items: center; gap: 10px; background: linear-gradient(180deg, transparent, rgba(255,255,255,.4)); }
         .rr-card__avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; object-fit: cover; box-shadow: 0 0 0 2px var(--color-cream), 0 1px 3px rgba(63,42,28,.1); }
@@ -559,7 +553,7 @@ export default function ResumeReviews() {
         .rr-co-extra { font-size: 10px; font-weight: 700; color: var(--color-muted); }
 
         /* Skeleton loader (matches card layout, no spinner) */
-        .rr-card-skel { background: var(--color-cream); border: 1px solid rgba(26,25,22,.06); border-radius: 14px; overflow: hidden; padding: 36px 18px 18px; }
+        .rr-card-skel { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.13); border-radius: 14px; overflow: hidden; padding: 36px 18px 18px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(58,38,22,.12); }
         .rr-card-skel__pill { width: 64px; height: 16px; border-radius: 999px; background: rgba(26,25,22,.06); margin-bottom: 18px; }
         .rr-card-skel__logos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
         .rr-card-skel__logo { aspect-ratio: 1 / 1; background: rgba(26,25,22,.04); border-radius: 10px; }
@@ -605,7 +599,8 @@ export default function ResumeReviews() {
         /* SUBMIT FORM */
         .rr-submit { max-width: 1240px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
         .rr-submit__layout { display: grid; grid-template-columns: 1fr 1.6fr; gap: 64px; align-items: flex-start; }
-        .rr-submit__intro-kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 12px; }
+        .rr-submit__intro-kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 10px; }
+        .rr-submit__intro-kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-accent); opacity: .5; }
         .rr-submit__intro-title { font-family: var(--font-display); font-size: clamp(22px,3vw,32px); font-weight: 700; color: var(--color-dark); line-height: 1.2; margin-bottom: 16px; }
         .rr-submit__intro-body { font-size: clamp(14px,1.6vw,15px); color: var(--color-muted); line-height: 1.75; }
         .rr-submit__intro-body strong { color: var(--color-dark); font-weight: 600; }
@@ -615,18 +610,18 @@ export default function ResumeReviews() {
         .rr-form-box { background: linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(232,168,56,.04) 100%); border: 1px solid rgba(26,25,22,.08); border-radius: 18px; padding: clamp(24px,4vw,44px); position: relative; box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 24px 48px -28px rgba(63,42,28,.18); }
         .rr-form-row { margin-bottom: 14px; }
         .rr-form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .rr-form-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--color-muted); margin-bottom: 6px; }
+        .rr-form-label { display: block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: var(--color-muted); margin-bottom: 7px; }
         .rr-form-label span { color: var(--color-accent); }
         .rr-form-label em { font-weight: 400; text-transform: none; letter-spacing: 0; font-style: normal; }
-        .rr-form-input, .rr-form-select, .rr-form-textarea { width: 100%; font-family: var(--font-body); font-size: 14px; padding: 10px 13px; border: 1.5px solid rgba(0,0,0,.12); border-radius: 8px; background: var(--color-white); color: var(--color-dark); outline: none; transition: border-color .2s; box-sizing: border-box; }
-        .rr-form-input:focus, .rr-form-select:focus, .rr-form-textarea:focus { border-color: var(--color-gold); }
+        .rr-form-input, .rr-form-select, .rr-form-textarea { width: 100%; font-family: var(--font-body); font-size: 15px; padding: 12px 14px; border: 1.5px solid rgba(26,25,22,.12); border-radius: 10px; background: rgba(255,255,255,.85); color: var(--color-dark); outline: none; transition: border-color .2s, background-color .2s, box-shadow .2s; box-sizing: border-box; }
+        .rr-form-input:focus, .rr-form-select:focus, .rr-form-textarea:focus { border-color: var(--color-gold); background: var(--color-white); box-shadow: 0 0 0 4px rgba(232,168,56,.16); }
         .rr-form-textarea { min-height: 72px; resize: vertical; line-height: 1.6; }
         .rr-form-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238A7E72' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
         .rr-tag-toggles { display: flex; flex-wrap: wrap; gap: 7px; }
-        .rr-tag-toggle { display: inline-flex; align-items: center; padding: 16px 13px; border: 1.5px solid rgba(0,0,0,.12); border-radius: 20px; cursor: pointer; user-select: none; font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--color-muted); transition: all .15s; }
-        .rr-tag-toggle:hover { border-color: var(--color-dark); color: var(--color-dark); }
+        .rr-tag-toggle { display: inline-flex; align-items: center; padding: 8px 14px; border: 1.5px solid rgba(26,25,22,.12); border-radius: 999px; cursor: pointer; user-select: none; font-family: var(--font-display); font-size: 12px; font-weight: 600; letter-spacing: -.005em; color: var(--color-muted); transition: border-color .18s, color .18s, background .18s, transform .15s cubic-bezier(.16,1,.3,1); }
+        .rr-tag-toggle:hover { border-color: rgba(26,25,22,.24); color: var(--color-dark); transform: translateY(-1px); }
         .rr-tag-toggle.active { border-color: var(--color-navy); background: var(--color-navy); color: var(--color-cream); }
-        .rr-tag-toggle:focus-visible { outline: 2px solid var(--color-navy); outline-offset: 2px; border-radius: 20px; }
+        .rr-tag-toggle:focus-visible { outline: 2px solid var(--color-navy); outline-offset: 2px; border-radius: 999px; }
         .rr-upload-zone { width: 100%; border: 2px dashed rgba(0,0,0,.14); border-radius: 10px; padding: 24px 16px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; position: relative; }
         .rr-upload-zone:hover { border-color: var(--color-gold); background: rgba(232,168,56,.04); }
         .rr-upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -638,8 +633,10 @@ export default function ResumeReviews() {
         .rr-radio-option { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 13px; color: var(--color-dark); }
         .rr-radio-option input[type="radio"] { accent-color: var(--color-dark); cursor: pointer; }
         .rr-form-note { font-size: 11px; color: var(--color-muted); line-height: 1.65; margin-top: 10px; font-style: italic; }
-        .rr-form-btn { width: 100%; padding: 14px 24px; background: var(--color-dark); color: var(--color-cream); border: none; border-radius: 8px; font-family: var(--font-display); font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s, transform .18s; margin-top: 6px; }
-        .rr-form-btn:hover { background: var(--color-teal); transform: translateY(-1px); }
+        .rr-form-btn { width: 100%; padding: 14px 28px; background: var(--color-dark); color: var(--color-cream); border: none; border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; cursor: pointer; box-shadow: 0 8px 20px -10px rgba(58,38,22,.4), inset 0 1px 0 rgba(255,255,255,.08); transition: background .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s; margin-top: 6px; }
+        .rr-form-btn:hover { background: var(--color-accent); transform: translateY(-2px); box-shadow: 0 14px 26px -12px rgba(179,69,57,.5), inset 0 1px 0 rgba(255,255,255,.12); }
+        .rr-form-btn:active { transform: translateY(0); }
+        .rr-form-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
         .rr-form-success { text-align: center; padding: 40px 20px; }
         .rr-form-success__icon { width: 54px; height: 54px; border-radius: 50%; background: rgba(58,125,107,.1); color: var(--color-teal); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px; }
         .rr-form-success__title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--color-dark); margin-bottom: 8px; }
@@ -696,9 +693,10 @@ export default function ResumeReviews() {
         .rr-sheet__body { padding: 16px 20px; }
 
         /* ECOSYSTEM */
-        .rr-eco { background: var(--color-dark); padding: 80px clamp(20px,5vw,56px); }
+        .rr-eco { background: var(--color-dark); padding: clamp(64px,8vw,104px) clamp(20px,5vw,56px); }
         .rr-eco__inner { max-width: 1240px; margin: 0 auto; }
-        .rr-eco__kicker { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(242,228,206,.4); margin-bottom: 10px; }
+        .rr-eco__kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-gold); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 10px; }
+        .rr-eco__kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-gold); opacity: .5; }
         .rr-eco__title { font-family: var(--font-display); font-size: clamp(20px,3vw,30px); font-weight: 700; color: var(--color-cream); margin-bottom: 8px; line-height: 1.25; }
         .rr-eco__body { font-size: clamp(14px,1.6vw,15px); color: rgba(242,228,206,.55); line-height: 1.75; max-width: 680px; margin-bottom: 36px; }
         .rr-eco__grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(190px,1fr)); gap: 14px; }
@@ -713,9 +711,9 @@ export default function ResumeReviews() {
         .rr-closing__headline { font-family: var(--font-display); font-size: clamp(28px,5vw,46px); font-weight: 700; color: var(--color-cream); line-height: 1.08; letter-spacing: -.02em; margin-bottom: 32px; }
         .rr-closing__headline em { font-family: var(--font-serif, var(--font-display)); font-style: italic; font-weight: 500; color: var(--color-gold); padding: 0 .04em; }
         .rr-closing__btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-        .rr-closing__btn-p { display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; background: var(--color-cream); color: var(--color-teal); border-radius: 8px; font-family: var(--font-display); font-size: 14px; font-weight: 700; text-decoration: none; border: 1.5px solid var(--color-cream); transition: background .2s, color .2s, transform .18s; }
-        .rr-closing__btn-p:hover { background: var(--color-dark); color: var(--color-cream); border-color: var(--color-dark); transform: translateY(-1px); }
-        .rr-closing__btn-s { display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; background: transparent; color: var(--color-cream); border-radius: 8px; font-family: var(--font-display); font-size: 14px; font-weight: 700; text-decoration: none; border: 1.5px solid rgba(242,228,206,.5); transition: border-color .2s, background .2s, transform .18s; }
+        .rr-closing__btn-p { display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; background: var(--color-cream); color: var(--color-teal); border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid var(--color-cream); transition: background .2s, color .2s, transform .18s cubic-bezier(.16,1,.3,1); }
+        .rr-closing__btn-p:hover { background: var(--color-dark); color: var(--color-cream); border-color: var(--color-dark); transform: translateY(-2px); }
+        .rr-closing__btn-s { display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px; background: transparent; color: var(--color-cream); border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid rgba(242,228,206,.5); transition: border-color .2s, background .2s, transform .18s cubic-bezier(.16,1,.3,1); }
         .rr-closing__btn-s:hover { border-color: var(--color-cream); background: rgba(255,255,255,.1); transform: translateY(-1px); }
 
         /* RESPONSIVE */
