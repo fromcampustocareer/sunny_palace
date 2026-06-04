@@ -2,14 +2,12 @@ import { Link } from 'react-router-dom'
 import ArticleLayout from '../../components/ArticleLayout'
 import ArticleSubscribe from '../../components/ArticleSubscribe'
 import { useT } from '../../hooks/useT'
+import { useShare } from '../../hooks/useShare'
 
 export default function FirstGenPlaybook() {
   const t = useT('firstGenPlaybook')
 
-  const handleShare = () => {
-    if (navigator.share) navigator.share({ title: t.shareTitle, url: window.location.href })
-    else navigator.clipboard?.writeText(window.location.href)
-  }
+  const { share, copied, copiedLabel } = useShare(t.shareTitle)
 
   return (
     <ArticleLayout title={t.pageTitle}>
@@ -45,12 +43,12 @@ export default function FirstGenPlaybook() {
           </div>
         </div>
         <div className="art-engage__right">
-          <button className="art-engage__share" onClick={handleShare}>
+          <button className="art-engage__share" onClick={share}>
             <svg className="art-engage__icon" viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
             </svg>
-            {t.shareBtn}
+            {copied ? copiedLabel : t.shareBtn}
           </button>
         </div>
       </div>
