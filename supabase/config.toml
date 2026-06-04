@@ -1,0 +1,12 @@
+project_id = "kdkeerhukydxwoycjuwl"
+
+# These two functions are public endpoints (contact form + waitlist signup) called
+# from the browser with the publishable key. Publishable/secret keys are not JWTs,
+# so the gateway's default JWT verification rejects them — they MUST run with
+# verify_jwt = false. Keeping it here means a plain `supabase functions deploy`
+# can't silently re-enable JWT verification and break the forms.
+[functions.send-contact-email]
+verify_jwt = false
+
+[functions.add-to-waitlist]
+verify_jwt = false
