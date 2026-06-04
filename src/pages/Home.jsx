@@ -36,10 +36,11 @@ const CONFETTI_COLORS = ['#E8A838','#B34539','#3A7D6B','#5B8EC2','#F2E4CE','#f5c
 const PINATA_STAGES = [{ at: 0, src: '/pinanta/step1.png' },{ at: 3, src: '/pinanta/step2.png' },{ at: 5, src: '/pinanta/step3.png' }]
 const HITS_TO_BREAK = 7
 
-// Pre-launch waitlist mode: hides nav links, search, and every section after the hero,
+// Waitlist mode: hides nav links, search, and every section after the hero,
 // and replaces the Get in Touch CTA with a Waitlist button.
-// On in production; automatically off during local dev (`npm run dev`) so the full site is visible on localhost.
-const WAITLIST_MODE = !import.meta.env.DEV
+// Off — the full site is live in every environment. Set to `true` (or
+// `!import.meta.env.DEV` for prod-only) to gate the site behind the waitlist again.
+const WAITLIST_MODE = false
 
 export default function Home() {
   const navigate = useNavigate()
