@@ -26,7 +26,7 @@ export default function ArticleSubscribe({ source }) {
         // unique violation — already subscribed
         setDone(true)
       } else {
-        setError(`Error: ${err.message} (${err.code})`)
+        setError(t.subscribeError)
       }
     } else {
       setDone(true)
