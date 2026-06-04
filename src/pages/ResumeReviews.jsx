@@ -458,10 +458,10 @@ export default function ResumeReviews() {
         html, body { background: var(--color-cream); }
 
         .rr-divider { border: none; border-top: 1px solid rgba(26,25,22,.08); margin: 0; }
-        .rr-kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 10px; }
-        .rr-kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-accent); opacity: .5; }
-        .rr-section-title { font-family: var(--font-display); font-size: clamp(30px,4.6vw,52px); font-weight: 700; color: var(--color-dark); line-height: 1.05; letter-spacing: -.02em; margin-bottom: 14px; max-width: 18ch; }
-        .rr-section-sub { font-family: var(--font-serif, var(--font-display)); font-size: clamp(17px,2vw,22px); font-style: italic; font-weight: 400; color: var(--color-accent); margin-bottom: 18px; max-width: 50ch; }
+        .rr-kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-cream); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 10px; }
+        .rr-kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-cream); opacity: .5; }
+        .rr-section-title { font-family: var(--font-display); font-size: clamp(30px,4.6vw,52px); font-weight: 700; color: var(--color-cream); line-height: 1.05; letter-spacing: -.02em; margin-bottom: 14px; max-width: 18ch; }
+        .rr-section-sub { font-family: var(--font-serif, var(--font-display)); font-size: clamp(17px,2vw,22px); font-style: italic; font-weight: 400; color: rgba(242,228,206,.88); margin-bottom: 18px; max-width: 50ch; }
         .rr-section-body { font-size: clamp(15px,1.8vw,17px); color: var(--color-muted); line-height: 1.75; max-width: 700px; }
         .rr-section-body strong { color: var(--color-dark); font-weight: 600; }
 
@@ -657,19 +657,20 @@ export default function ResumeReviews() {
         .rr-sort-wrap select:focus { outline: 2px solid var(--color-accent); outline-offset: 4px; border-radius: 4px; }
 
         /* HOW IT WORKS */
-        .rr-howto { max-width: 1240px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
+        .rr-howto { background: var(--color-accent); padding: 80px clamp(20px,5vw,56px); }
+        .rr-howto__inner { max-width: 1240px; margin: 0 auto; }
         .rr-howto__head { margin-bottom: 36px; }
         .rr-howto__grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
         .rr-howto__card { background: transparent; border: none; padding: 28px 26px 28px 0; position: relative; transition: transform .28s cubic-bezier(.16,1,.3,1); }
-        .rr-howto__card + .rr-howto__card { padding-left: 26px; border-left: 1px solid rgba(26,25,22,.1); }
+        .rr-howto__card + .rr-howto__card { padding-left: 26px; border-left: 1px solid rgba(255,255,255,.18); }
         .rr-howto__card:hover { transform: translateY(-2px); }
-        .rr-howto__card:nth-child(1) .rr-howto__num { color: var(--color-accent); }
-        .rr-howto__card:nth-child(2) .rr-howto__num { color: var(--color-teal); }
-        .rr-howto__card:nth-child(3) .rr-howto__num { color: var(--color-gold-dark); }
+        .rr-howto__card:nth-child(1) .rr-howto__num { color: var(--color-cream); }
+        .rr-howto__card:nth-child(2) .rr-howto__num { color: var(--color-cream); }
+        .rr-howto__card:nth-child(3) .rr-howto__num { color: var(--color-cream); }
         .rr-howto__num { font-family: var(--font-display); font-size: 48px; font-weight: 700; line-height: 1; margin-bottom: 14px; opacity: .9; letter-spacing: -.02em; }
-        @media (max-width: 700px) { .rr-howto__card + .rr-howto__card { padding-left: 0; border-left: none; border-top: 1px solid rgba(26,25,22,.1); padding-top: 24px; } }
-        .rr-howto__title { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--color-dark); margin-bottom: 10px; line-height: 1.3; }
-        .rr-howto__body { font-size: 14px; color: var(--color-muted); line-height: 1.75; }
+        @media (max-width: 700px) { .rr-howto__card + .rr-howto__card { padding-left: 0; border-left: none; border-top: 1px solid rgba(255,255,255,.18); padding-top: 24px; } }
+        .rr-howto__title { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--color-cream); margin-bottom: 10px; line-height: 1.3; }
+        .rr-howto__body { font-size: 14px; color: rgba(242,228,206,.75); line-height: 1.75; }
         @media (max-width: 700px) { .rr-howto__grid { grid-template-columns: 1fr; } }
 
         /* SUBMIT FORM */
@@ -1025,6 +1026,7 @@ export default function ResumeReviews() {
 
       {/* HOW IT WORKS */}
       <section className="rr-howto">
+        <div className="rr-howto__inner">
         <div className="rr-howto__head">
           <p className="rr-kicker">{t.howKicker}</p>
           <h2 className="rr-section-title">{t.howTitle}</h2>
@@ -1046,6 +1048,7 @@ export default function ResumeReviews() {
             <div className="rr-howto__title">{t.howStep3Title}</div>
             <p className="rr-howto__body">{t.howStep3Body}</p>
           </div>
+        </div>
         </div>
       </section>
 
