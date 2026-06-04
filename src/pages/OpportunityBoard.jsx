@@ -16,9 +16,12 @@ function matchCard(card, { tab, query, stage, location, deadline }) {
     const hay = (card.keywords + ' ' + card.title + ' ' + card.company).toLowerCase()
     if (!hay.includes(query)) return false
   }
-  if (stage && !card.stage.includes(stage)) return false
-  if (location && !card.location.includes(location)) return false
-  if (deadline && !card.deadline.includes(deadline)) return false
+  // Community (DB) opportunities may lack stage/location metadata. Treat an unknown (empty)
+  // value as "passes" so an active filter narrows the cards that DO have data instead of
+  // silently hiding every community submission.
+  if (stage && card.stage && !card.stage.includes(stage)) return false
+  if (location && card.location && !card.location.includes(location)) return false
+  if (deadline && card.deadline && !card.deadline.includes(deadline)) return false
   return true
 }
 
@@ -36,7 +39,8 @@ function dbOpportunityToCard(row, t) {
     const diffDays = (d - new Date()) / 86400000
     deadlineLabel = `${t.deadlineCloses} ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
     deadlineCls = diffDays < 30 ? 'urgent' : ''
-    deadlineFilter = diffDays < 30 ? 'this-month' : 'rolling'
+    // Bucket so the "This Week" filter can actually match; <7d items also satisfy "This Month".
+    deadlineFilter = diffDays < 7 ? 'this-week this-month' : diffDays < 30 ? 'this-month' : 'rolling'
   }
   const tags = [{ l: row.role_type || 'Opportunity', c: tagTypeMap[typeKey] || 'ob-tag--muted' }]
   if (row.eligibility) tags.push({ l: row.eligibility, c: 'ob-tag--muted' })
@@ -47,7 +51,7 @@ function dbOpportunityToCard(row, t) {
     tags, meta: [...(row.location ? [row.location] : []), ...(row.pay ? [row.pay] : [])], desc: row.why || '',
     source: t.cardCommunitySource,
     viewLink: row.link, postLink: row.link, postLabel: t.cardViewRole,
-    type: typeKey, stage: '', location: '', deadline: deadlineFilter, bridge: false,
+    type: typeKey, stage: '', location: /remote/i.test(row.location || '') ? 'remote' : '', deadline: deadlineFilter, bridge: false,
     keywords: `${row.role} ${row.company} ${row.eligibility || ''}`.toLowerCase(),
     _featured: row.status === 'featured',
   }
@@ -646,10 +650,10 @@ export default function OpportunityBoard() {
           <p className="ob-eco__body">{t.ecoBody}</p>
           <div className="ob-eco__grid">
             {t.ecoLinks.map(l => (
-              <div key={l.to} className="ob-eco__link">
+              <Link key={l.to} to={l.to} className="ob-eco__link">
                 <div className="ob-eco__link-title">{l.title}</div>
                 <div className="ob-eco__link-desc">{l.desc}</div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
