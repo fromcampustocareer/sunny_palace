@@ -958,7 +958,7 @@ export const en = {
     cardTopicsLabel: 'Topics',
     cardBadgeNew: 'New',
     cardBadgeActive: 'Active',
-    cardCtaPrimary: 'Connect on LinkedIn ↗',
+    cardCtaPrimary: 'Connect on LinkedIn',
     cardCtaSecondary: 'Copy template',
 
     // Loading / empty states
@@ -1157,7 +1157,7 @@ export const en = {
 
     // Card UI
     cardFeaturedBadge: 'Featured',
-    cardViewRole: 'View role ↗',
+    cardViewRole: 'View role',
 
     // No results
     noResults: 'No opportunities match your filters. Try adjusting your search or tab.',
@@ -2866,7 +2866,7 @@ export const en = {
     // sign-off
     signoffLine: 'You belong in these rooms.',
     signoffSub: 'We built this because no one handed us the playbook. If something resonated, or if you have questions, we want to hear from you.',
-    signoffCta: 'Get in touch ↗',
+    signoffCta: 'Get in touch',
     // footer
     footerCopy: 'Jose x Jocelyn © 2026',
     footerHome: 'Home',

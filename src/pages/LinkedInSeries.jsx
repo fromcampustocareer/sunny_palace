@@ -500,10 +500,6 @@ export default function LinkedInSeries() {
                   <span className={`ls-post__author ${authorClass(p.author)}`}>{getAuthorLabel(p.author)}</span>
                   <span className="ls-live__cta">
                     {t.liveReadOnLinkedIn}
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M7 17 17 7"/>
-                      <polyline points="7 7 17 7 17 17"/>
-                    </svg>
                   </span>
                 </div>
               </a>
@@ -547,10 +543,6 @@ export default function LinkedInSeries() {
                           <span className={`ls-post__author ${authorClass(p.author)}`}>{getAuthorLabel(p.author)}</span>
                           <span className="ls-pub__cta">
                             {t.liveReadOnLinkedIn}
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <path d="M7 17 17 7"/>
-                              <polyline points="7 7 17 7 17 17"/>
-                            </svg>
                           </span>
                         </div>
                       </a>
