@@ -29,9 +29,21 @@ serve(async (req) => {
       )
     }
 
+    // Privileged client for the insert (bypasses RLS). Prefer the new secret key
+    // (sb_secret_*), which survives revocation of the legacy HS256 JWT secret;
+    // fall back to the legacy service_role key if the new API keys aren't
+    // configured yet. See SUPABASE_SECRET_KEYS in the Edge Functions runtime.
+    const serviceKey = (() => {
+      try {
+        const secretKeys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}')
+        if (secretKeys?.default) return secretKeys.default
+      } catch (_) { /* fall through to legacy key */ }
+      return Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    })()
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      serviceKey
     )
 
     const schoolValue = typeof school === 'string' && school.trim() ? school.trim() : null
