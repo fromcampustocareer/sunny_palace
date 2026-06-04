@@ -923,8 +923,8 @@ export default function CoffeeChat() {
           <div>
             <h3 className="cc-reach__col-title">{t.reachCol2Title}</h3>
             <div className="cc-do-list">
-              {t.reachDoDont.map((item) => (
-                <div key={item.strongText} className="cc-do-item">
+              {t.reachDoDont.map((item, i) => (
+                <div key={i} className="cc-do-item">
                   <span className={`cc-do-item__icon cc-do-item__icon--${item.type}`} aria-hidden="true">
                     {item.type === 'do'
                       ? <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 5.8l2.4 2.4L9 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
