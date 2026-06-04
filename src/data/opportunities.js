@@ -268,7 +268,7 @@ export const OPPORTUNITIES = [
     keywords: "campus growth manager partiful internship internship",
   },
   {
-    id: "mlh-fellowship-summer-2026", logo: "M(", logoStyle: {},
+    id: "mlh-fellowship-summer-2026", logo: "M", logoStyle: {},
     deadlineLabel: "Rolling", deadlineCls: "rolling",
     title: "MLH Fellowship", company: "MLH (Major League Hacking)",
     tags: [{ l: "Program", c: "ob-tag--program" }, { l: "All Years", c: "ob-tag--muted" }, { l: "Summer", c: "ob-tag--muted" }],
