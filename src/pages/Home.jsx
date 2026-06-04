@@ -37,8 +37,9 @@ const PINATA_STAGES = [{ at: 0, src: '/pinanta/step1.png' },{ at: 3, src: '/pina
 const HITS_TO_BREAK = 7
 
 // Pre-launch waitlist mode: hides nav links, search, and every section after the hero,
-// and replaces the Get in Touch CTA with a Waitlist button. Flip to false to restore the full site.
-const WAITLIST_MODE = true
+// and replaces the Get in Touch CTA with a Waitlist button.
+// On in production; automatically off during local dev (`npm run dev`) so the full site is visible on localhost.
+const WAITLIST_MODE = !import.meta.env.DEV
 
 export default function Home() {
   const navigate = useNavigate()
