@@ -958,7 +958,7 @@ export const es = {
     cardTopicsLabel: 'Temas',
     cardBadgeNew: 'Nuevo',
     cardBadgeActive: 'Activo',
-    cardCtaPrimary: 'Conectar en LinkedIn ↗',
+    cardCtaPrimary: 'Conectar en LinkedIn',
     cardCtaSecondary: 'Copiar plantilla',
 
     // Loading / empty states
@@ -1157,7 +1157,7 @@ export const es = {
 
     // Card UI
     cardFeaturedBadge: 'Destacada',
-    cardViewRole: 'Ver rol ↗',
+    cardViewRole: 'Ver rol',
 
     // No results
     noResults: 'Ninguna oportunidad coincide con tus filtros. Intenta ajustar tu búsqueda o pestaña.',
@@ -2866,7 +2866,7 @@ export const es = {
     // sign-off
     signoffLine: 'Tú perteneces a estos espacios.',
     signoffSub: 'Construimos esto porque nadie nos entregó el manual. Si algo resonó, o si tienes preguntas, queremos escucharte.',
-    signoffCta: 'Contáctanos ↗',
+    signoffCta: 'Contáctanos',
     // footer
     footerCopy: 'Jose x Jocelyn © 2026',
     footerHome: 'Inicio',
