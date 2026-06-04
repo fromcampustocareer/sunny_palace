@@ -236,6 +236,8 @@ export const en = {
     formSubmitting: 'Submitting…',
     formSuccessTitle: 'Thanks for the submission!',
     formSuccessBody: 'We review every suggestion and update this list as new programs open. We appreciate you helping keep it current.',
+    formSuccessCta: 'Browse templates →',
+    formSuccessCtaTo: '/career-templates',
     openProgramsHeading: 'Applications open',
     openProgramsCountSingular: 'program accepting now',
     openProgramsCountPlural: 'programs accepting now',
@@ -847,7 +849,8 @@ export const en = {
 
     // ── Hero ──────────────────────────────────────────────────────────────
     heroKicker: 'From Campus to Career · Community',
-    heroTitle: 'Coffee Chat',
+    heroTitle: 'Coffee',
+    heroTitleAccent: 'Chat',
     heroTitleEm: 'Network',
     heroTagline: 'The directory we wish someone had pointed us to when we were sending cold messages alone.',
     heroSub: 'A live directory of students, grads, and professionals who actually want to be reached out to.',
@@ -2875,6 +2878,8 @@ export const en = {
     subscribeBtnIdle: 'Subscribe',
     subscribeBtnLoading: 'Subscribing…',
     subscribeSuccess: "You're on the list.",
+    subscribeError: 'Something went wrong. Please try again in a moment.',
+    shareCopied: 'Link copied!',
   },
 
   coffeeChatFramework: {
