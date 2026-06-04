@@ -250,14 +250,20 @@ export default function Home() {
     setNewsletterLoading(true)
     setNewsletterError('')
     // Collect emails into the shared subscribers list so we can notify them when articles drop.
-    const { error } = await supabase
-      .from('subscribers')
-      .insert({ email: newsletterEmail.trim(), source: 'home-la-voz' })
-    setNewsletterLoading(false)
-    if (error && error.code !== '23505') {
+    try {
+      const { error } = await supabase
+        .from('subscribers')
+        .insert({ email: newsletterEmail.trim(), source: 'home-la-voz' })
+      if (error && error.code !== '23505') {
+        setNewsletterError(t.newsletterError)
+      } else {
+        setNewsletterSent(true)
+      }
+    } catch {
+      // Network/CORS failure throws rather than returning { error } — surface it instead of hanging.
       setNewsletterError(t.newsletterError)
-    } else {
-      setNewsletterSent(true)
+    } finally {
+      setNewsletterLoading(false)
     }
   }, [newsletterEmail, t])
 

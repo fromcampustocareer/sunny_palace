@@ -825,6 +825,8 @@ export const es = {
     formSubmitting: 'Enviando…',
     formSuccessTitle: '¡Solicitud recibida!',
     formSuccessBody: 'Jose y Jocelyn revisan cada envío y los usan para decidir qué construir a continuación. Gracias por ayudar a dar forma a este hub.',
+    formSuccessCta: 'Ver plantillas →',
+    formSuccessCtaTo: '/career-templates',
     // ── Cierre Emocional ──────────────────────────────────────────────────
     closingTitle: 'No tienes que ser la persona más pulida del cuarto.',
     closingBody: 'Solo tienes que ser quien llegó preparada, nombró lo que aportaba, y no se disculpó por el camino que la trajo aquí. <strong>Dos pasos adelante sigue siendo adelante.</strong> Hicimos este hub porque nadie lo hizo por nosotros.',
@@ -847,7 +849,8 @@ export const es = {
 
     // ── Hero ──────────────────────────────────────────────────────────────
     heroKicker: 'Del Campus a la Carrera · Comunidad',
-    heroTitle: 'Red de Conversaciones',
+    heroTitle: 'Red de',
+    heroTitleAccent: 'Conversaciones',
     heroTitleEm: 'Informativas',
     heroTagline: 'El directorio que hubiéramos querido que alguien nos mostrara cuando mandábamos mensajes en frío.',
     heroSub: 'Un directorio en vivo de estudiantes, egresados y profesionales que realmente quieren ser contactados.',
@@ -2875,6 +2878,8 @@ export const es = {
     subscribeBtnIdle: 'Suscribirte',
     subscribeBtnLoading: 'Suscribiendo…',
     subscribeSuccess: 'Ya estás en la lista.',
+    subscribeError: 'Algo salió mal. Inténtalo de nuevo en un momento.',
+    shareCopied: '¡Enlace copiado!',
   },
 
   coffeeChatFramework: {
