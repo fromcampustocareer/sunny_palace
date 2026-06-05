@@ -284,7 +284,7 @@ export default function OpportunityBoard() {
         .ob-featured-label::before { content: ''; display: inline-block; width: 20px; height: 2px; background: var(--color-gold); border-radius: 1px; }
         .ob-featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; margin-top: 16px; }
 
-        .ob-card { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.1); border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(var(--ob-shadow-warm),.12); transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s, border-color .22s; position: relative; }
+        .ob-card { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.1); border-radius: 14px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(var(--ob-shadow-warm),.12); transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s, border-color .22s; position: relative; }
         .ob-card:hover { transform: translateY(-3px); border-color: rgba(26,25,22,.22); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 16px 32px -12px rgba(var(--ob-shadow-warm),.22); }
         .ob-card--internship    { background: linear-gradient(180deg, rgba(22,43,68,.07)  0%, rgba(255,250,242,.55) 60%); border-color: rgba(22,43,68,.22); }
         .ob-card--apprenticeship { background: linear-gradient(180deg, rgba(58,125,107,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(58,125,107,.22); }
@@ -310,7 +310,7 @@ export default function OpportunityBoard() {
         .ob-card__title { font-family: var(--font-display); font-size: clamp(14px,1.7vw,16px); font-weight: 700; color: var(--color-dark); line-height: 1.3; }
         .ob-card__company { font-size: 14px; color: var(--color-dark); font-weight: 600; }
         .ob-card__tags { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
-        .ob-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+        .ob-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
         .ob-tag--intern    { background: rgba(22,43,68,.08);    color: var(--color-navy); }
         .ob-tag--apprent   { background: rgba(58,125,107,.1);   color: var(--color-teal); }
         .ob-tag--newgrad   { background: rgba(232,168,56,.12);  color: var(--color-gold-dark); }
@@ -325,9 +325,20 @@ export default function OpportunityBoard() {
         .ob-card__source { font-size: 11px; color: rgba(0,0,0,.35); display: flex; align-items: center; gap: 5px; }
         .ob-card__source-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-gold-dark); flex-shrink: 0; }
         .ob-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 4px; }
-        .ob-card__cta-primary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 16px; background: var(--color-dark); color: var(--color-cream); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: background .2s, transform .15s; flex: 1; justify-content: center; }
-        .ob-card__cta-primary:hover { background: var(--color-accent-hover); transform: translateY(-1px); }
-        .ob-card__cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 14px; background: transparent; color: var(--color-muted); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: 1.5px solid rgba(0,0,0,.12); cursor: pointer; transition: border-color .2s, color .2s, transform .15s; flex-shrink: 0; }
+        /* Color-outline pill CTA that tracks the card type, matching the Templates card system */
+        .ob-card__cta-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 18px; background: transparent; color: var(--color-dark); border: 1.5px solid rgba(26,25,22,.4); border-radius: 999px; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; cursor: pointer; transition: background .25s, color .25s, border-color .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s; flex: 1; }
+        .ob-card__cta-primary:hover { background: var(--color-dark); color: var(--color-cream); border-color: var(--color-dark); transform: translateY(-1px); box-shadow: 0 8px 16px -8px rgba(26,25,22,.4); }
+        .ob-card--internship    .ob-card__cta-primary { color: var(--color-navy);      border-color: rgba(22,43,68,.45); }
+        .ob-card--internship    .ob-card__cta-primary:hover { background: var(--color-navy);   color: var(--color-cream); border-color: var(--color-navy);   box-shadow: 0 8px 16px -8px rgba(22,43,68,.5); }
+        .ob-card--apprenticeship .ob-card__cta-primary { color: var(--color-teal);      border-color: rgba(58,125,107,.5); }
+        .ob-card--apprenticeship .ob-card__cta-primary:hover { background: var(--color-teal);   color: var(--color-cream); border-color: var(--color-teal);   box-shadow: 0 8px 16px -8px rgba(58,125,107,.5); }
+        .ob-card--new-grad      .ob-card__cta-primary { color: var(--color-gold-dark); border-color: rgba(232,168,56,.6); }
+        .ob-card--new-grad      .ob-card__cta-primary:hover { background: var(--color-gold);   color: var(--color-dark);  border-color: var(--color-gold);   box-shadow: 0 8px 16px -8px rgba(232,168,56,.5); }
+        .ob-card--fellowship    .ob-card__cta-primary { color: var(--color-blue);      border-color: rgba(91,142,194,.5); }
+        .ob-card--fellowship    .ob-card__cta-primary:hover { background: var(--color-blue);   color: var(--color-cream); border-color: var(--color-blue);   box-shadow: 0 8px 16px -8px rgba(91,142,194,.5); }
+        .ob-card--program       .ob-card__cta-primary { color: var(--color-accent);    border-color: rgba(179,69,57,.5); }
+        .ob-card--program       .ob-card__cta-primary:hover { background: var(--color-accent); color: var(--color-cream); border-color: var(--color-accent); box-shadow: 0 8px 16px -8px rgba(179,69,57,.5); }
+        .ob-card__cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 12px 16px; background: transparent; color: var(--color-muted); border-radius: 999px; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid rgba(0,0,0,.14); cursor: pointer; transition: border-color .25s, color .25s, transform .22s cubic-bezier(.16,1,.3,1); flex-shrink: 0; }
         .ob-card__cta-secondary:hover { border-color: var(--color-dark); color: var(--color-dark); transform: translateY(-1px); }
         .ob-card__cta-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 8px; }
         .ob-card__cta-secondary:focus-visible { outline: 2px solid var(--color-dark); outline-offset: 2px; border-radius: 8px; }
