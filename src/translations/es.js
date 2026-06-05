@@ -1091,6 +1091,7 @@ export const es = {
     modalSub: 'Personaliza los campos entre corchetes antes de enviar. Mantén tu mensaje final en menos de 80 palabras.',
     modalCopyBtn: 'Copiar al portapapeles',
     modalCopied: '¡Copiado!',
+    modalCopyFailed: 'Presiona Ctrl/Cmd+C para copiar',
     modalClose: 'Cerrar',
     signoffLine: 'Los “sí, contáctame” que hubiéramos querido tener.',
     signoffSub: 'Un directorio de gente que ya levantó la mano. Dinos qué intentas preguntar.',
