@@ -139,7 +139,7 @@ const PAGE_CSS = `
   .ls-episodes { max-width:1240px;margin:0 auto;padding:0 clamp(20px,5vw,56px) 80px;display:flex;flex-direction:column;gap:64px; }
   .ls-ep { display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:start;scroll-margin-top:96px; }
   .ls-ep__head { display:flex;align-items:flex-start;gap:24px;margin-bottom:0;position:sticky;top:80px; }
-  .ls-ep__num { font-family:var(--font-display);font-size:clamp(48px,5.4vw,76px);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-0.05em;line-height:1;color:rgba(232,168,56,.42);flex-shrink:0;min-width:60px;font-feature-settings:"ss01" 1; }
+  .ls-ep__num { font-family:var(--font-display);font-size:clamp(48px,5.4vw,76px);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-0.05em;line-height:1;color:rgba(139,105,20,.7);flex-shrink:0;min-width:60px;font-feature-settings:"ss01" 1; }
   .ls-ep__info { flex:1;min-width:0; }
   @media (max-width: 960px) {
     .ls-ep { grid-template-columns: 1fr; gap: 24px; }

@@ -4,6 +4,22 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   publicDir: 'public',
+  build: {
+    rollupOptions: {
+      output: {
+        // Split heavy vendor libs into their own chunks: they download in
+        // parallel with the app and stay cached across deploys (app-code
+        // changes no longer invalidate React / GSAP / Supabase).
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('gsap')) return 'gsap'
+            if (id.includes('@supabase')) return 'supabase'
+            return 'vendor'
+          }
+        },
+      },
+    },
+  },
   server: {
     port: 3000,
     watch: {

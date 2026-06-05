@@ -57,28 +57,40 @@ function dbOpportunityToCard(row, t) {
   }
 }
 
+// One color per opportunity type, so logo + tag + tint + CTA all agree per card
+// (mirrors the Templates card system). Replaces the old per-item random logo colors.
+const LOGO_TINT = {
+  scholarship: { background: 'rgba(232,168,56,.16)', color: 'var(--color-gold-dark)' },
+  program:     { background: 'rgba(179,69,57,.1)',   color: 'var(--color-accent)' },
+  internship:  { background: 'rgba(22,43,68,.1)',    color: 'var(--color-navy)' },
+  research:    { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
+  fellowship:  { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
+}
 function OBCard({ card, featured, t, idx = 0 }) {
   const isExternal = card.postLink.startsWith('http')
   const typeKey = (card.type || '').split(' ')[0]
+  const logoStyle = LOGO_TINT[typeKey] || card.logoStyle || {}
   return (
     <article className={`ob-card${typeKey ? ' ob-card--' + typeKey : ''}${featured ? ' featured' : ''}`} style={{ '--ob-i': idx % 12 }}>
       {featured && <span className="ob-card__featured-badge">{t.cardFeaturedBadge}</span>}
       <div className="ob-card__top">
-        <div className="ob-card__company-logo" style={card.logoStyle}>{card.logo}</div>
+        <div className="ob-card__company-logo" style={logoStyle}>{card.logo}</div>
         <span className={`ob-card__deadline${card.deadlineCls ? ' ' + card.deadlineCls : ''}`}>{card.deadlineLabel}</span>
       </div>
       <div>
         <div className="ob-card__title">{card.title}</div>
-        <div className="ob-card__company">{card.company}</div>
+        {card.company && <div className="ob-card__company">{card.company}</div>}
       </div>
       <div className="ob-card__tags">
         {card.tags.map(tag => <span key={tag.l} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
       </div>
-      <div className="ob-card__meta">
-        {card.meta.map(m => <span key={m} className="ob-card__meta-item">{m}</span>)}
-      </div>
+      {card.meta.length > 0 && (
+        <div className="ob-card__meta">
+          {card.meta.map(m => <span key={m} className="ob-card__meta-item">{m}</span>)}
+        </div>
+      )}
+      {card.source && <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>}
       <div className="ob-card__desc">{card.desc}</div>
-      <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>
       <div className="ob-card__actions">
         <a href={card.viewLink} className="ob-card__cta-primary" target="_blank" rel="noopener">{card.viewLabel || t.cardViewRole}</a>
         {card.postLink && (isExternal
@@ -256,7 +268,7 @@ export default function OpportunityBoard() {
         .ob-hero__stats { display: flex; flex-wrap: wrap; gap: 0; border-top: 1px solid rgba(26,25,22,.12); padding-top: 26px; }
         .ob-hero__stat { padding-right: clamp(24px,4vw,52px); margin-right: clamp(24px,4vw,52px); border-right: 1px solid rgba(26,25,22,.12); }
         .ob-hero__stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
-        .ob-hero__stat-value { font-family: var(--font-display); font-size: clamp(28px,4vw,40px); font-weight: 700; color: var(--color-accent); line-height: 1; margin-bottom: 6px; }
+        .ob-hero__stat-value { font-family: var(--font-display); font-size: clamp(28px,4vw,40px); font-weight: 700; color: var(--color-dark); line-height: 1; margin-bottom: 6px; }
         .ob-hero__stat-label { font-size: 13px; font-weight: 500; color: var(--color-muted); line-height: 1.35; max-width: 18ch; }
 
         .ob-board { max-width: 1240px; margin: 0 auto; padding: 72px clamp(20px,5vw,56px) 80px; }
@@ -265,6 +277,10 @@ export default function OpportunityBoard() {
         .ob-tab { padding: 13px 18px; border-radius: 20px; border: 1.5px solid rgba(0,0,0,.1); background: transparent; font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--color-muted); cursor: pointer; transition: background .18s, border-color .18s, color .18s; }
         .ob-tab:hover { border-color: var(--color-dark); color: var(--color-dark); }
         .ob-tab.active { background: var(--color-dark); border-color: var(--color-dark); color: var(--color-cream); }
+        .ob-tab--internship.active  { background: var(--color-navy);   border-color: var(--color-navy); }
+        .ob-tab--research.active    { background: var(--color-teal);   border-color: var(--color-teal); }
+        .ob-tab--program.active     { background: var(--color-accent); border-color: var(--color-accent); }
+        .ob-tab--scholarship.active { background: var(--color-gold);   border-color: var(--color-gold); color: var(--color-dark); }
         .ob-tab:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 6px; }
         .ob-filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; align-items: center; }
         .ob-search-wrap { position: relative; flex: 1; min-width: 220px; }
@@ -282,13 +298,15 @@ export default function OpportunityBoard() {
         .ob-featured-label::before { content: ''; display: inline-block; width: 20px; height: 2px; background: var(--color-gold); border-radius: 1px; }
         .ob-featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; margin-top: 16px; }
 
-        .ob-card { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.1); border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(var(--ob-shadow-warm),.12); transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s, border-color .22s; position: relative; }
+        .ob-card { background: linear-gradient(180deg, rgba(255,250,242,.85) 0%, rgba(255,250,242,.55) 100%); border: 1px solid rgba(26,25,22,.1); border-radius: 14px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 4px 12px -6px rgba(var(--ob-shadow-warm),.12); transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s, border-color .22s; position: relative; }
         .ob-card:hover { transform: translateY(-3px); border-color: rgba(26,25,22,.22); box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 16px 32px -12px rgba(var(--ob-shadow-warm),.22); }
         .ob-card--internship    { background: linear-gradient(180deg, rgba(22,43,68,.07)  0%, rgba(255,250,242,.55) 60%); border-color: rgba(22,43,68,.22); }
         .ob-card--apprenticeship { background: linear-gradient(180deg, rgba(58,125,107,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(58,125,107,.22); }
         .ob-card--new-grad      { background: linear-gradient(180deg, rgba(232,168,56,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(232,168,56,.26); }
-        .ob-card--fellowship    { background: linear-gradient(180deg, rgba(91,142,194,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(91,142,194,.22); }
+        .ob-card--fellowship    { background: linear-gradient(180deg, rgba(58,125,107,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(58,125,107,.22); }
+        .ob-card--research      { background: linear-gradient(180deg, rgba(58,125,107,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(58,125,107,.22); }
         .ob-card--program       { background: linear-gradient(180deg, rgba(179,69,57,.06) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(179,69,57,.22); }
+        .ob-card--scholarship   { background: linear-gradient(180deg, rgba(232,168,56,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(232,168,56,.26); }
         .ob-card.featured { border-color: rgba(232,168,56,.42); border-width: 1.5px; background: linear-gradient(180deg, rgba(232,168,56,.07) 0%, rgba(255,250,242,.55) 60%); }
         .ob-card.featured::before { content: ''; position: absolute; top: -1px; left: 18px; width: 36px; height: 6px; background: var(--color-gold); border-radius: 0 0 4px 4px; box-shadow: 0 1px 2px rgba(232,168,56,.4); }
         .ob-card.archived { opacity: .55; pointer-events: none; }
@@ -306,27 +324,43 @@ export default function OpportunityBoard() {
         .ob-card__deadline.urgent { color: var(--color-accent); }
         .ob-card__deadline.rolling { color: var(--color-teal); }
         .ob-card__title { font-family: var(--font-display); font-size: clamp(14px,1.7vw,16px); font-weight: 700; color: var(--color-dark); line-height: 1.3; }
-        .ob-card__company { font-size: 13px; color: var(--color-muted); font-weight: 500; }
+        .ob-card__company { font-size: 14px; color: var(--color-dark); font-weight: 600; }
         .ob-card__tags { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
-        .ob-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+        .ob-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
         .ob-tag--intern    { background: rgba(22,43,68,.08);    color: var(--color-navy); }
         .ob-tag--apprent   { background: rgba(58,125,107,.1);   color: var(--color-teal); }
         .ob-tag--newgrad   { background: rgba(232,168,56,.12);  color: var(--color-gold-dark); }
-        .ob-tag--fellowship{ background: rgba(22,43,68,.08);    color: var(--color-navy); }
+        .ob-tag--fellowship{ background: rgba(58,125,107,.1);   color: var(--color-teal); }
+        .ob-tag--research  { background: rgba(58,125,107,.1);   color: var(--color-teal); }
         .ob-tag--program   { background: rgba(179,69,57,.08);   color: var(--color-accent); }
-        .ob-tag--muted     { background: rgba(0,0,0,.05);       color: var(--color-muted); }
+        .ob-tag--muted     { background: rgba(0,0,0,.1);        color: #3E3A35; }
         .ob-tag--bridge    { background: rgba(58,125,107,.1);   color: var(--color-teal); }
         .ob-card__meta { display: flex; flex-wrap: wrap; gap: 12px; }
         .ob-card__meta-item { font-size: 12px; color: var(--color-muted); display: flex; align-items: center; gap: 4px; }
-        .ob-card__desc { font-size: 13px; color: var(--color-muted); line-height: 1.65; }
+        .ob-card__desc { font-size: 13px; color: var(--color-muted); line-height: 1.65; flex: 1; }
         .ob-card__desc strong { color: var(--color-dark); font-weight: 600; }
         .ob-card__source { font-size: 11px; color: rgba(0,0,0,.35); display: flex; align-items: center; gap: 5px; }
         .ob-card__source-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-gold-dark); flex-shrink: 0; }
         .ob-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 4px; }
-        .ob-card__cta-primary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 16px; background: var(--color-dark); color: var(--color-cream); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: background .2s, transform .15s; flex: 1; justify-content: center; }
-        .ob-card__cta-primary:hover { background: var(--color-accent-hover); transform: translateY(-1px); }
-        .ob-card__cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 14px; background: transparent; color: var(--color-muted); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: 1.5px solid rgba(0,0,0,.12); cursor: pointer; transition: border-color .2s, color .2s; flex-shrink: 0; }
-        .ob-card__cta-secondary:hover { border-color: var(--color-dark); color: var(--color-dark); }
+        /* Color-outline pill CTA that tracks the card type, matching the Templates card system */
+        .ob-card__cta-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 18px; background: transparent; color: var(--color-dark); border: 1.5px solid rgba(26,25,22,.4); border-radius: 999px; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; cursor: pointer; transition: background .25s, color .25s, border-color .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s; flex: 1; }
+        .ob-card__cta-primary:hover { background: var(--color-dark); color: var(--color-cream); border-color: var(--color-dark); transform: translateY(-1px); box-shadow: 0 8px 16px -8px rgba(26,25,22,.4); }
+        .ob-card--internship    .ob-card__cta-primary { color: var(--color-navy);      border-color: rgba(22,43,68,.45); }
+        .ob-card--internship    .ob-card__cta-primary:hover { background: var(--color-navy);   color: var(--color-cream); border-color: var(--color-navy);   box-shadow: 0 8px 16px -8px rgba(22,43,68,.5); }
+        .ob-card--apprenticeship .ob-card__cta-primary { color: var(--color-teal);      border-color: rgba(58,125,107,.5); }
+        .ob-card--apprenticeship .ob-card__cta-primary:hover { background: var(--color-teal);   color: var(--color-cream); border-color: var(--color-teal);   box-shadow: 0 8px 16px -8px rgba(58,125,107,.5); }
+        .ob-card--new-grad      .ob-card__cta-primary { color: var(--color-gold-dark); border-color: rgba(232,168,56,.6); }
+        .ob-card--new-grad      .ob-card__cta-primary:hover { background: var(--color-gold);   color: var(--color-dark);  border-color: var(--color-gold);   box-shadow: 0 8px 16px -8px rgba(232,168,56,.5); }
+        .ob-card--fellowship    .ob-card__cta-primary { color: var(--color-teal);      border-color: rgba(58,125,107,.5); }
+        .ob-card--fellowship    .ob-card__cta-primary:hover { background: var(--color-teal);   color: var(--color-cream); border-color: var(--color-teal);   box-shadow: 0 8px 16px -8px rgba(58,125,107,.5); }
+        .ob-card--research      .ob-card__cta-primary { color: var(--color-teal);      border-color: rgba(58,125,107,.5); }
+        .ob-card--research      .ob-card__cta-primary:hover { background: var(--color-teal);   color: var(--color-cream); border-color: var(--color-teal);   box-shadow: 0 8px 16px -8px rgba(58,125,107,.5); }
+        .ob-card--program       .ob-card__cta-primary { color: var(--color-accent);    border-color: rgba(179,69,57,.5); }
+        .ob-card--program       .ob-card__cta-primary:hover { background: var(--color-accent); color: var(--color-cream); border-color: var(--color-accent); box-shadow: 0 8px 16px -8px rgba(179,69,57,.5); }
+        .ob-card--scholarship   .ob-card__cta-primary { color: var(--color-gold-dark); border-color: rgba(232,168,56,.6); }
+        .ob-card--scholarship   .ob-card__cta-primary:hover { background: var(--color-gold); color: var(--color-dark); border-color: var(--color-gold); box-shadow: 0 8px 16px -8px rgba(232,168,56,.5); }
+        .ob-card__cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 12px 16px; background: transparent; color: var(--color-muted); border-radius: 999px; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid rgba(0,0,0,.14); cursor: pointer; transition: border-color .25s, color .25s, transform .22s cubic-bezier(.16,1,.3,1); flex-shrink: 0; }
+        .ob-card__cta-secondary:hover { border-color: var(--color-dark); color: var(--color-dark); transform: translateY(-1px); }
         .ob-card__cta-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 8px; }
         .ob-card__cta-secondary:focus-visible { outline: 2px solid var(--color-dark); outline-offset: 2px; border-radius: 8px; }
         .ob-main-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; }
@@ -436,7 +470,7 @@ export default function OpportunityBoard() {
           {TAB_KEYS.map(key => {
             const labelMap = { all: t.tabAll, internship: t.tabInternship, research: t.tabResearch, program: t.tabProgram, scholarship: t.tabScholarship }
             return (
-              <button key={key} id={`ob-tab-${key}`} className={`ob-tab${tab === key ? ' active' : ''}`} aria-pressed={tab === key} onClick={() => setTab(key)}>{labelMap[key]}</button>
+              <button key={key} id={`ob-tab-${key}`} className={`ob-tab ob-tab--${key}${tab === key ? ' active' : ''}`} aria-pressed={tab === key} onClick={() => setTab(key)}>{labelMap[key]}</button>
             )
           })}
         </div>
