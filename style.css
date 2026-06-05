@@ -1400,7 +1400,7 @@ ul { list-style: none; }
     display: block;
   }
   .c2c__node-marker::after { display: none; }
-  .c2c__node:first-child .c2c__node-marker::before { top: 13px; }
+  .c2c__node:first-child .c2c__node-marker::before { display: block; top: 13px; }
   .c2c__node:last-child  .c2c__node-marker::before { bottom: calc(100% - 13px); }
   .c2c__node-dot { margin-top: 5px; }
 
