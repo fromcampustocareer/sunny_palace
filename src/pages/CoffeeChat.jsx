@@ -336,6 +336,8 @@ export default function CoffeeChat() {
     try {
       const ta = document.createElement('textarea')
       ta.value = text
+      ta.setAttribute('readonly', '')
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;'
       return false
     } catch {
       return false
