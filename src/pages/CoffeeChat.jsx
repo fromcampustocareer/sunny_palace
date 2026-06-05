@@ -359,6 +359,9 @@ export default function CoffeeChat() {
         })
     } else if (copyViaExecCommand(text)) {
       markCopied()
+    } else {
+      setCopyFailed(true)
+      setTimeout(() => setCopyFailed(false), 3500)
     }
   }
 
