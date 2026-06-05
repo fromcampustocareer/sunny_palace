@@ -1166,7 +1166,7 @@ export default function CoffeeChat() {
             onClick={copyTemplate}
             aria-live="polite"
           >
-            {copied ? t.modalCopied : t.modalCopyBtn}
+            {copied ? t.modalCopied : copyFailed ? t.modalCopyFailed : t.modalCopyBtn}
           </button>
         </div>
       </div>
