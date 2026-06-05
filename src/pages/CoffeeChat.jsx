@@ -333,7 +333,11 @@ export default function CoffeeChat() {
   }
 
   const copyViaExecCommand = (text) => {
-    return false
+    try {
+      return false
+    } catch {
+      return false
+    }
   }
 
   const copyTemplate = () => {
