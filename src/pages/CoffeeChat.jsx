@@ -332,6 +332,10 @@ export default function CoffeeChat() {
     setTimeout(() => setCopied(false), 2500)
   }
 
+  const copyViaExecCommand = (text) => {
+    return false
+  }
+
   const copyTemplate = () => {
     const text = TEMPLATE_TEXT.replace('[Name]', modalName)
     navigator.clipboard.writeText(text)
