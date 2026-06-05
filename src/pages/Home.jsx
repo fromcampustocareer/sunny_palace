@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback, Fragment } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
-import { supabase } from '../lib/supabase'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLang } from '../context/LanguageContext'
 import { useT } from '../hooks/useT'
@@ -115,6 +114,7 @@ export default function Home() {
     setModalLoading(true)
     setModalError('')
     try {
+      const { supabase } = await import('../lib/supabase')
       const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`, {
         method: 'POST',
@@ -251,6 +251,7 @@ export default function Home() {
     setNewsletterError('')
     // Collect emails into the shared subscribers list so we can notify them when articles drop.
     try {
+      const { supabase } = await import('../lib/supabase')
       const { error } = await supabase
         .from('subscribers')
         .insert({ email: newsletterEmail.trim(), source: 'home-la-voz' })
