@@ -350,12 +350,14 @@ export default function CoffeeChat() {
 
   const copyTemplate = () => {
     const text = TEMPLATE_TEXT.replace('[Name]', modalName)
-    navigator.clipboard.writeText(text)
-      .then(markCopied)
-      .catch(() => {
-        if (copyViaExecCommand(text)) markCopied()
-        else { setCopyFailed(true); setTimeout(() => setCopyFailed(false), 3500) }
-      })
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text)
+        .then(markCopied)
+        .catch(() => {
+          if (copyViaExecCommand(text)) markCopied()
+          else { setCopyFailed(true); setTimeout(() => setCopyFailed(false), 3500) }
+        })
+    }
   }
 
   const setFormField = (k, v) => {
