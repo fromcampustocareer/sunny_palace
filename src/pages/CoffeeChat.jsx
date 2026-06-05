@@ -326,6 +326,12 @@ export default function CoffeeChat() {
     }
   }, [])
 
+  const markCopied = () => {
+    setCopyFailed(false)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2500)
+  }
+
   const copyTemplate = () => {
     const text = TEMPLATE_TEXT.replace('[Name]', modalName)
     navigator.clipboard.writeText(text).then(() => {
