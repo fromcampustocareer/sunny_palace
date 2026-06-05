@@ -1,7 +1,9 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { en } from '../translations/en'
 
 export const LanguageContext = createContext({
   lang: 'en',
+  dict: en,
   setLang: () => { throw new Error('useLang must be used inside LanguageProvider') },
 })
 
@@ -16,10 +18,21 @@ function readStoredLang() {
 }
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(readStoredLang)
+  const [lang, setLangState] = useState(readStoredLang)
+  // English is bundled with the app; Spanish is a separate chunk loaded on demand
+  // (only when the visitor is on, or switches to, ES) so EN visitors never pay for it.
+  const [esDict, setEsDict] = useState(null)
 
-  function toggle(newLang) {
-    setLang(newLang)
+  useEffect(() => {
+    if (lang === 'es' && !esDict) {
+      let cancelled = false
+      import('../translations/es').then(m => { if (!cancelled) setEsDict(m.es) })
+      return () => { cancelled = true }
+    }
+  }, [lang, esDict])
+
+  function setLang(newLang) {
+    setLangState(newLang)
     try {
       localStorage.setItem('jj-lang', newLang)
     } catch {
@@ -27,8 +40,11 @@ export function LanguageProvider({ children }) {
     }
   }
 
+  // Until Spanish finishes loading, render English (useT also falls back per-key).
+  const dict = lang === 'es' && esDict ? esDict : en
+
   return (
-    <LanguageContext.Provider value={{ lang, setLang: toggle }}>
+    <LanguageContext.Provider value={{ lang, dict, setLang }}>
       {children}
     </LanguageContext.Provider>
   )
