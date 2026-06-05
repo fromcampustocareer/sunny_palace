@@ -63,6 +63,8 @@ const LOGO_TINT = {
   scholarship: { background: 'rgba(232,168,56,.16)', color: 'var(--color-gold-dark)' },
   program:     { background: 'rgba(179,69,57,.1)',   color: 'var(--color-accent)' },
   internship:  { background: 'rgba(22,43,68,.1)',    color: 'var(--color-navy)' },
+  research:    { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
+  fellowship:  { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
 }
 function OBCard({ card, featured, t, idx = 0 }) {
   const isExternal = card.postLink.startsWith('http')
@@ -275,6 +277,10 @@ export default function OpportunityBoard() {
         .ob-tab { padding: 13px 18px; border-radius: 20px; border: 1.5px solid rgba(0,0,0,.1); background: transparent; font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--color-muted); cursor: pointer; transition: background .18s, border-color .18s, color .18s; }
         .ob-tab:hover { border-color: var(--color-dark); color: var(--color-dark); }
         .ob-tab.active { background: var(--color-dark); border-color: var(--color-dark); color: var(--color-cream); }
+        .ob-tab--internship.active  { background: var(--color-navy);   border-color: var(--color-navy); }
+        .ob-tab--research.active    { background: var(--color-teal);   border-color: var(--color-teal); }
+        .ob-tab--program.active     { background: var(--color-accent); border-color: var(--color-accent); }
+        .ob-tab--scholarship.active { background: var(--color-gold);   border-color: var(--color-gold); color: var(--color-dark); }
         .ob-tab:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 6px; }
         .ob-filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; align-items: center; }
         .ob-search-wrap { position: relative; flex: 1; min-width: 220px; }
@@ -297,7 +303,8 @@ export default function OpportunityBoard() {
         .ob-card--internship    { background: linear-gradient(180deg, rgba(22,43,68,.07)  0%, rgba(255,250,242,.55) 60%); border-color: rgba(22,43,68,.22); }
         .ob-card--apprenticeship { background: linear-gradient(180deg, rgba(58,125,107,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(58,125,107,.22); }
         .ob-card--new-grad      { background: linear-gradient(180deg, rgba(232,168,56,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(232,168,56,.26); }
-        .ob-card--fellowship    { background: linear-gradient(180deg, rgba(91,142,194,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(91,142,194,.22); }
+        .ob-card--fellowship    { background: linear-gradient(180deg, rgba(58,125,107,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(58,125,107,.22); }
+        .ob-card--research      { background: linear-gradient(180deg, rgba(58,125,107,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(58,125,107,.22); }
         .ob-card--program       { background: linear-gradient(180deg, rgba(179,69,57,.06) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(179,69,57,.22); }
         .ob-card--scholarship   { background: linear-gradient(180deg, rgba(232,168,56,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(232,168,56,.26); }
         .ob-card.featured { border-color: rgba(232,168,56,.42); border-width: 1.5px; background: linear-gradient(180deg, rgba(232,168,56,.07) 0%, rgba(255,250,242,.55) 60%); }
@@ -323,7 +330,8 @@ export default function OpportunityBoard() {
         .ob-tag--intern    { background: rgba(22,43,68,.08);    color: var(--color-navy); }
         .ob-tag--apprent   { background: rgba(58,125,107,.1);   color: var(--color-teal); }
         .ob-tag--newgrad   { background: rgba(232,168,56,.12);  color: var(--color-gold-dark); }
-        .ob-tag--fellowship{ background: rgba(22,43,68,.08);    color: var(--color-navy); }
+        .ob-tag--fellowship{ background: rgba(58,125,107,.1);   color: var(--color-teal); }
+        .ob-tag--research  { background: rgba(58,125,107,.1);   color: var(--color-teal); }
         .ob-tag--program   { background: rgba(179,69,57,.08);   color: var(--color-accent); }
         .ob-tag--muted     { background: rgba(0,0,0,.1);        color: #3E3A35; }
         .ob-tag--bridge    { background: rgba(58,125,107,.1);   color: var(--color-teal); }
@@ -343,8 +351,10 @@ export default function OpportunityBoard() {
         .ob-card--apprenticeship .ob-card__cta-primary:hover { background: var(--color-teal);   color: var(--color-cream); border-color: var(--color-teal);   box-shadow: 0 8px 16px -8px rgba(58,125,107,.5); }
         .ob-card--new-grad      .ob-card__cta-primary { color: var(--color-gold-dark); border-color: rgba(232,168,56,.6); }
         .ob-card--new-grad      .ob-card__cta-primary:hover { background: var(--color-gold);   color: var(--color-dark);  border-color: var(--color-gold);   box-shadow: 0 8px 16px -8px rgba(232,168,56,.5); }
-        .ob-card--fellowship    .ob-card__cta-primary { color: var(--color-blue);      border-color: rgba(91,142,194,.5); }
-        .ob-card--fellowship    .ob-card__cta-primary:hover { background: var(--color-blue);   color: var(--color-cream); border-color: var(--color-blue);   box-shadow: 0 8px 16px -8px rgba(91,142,194,.5); }
+        .ob-card--fellowship    .ob-card__cta-primary { color: var(--color-teal);      border-color: rgba(58,125,107,.5); }
+        .ob-card--fellowship    .ob-card__cta-primary:hover { background: var(--color-teal);   color: var(--color-cream); border-color: var(--color-teal);   box-shadow: 0 8px 16px -8px rgba(58,125,107,.5); }
+        .ob-card--research      .ob-card__cta-primary { color: var(--color-teal);      border-color: rgba(58,125,107,.5); }
+        .ob-card--research      .ob-card__cta-primary:hover { background: var(--color-teal);   color: var(--color-cream); border-color: var(--color-teal);   box-shadow: 0 8px 16px -8px rgba(58,125,107,.5); }
         .ob-card--program       .ob-card__cta-primary { color: var(--color-accent);    border-color: rgba(179,69,57,.5); }
         .ob-card--program       .ob-card__cta-primary:hover { background: var(--color-accent); color: var(--color-cream); border-color: var(--color-accent); box-shadow: 0 8px 16px -8px rgba(179,69,57,.5); }
         .ob-card--scholarship   .ob-card__cta-primary { color: var(--color-gold-dark); border-color: rgba(232,168,56,.6); }
@@ -460,7 +470,7 @@ export default function OpportunityBoard() {
           {TAB_KEYS.map(key => {
             const labelMap = { all: t.tabAll, internship: t.tabInternship, research: t.tabResearch, program: t.tabProgram, scholarship: t.tabScholarship }
             return (
-              <button key={key} id={`ob-tab-${key}`} className={`ob-tab${tab === key ? ' active' : ''}`} aria-pressed={tab === key} onClick={() => setTab(key)}>{labelMap[key]}</button>
+              <button key={key} id={`ob-tab-${key}`} className={`ob-tab ob-tab--${key}${tab === key ? ' active' : ''}`} aria-pressed={tab === key} onClick={() => setTab(key)}>{labelMap[key]}</button>
             )
           })}
         </div>
