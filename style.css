@@ -1927,17 +1927,16 @@ ul { list-style: none; }
   position: absolute;
   top: clamp(20px, 2.4vw, 32px);
   right: clamp(20px, 2.4vw, 32px);
-  padding: 5px 12px;
-  border-radius: 999px;
-  background: rgba(232, 168, 56, 0.18);
-  border: 1px solid rgba(232, 168, 56, 0.5);
+  padding: 0;
+  background: none;
+  border: none;
   color: var(--color-gold-dark);
   font-size: 11px; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase;
 }
 .editorial__card--dark .editorial__card-soon {
-  background: rgba(232, 168, 56, 0.16);
-  border-color: rgba(232, 168, 56, 0.45);
+  background: none;
+  border: none;
   color: var(--color-gold);
 }
 
