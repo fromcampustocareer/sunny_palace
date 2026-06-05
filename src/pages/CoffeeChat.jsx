@@ -334,10 +334,7 @@ export default function CoffeeChat() {
 
   const copyTemplate = () => {
     const text = TEMPLATE_TEXT.replace('[Name]', modalName)
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2500)
-    })
+    navigator.clipboard.writeText(text).then(markCopied)
   }
 
   const setFormField = (k, v) => {
