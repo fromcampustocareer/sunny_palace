@@ -424,7 +424,7 @@ export default function ResumeReviews() {
         avatar_url = data.publicUrl
       }
     }
-    const { error } = await supabase.from('resume_submissions').insert({
+    const { data, error } = await supabase.from('resume_submissions').insert({
       handle: submitForm.handle,
       email: submitForm.email,
       linkedin_url: submitForm.linkedin || null,
@@ -439,10 +439,14 @@ export default function ResumeReviews() {
       file_name: storagePath,
       status: 'approved',
       avatar_url,
-    })
+    }).select().single()
     setSubmitLoading(false)
     if (error) { setSubmitError(t.formErrorGeneric) }
-    else { setSubmitSubmitted(true) }
+    else {
+      // Approved on submit, so surface it in the library immediately (newest-first) — no reload.
+      if (data) setDbResumes(prev => [dbResumeToCard(data), ...prev])
+      setSubmitSubmitted(true)
+    }
   }
 
   function toggleBgTag(tag) {

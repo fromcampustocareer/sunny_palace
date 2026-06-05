@@ -204,7 +204,7 @@ export default function OpportunityBoard() {
     setFieldErrors({ role: '', company: '', type: '', link: '', why: '', email: '' })
     setFormLoading(true)
     setFormError('')
-    const { error } = await supabase.from('opportunities').insert({
+    const { data, error } = await supabase.from('opportunities').insert({
       role: form.role.trim(),
       company: form.company.trim(),
       role_type: form.type,
@@ -216,11 +216,13 @@ export default function OpportunityBoard() {
       status: 'approved',
       location: form.location.trim() || null,
       pay: form.pay.trim() || null,
-    })
+    }).select().single()
     setFormLoading(false)
     if (error) {
       setFormError(t.formErrorGeneric)
     } else {
+      // Approved on submit, so surface it on the board immediately (newest-first) — no reload.
+      if (data) setDbOpportunities(prev => [dbOpportunityToCard(data, t), ...prev])
       setFormSubmitted(true)
     }
   }
