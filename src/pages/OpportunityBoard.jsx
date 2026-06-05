@@ -69,16 +69,18 @@ function OBCard({ card, featured, t, idx = 0 }) {
       </div>
       <div>
         <div className="ob-card__title">{card.title}</div>
-        <div className="ob-card__company">{card.company}</div>
+        {card.company && <div className="ob-card__company">{card.company}</div>}
       </div>
       <div className="ob-card__tags">
         {card.tags.map(tag => <span key={tag.l} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
       </div>
-      <div className="ob-card__meta">
-        {card.meta.map(m => <span key={m} className="ob-card__meta-item">{m}</span>)}
-      </div>
+      {card.meta.length > 0 && (
+        <div className="ob-card__meta">
+          {card.meta.map(m => <span key={m} className="ob-card__meta-item">{m}</span>)}
+        </div>
+      )}
+      {card.source && <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>}
       <div className="ob-card__desc">{card.desc}</div>
-      <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>
       <div className="ob-card__actions">
         <a href={card.viewLink} className="ob-card__cta-primary" target="_blank" rel="noopener">{card.viewLabel || t.cardViewRole}</a>
         {card.postLink && (isExternal
@@ -318,7 +320,7 @@ export default function OpportunityBoard() {
         .ob-tag--bridge    { background: rgba(58,125,107,.1);   color: var(--color-teal); }
         .ob-card__meta { display: flex; flex-wrap: wrap; gap: 12px; }
         .ob-card__meta-item { font-size: 12px; color: var(--color-muted); display: flex; align-items: center; gap: 4px; }
-        .ob-card__desc { font-size: 13px; color: var(--color-muted); line-height: 1.65; }
+        .ob-card__desc { font-size: 13px; color: var(--color-muted); line-height: 1.65; flex: 1; }
         .ob-card__desc strong { color: var(--color-dark); font-weight: 600; }
         .ob-card__source { font-size: 11px; color: rgba(0,0,0,.35); display: flex; align-items: center; gap: 5px; }
         .ob-card__source-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-gold-dark); flex-shrink: 0; }
