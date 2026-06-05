@@ -353,8 +353,8 @@ export default function CoffeeChat() {
     navigator.clipboard.writeText(text)
       .then(markCopied)
       .catch(() => {
-        setCopyFailed(true)
-        setTimeout(() => setCopyFailed(false), 3500)
+        if (copyViaExecCommand(text)) markCopied()
+        else { setCopyFailed(true); setTimeout(() => setCopyFailed(false), 3500) }
       })
   }
 
