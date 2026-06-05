@@ -1161,7 +1161,7 @@ export default function CoffeeChat() {
           <h2 id="cc-modal-title" className="cc-modal__title">{t.modalTitlePrefix} {modalName}</h2>
           <p className="cc-modal__sub">{t.modalSub}</p>
           <div className="cc-modal__template">{TEMPLATE_TEXT.replace('[Name]', modalName)}</div>
-          <button className={`cc-modal__copy-btn${copied ? ' copied' : ''}`} onClick={copyTemplate}>
+          <button className={`cc-modal__copy-btn${copied ? ' copied' : ''}${copyFailed ? ' copy-failed' : ''}`} onClick={copyTemplate}>
             {copied ? t.modalCopied : t.modalCopyBtn}
           </button>
         </div>
