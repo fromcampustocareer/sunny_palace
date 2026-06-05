@@ -57,14 +57,22 @@ function dbOpportunityToCard(row, t) {
   }
 }
 
+// One color per opportunity type, so logo + tag + tint + CTA all agree per card
+// (mirrors the Templates card system). Replaces the old per-item random logo colors.
+const LOGO_TINT = {
+  scholarship: { background: 'rgba(232,168,56,.16)', color: 'var(--color-gold-dark)' },
+  program:     { background: 'rgba(179,69,57,.1)',   color: 'var(--color-accent)' },
+  internship:  { background: 'rgba(22,43,68,.1)',    color: 'var(--color-navy)' },
+}
 function OBCard({ card, featured, t, idx = 0 }) {
   const isExternal = card.postLink.startsWith('http')
   const typeKey = (card.type || '').split(' ')[0]
+  const logoStyle = LOGO_TINT[typeKey] || card.logoStyle || {}
   return (
     <article className={`ob-card${typeKey ? ' ob-card--' + typeKey : ''}${featured ? ' featured' : ''}`} style={{ '--ob-i': idx % 12 }}>
       {featured && <span className="ob-card__featured-badge">{t.cardFeaturedBadge}</span>}
       <div className="ob-card__top">
-        <div className="ob-card__company-logo" style={card.logoStyle}>{card.logo}</div>
+        <div className="ob-card__company-logo" style={logoStyle}>{card.logo}</div>
         <span className={`ob-card__deadline${card.deadlineCls ? ' ' + card.deadlineCls : ''}`}>{card.deadlineLabel}</span>
       </div>
       <div>
@@ -291,6 +299,7 @@ export default function OpportunityBoard() {
         .ob-card--new-grad      { background: linear-gradient(180deg, rgba(232,168,56,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(232,168,56,.26); }
         .ob-card--fellowship    { background: linear-gradient(180deg, rgba(91,142,194,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(91,142,194,.22); }
         .ob-card--program       { background: linear-gradient(180deg, rgba(179,69,57,.06) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(179,69,57,.22); }
+        .ob-card--scholarship   { background: linear-gradient(180deg, rgba(232,168,56,.07) 0%, rgba(255,250,242,.55) 60%); border-color: rgba(232,168,56,.26); }
         .ob-card.featured { border-color: rgba(232,168,56,.42); border-width: 1.5px; background: linear-gradient(180deg, rgba(232,168,56,.07) 0%, rgba(255,250,242,.55) 60%); }
         .ob-card.featured::before { content: ''; position: absolute; top: -1px; left: 18px; width: 36px; height: 6px; background: var(--color-gold); border-radius: 0 0 4px 4px; box-shadow: 0 1px 2px rgba(232,168,56,.4); }
         .ob-card.archived { opacity: .55; pointer-events: none; }
@@ -338,6 +347,8 @@ export default function OpportunityBoard() {
         .ob-card--fellowship    .ob-card__cta-primary:hover { background: var(--color-blue);   color: var(--color-cream); border-color: var(--color-blue);   box-shadow: 0 8px 16px -8px rgba(91,142,194,.5); }
         .ob-card--program       .ob-card__cta-primary { color: var(--color-accent);    border-color: rgba(179,69,57,.5); }
         .ob-card--program       .ob-card__cta-primary:hover { background: var(--color-accent); color: var(--color-cream); border-color: var(--color-accent); box-shadow: 0 8px 16px -8px rgba(179,69,57,.5); }
+        .ob-card--scholarship   .ob-card__cta-primary { color: var(--color-gold-dark); border-color: rgba(232,168,56,.6); }
+        .ob-card--scholarship   .ob-card__cta-primary:hover { background: var(--color-gold); color: var(--color-dark); border-color: var(--color-gold); box-shadow: 0 8px 16px -8px rgba(232,168,56,.5); }
         .ob-card__cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 12px 16px; background: transparent; color: var(--color-muted); border-radius: 999px; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid rgba(0,0,0,.14); cursor: pointer; transition: border-color .25s, color .25s, transform .22s cubic-bezier(.16,1,.3,1); flex-shrink: 0; }
         .ob-card__cta-secondary:hover { border-color: var(--color-dark); color: var(--color-dark); transform: translateY(-1px); }
         .ob-card__cta-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 8px; }
