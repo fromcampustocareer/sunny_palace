@@ -667,6 +667,8 @@ export default function CoffeeChat() {
         .cc-modal__copy-btn:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 8px; }
         .cc-card__cta-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 8px; }
         .cc-card__cta-secondary:focus-visible { outline: 2px solid var(--color-dark); outline-offset: 2px; border-radius: 8px; }
+        .cc-btn-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 3px; }
+        .cc-btn-secondary:focus-visible { outline: 2px solid var(--color-dark); outline-offset: 3px; }
 
         .cc-ms-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px; border: 1.5px solid rgba(26,25,22,.12); border-radius: 10px; background: rgba(255,255,255,.85); color: var(--color-dark); font-family: var(--font-body); font-size: 15px; text-align: left; cursor: pointer; transition: border-color .2s, background .2s, box-shadow .2s; }
         .cc-ms-trigger:focus { border-color: var(--color-gold); background: var(--color-white); outline: none; box-shadow: 0 0 0 4px rgba(232,168,56,.12); }

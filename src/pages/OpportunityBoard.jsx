@@ -306,7 +306,7 @@ export default function OpportunityBoard() {
         .ob-card__deadline.urgent { color: var(--color-accent); }
         .ob-card__deadline.rolling { color: var(--color-teal); }
         .ob-card__title { font-family: var(--font-display); font-size: clamp(14px,1.7vw,16px); font-weight: 700; color: var(--color-dark); line-height: 1.3; }
-        .ob-card__company { font-size: 13px; color: var(--color-muted); font-weight: 500; }
+        .ob-card__company { font-size: 14px; color: var(--color-dark); font-weight: 600; }
         .ob-card__tags { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
         .ob-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
         .ob-tag--intern    { background: rgba(22,43,68,.08);    color: var(--color-navy); }
@@ -325,8 +325,8 @@ export default function OpportunityBoard() {
         .ob-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 4px; }
         .ob-card__cta-primary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 16px; background: var(--color-dark); color: var(--color-cream); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: background .2s, transform .15s; flex: 1; justify-content: center; }
         .ob-card__cta-primary:hover { background: var(--color-accent-hover); transform: translateY(-1px); }
-        .ob-card__cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 14px; background: transparent; color: var(--color-muted); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: 1.5px solid rgba(0,0,0,.12); cursor: pointer; transition: border-color .2s, color .2s; flex-shrink: 0; }
-        .ob-card__cta-secondary:hover { border-color: var(--color-dark); color: var(--color-dark); }
+        .ob-card__cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 13px 14px; background: transparent; color: var(--color-muted); border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 600; text-decoration: none; border: 1.5px solid rgba(0,0,0,.12); cursor: pointer; transition: border-color .2s, color .2s, transform .15s; flex-shrink: 0; }
+        .ob-card__cta-secondary:hover { border-color: var(--color-dark); color: var(--color-dark); transform: translateY(-1px); }
         .ob-card__cta-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 8px; }
         .ob-card__cta-secondary:focus-visible { outline: 2px solid var(--color-dark); outline-offset: 2px; border-radius: 8px; }
         .ob-main-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px,1fr)); gap: 16px; }
