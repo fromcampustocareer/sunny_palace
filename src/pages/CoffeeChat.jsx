@@ -542,7 +542,7 @@ export default function CoffeeChat() {
         .cc-tag--gold   { background: rgba(232,168,56,.14); color: var(--color-gold-dark); }
         .cc-tag--accent { background: rgba(179,69,57,.1);   color: var(--color-accent); }
         .cc-tag--navy   { background: rgba(22,43,68,.1);    color: var(--color-navy); }
-        .cc-tag--muted  { background: rgba(26,25,22,.06);   color: var(--color-muted); }
+        .cc-tag--muted  { background: rgba(26,25,22,.1);    color: #3E3A35; }
         .cc-card__meta { display: flex; align-items: center; gap: 14px; font-size: 11px; color: var(--color-muted); padding-top: 4px; border-top: 1px solid rgba(26,25,22,.06); padding-top: 12px; }
         .cc-card__capacity { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--color-dark); }
         .cc-card__capacity::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--color-teal); flex-shrink: 0; box-shadow: 0 0 0 2px rgba(58,125,107,.2); }
@@ -574,10 +574,11 @@ export default function CoffeeChat() {
         .cc-reach__templates-link::before { content: '→'; color: var(--color-gold); transition: transform .2s; }
         .cc-reach__templates-link:hover { color: var(--color-gold); }
 
-        .cc-bridge { max-width: 1040px; margin: 0 auto; padding: 0 clamp(20px,5vw,56px) 24px; }
-        .cc-bridge__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 24px 28px; background: rgba(232,168,56,.06); border: 1px solid rgba(232,168,56,.22); border-radius: 14px; }
-        .cc-bridge__copy { font-family: var(--font-display); font-size: clamp(17px,2vw,21px); font-weight: 600; color: var(--color-dark); line-height: 1.3; letter-spacing: -.005em; }
-        .cc-bridge__copy em { font-style: italic; font-family: var(--font-serif, var(--font-display)); color: var(--color-gold-dark); font-weight: 500; }
+        /* Bridge lives inside the plum reach band — translucent panel, cream text */
+        .cc-bridge { margin: clamp(40px,5vw,56px) 0 0; }
+        .cc-bridge__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 24px 28px; background: rgba(255,255,255,.09); border: 1px solid rgba(242,228,206,.2); border-radius: 14px; }
+        .cc-bridge__copy { font-family: var(--font-display); font-size: clamp(17px,2vw,21px); font-weight: 600; color: var(--color-cream); line-height: 1.3; letter-spacing: -.005em; }
+        .cc-bridge__copy em { font-style: italic; font-family: var(--font-serif, var(--font-display)); color: var(--color-gold); font-weight: 500; }
         .cc-bridge__cta { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; background: var(--color-dark); color: var(--color-cream); border-radius: 999px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; box-shadow: 0 6px 14px -8px rgba(63,42,28,.4), inset 0 1px 0 rgba(255,255,255,.08); transition: background .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s; }
         .cc-bridge__cta:hover { background: var(--color-teal); transform: translateY(-1px); box-shadow: 0 12px 22px -10px rgba(58,125,107,.5); }
         .cc-bridge__cta::after { content: '↓'; font-size: 13px; line-height: 1; }
@@ -979,17 +980,14 @@ export default function CoffeeChat() {
             </div>
           </div>
         </div>
+        <div className="cc-bridge">
+          <div className="cc-bridge__inner">
+            <p className="cc-bridge__copy">{t.bridgeCopyPrefix} <em>{t.bridgeCopyEm}</em></p>
+            <a href="#apply" className="cc-bridge__cta">{t.bridgeCtaLabel}</a>
+          </div>
+        </div>
         </div>
       </section>
-
-      <div className="cc-bridge">
-        <div className="cc-bridge__inner">
-          <p className="cc-bridge__copy">{t.bridgeCopyPrefix} <em>{t.bridgeCopyEm}</em></p>
-          <a href="#apply" className="cc-bridge__cta">{t.bridgeCtaLabel}</a>
-        </div>
-      </div>
-
-      <hr className="cc-divider" />
 
       <section className="cc-apply" id="apply">
         <div className="cc-apply__layout">
