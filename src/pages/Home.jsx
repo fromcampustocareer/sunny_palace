@@ -542,8 +542,8 @@ export default function Home() {
     gsap.from('.about__closing', { scrollTrigger: { trigger: '.about__closing', start: 'top 90%', toggleActions: toggle }, y: 20, opacity: 0, duration: 0.6, ease: 'power2.out' })
     gsap.from('.c2c__title-img', { scrollTrigger: { trigger: '.c2c', start: 'top 75%', toggleActions: toggle }, y: -30, opacity: 0, duration: 0.9, ease: 'power2.out' })
     gsap.from('.c2c__lead', { scrollTrigger: { trigger: '.c2c', start: 'top 65%', toggleActions: toggle }, y: 30, opacity: 0, duration: 0.7, ease: 'power2.out' })
-    gsap.utils.toArray('.c2c__card').forEach((card, i) => {
-      gsap.from(card, { scrollTrigger: { trigger: '.c2c__grid', start: 'top 80%', toggleActions: toggle }, y: 50, opacity: 0, duration: 0.6, ease: 'power3.out', delay: i * 0.12 })
+    gsap.utils.toArray('.c2c__node').forEach((node, i) => {
+      gsap.from(node, { scrollTrigger: { trigger: '.c2c__pipeline', start: 'top 80%', toggleActions: toggle }, y: 40, opacity: 0, duration: 0.6, ease: 'power3.out', delay: i * 0.14 })
     })
     gsap.from('.c2c__closing', { scrollTrigger: { trigger: '.c2c__closing', start: 'top 92%', toggleActions: toggle }, y: 20, opacity: 0, duration: 0.6, ease: 'power2.out' })
     gsap.from('.services__image-inner', { scrollTrigger: { trigger: '.services', start: 'top 75%', toggleActions: toggle }, clipPath: 'inset(20%)', scale: 1.2, duration: 1, ease: 'power2.out' })
@@ -1029,7 +1029,6 @@ export default function Home() {
       {/* ABOUT */}
       <section className="about" id="about">
         <div className="about__header">
-          <span className="about__number">{t.aboutNumber}</span>
           <h2 className="about__title">{t.aboutTitle}</h2>
         </div>
         <div className="about__tabs" role="tablist" onKeyDown={e => {
@@ -1142,18 +1141,23 @@ export default function Home() {
           </div>
           <div className="c2c__content">
             <p className="c2c__lead">{t.c2cLead}</p>
-            <div className="c2c__grid">
+            <ol className="c2c__pipeline">
               {t.c2cCards.map(({ n, t: title, d }, idx) => {
-                const cls = ['c2c__card--navy', 'c2c__card--teal', 'c2c__card--accent', 'c2c__card--gold'][idx]
+                const tone = ['navy', 'teal', 'accent', 'gold'][idx]
                 return (
-                  <div key={n} className={`c2c__card ${cls}`}>
-                    <span className="c2c__card-number">{n}</span>
-                    <h3 className="c2c__card-title">{title}</h3>
-                    <p className="c2c__card-desc">{d}</p>
-                  </div>
+                  <li key={n} className={`c2c__node c2c__node--${tone}`}>
+                    <div className="c2c__node-marker" aria-hidden="true">
+                      <span className="c2c__node-dot" />
+                    </div>
+                    <div className="c2c__node-body">
+                      <span className="c2c__node-num">{n}</span>
+                      <h3 className="c2c__node-title">{title}</h3>
+                      <p className="c2c__node-desc">{d}</p>
+                    </div>
+                  </li>
                 )
               })}
-            </div>
+            </ol>
             <p className="c2c__closing">{t.c2cClosing}</p>
           </div>
         </div>
@@ -1278,7 +1282,6 @@ export default function Home() {
         <div className="editorial__showcase">
           <div className="editorial__showcase-inner">
             <div className="editorial__showcase-content">
-              <span className="editorial__showcase-label">{t.editorialLabel}</span>
               <h2 className="editorial__showcase-title">{t.editorialTitle}</h2>
               <p className="editorial__showcase-desc">{t.editorialDesc}</p>
             </div>

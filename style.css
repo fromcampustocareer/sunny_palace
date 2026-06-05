@@ -708,7 +708,7 @@ ul { list-style: none; }
   font-weight: 500;
   letter-spacing: normal;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.58);
+  color: rgba(255,255,255,0.82);
   margin: 0;
   line-height: 1.5;
   width: 100%;
@@ -1254,69 +1254,103 @@ ul { list-style: none; }
   opacity: 0.75;
 }
 
-.c2c__grid {
+/* ---- Connected pipeline: one path, four brand-color nodes ----
+   Replaces the old four-block grid. Color reads as accent (node dot +
+   serif number) instead of four saturated walls competing with the
+   serif headline. A single hairline runs node-to-node via per-node
+   line segments, so it stays continuous and fully responsive. */
+.c2c__pipeline {
+  list-style: none;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: clamp(16px, 2.5vw, 28px);
+  gap: clamp(16px, 2.5vw, 32px);
   width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-/* ---- Solid accent cards ---- */
-.c2c__card {
-  border-radius: clamp(12px, 1.6vw, 18px);
-  padding: clamp(24px, 3vw, 40px) clamp(20px, 2.5vw, 32px);
+.c2c__node--navy   { --node-color: var(--color-navy);   --node-ink: var(--color-navy); }
+.c2c__node--teal   { --node-color: var(--color-teal);   --node-ink: var(--color-teal); }
+.c2c__node--accent { --node-color: var(--color-accent); --node-ink: var(--color-accent); }
+.c2c__node--gold   { --node-color: var(--color-gold);   --node-ink: var(--color-gold-dark); }
+
+.c2c__node {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Marker row carries the dot + the connecting line segments */
+.c2c__node-marker {
+  position: relative;
+  width: 100%;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.c2c__node-marker::before,
+.c2c__node-marker::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  /* 50% of the column + half the grid gap, so adjacent segments meet
+     at the gap midpoint and the rail reads as one continuous line */
+  width: calc(50% + clamp(8px, 1.25vw, 16px));
+  height: 2px;
+  background: rgba(26, 25, 22, 0.16);
+  transform: translateY(-50%);
+}
+.c2c__node-marker::before { right: 50%; }
+.c2c__node-marker::after  { left: 50%; }
+.c2c__node:first-child .c2c__node-marker::before,
+.c2c__node:last-child  .c2c__node-marker::after { display: none; }
+
+.c2c__node-dot {
+  position: relative;
+  z-index: 1;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--node-color);
+  box-shadow: 0 0 0 4px var(--color-cream);
   transition: transform 0.3s var(--ease-out);
 }
+.c2c__node:hover .c2c__node-dot { transform: scale(1.28); }
 
-.c2c__card:hover {
-  transform: translateY(-5px);
+.c2c__node-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 0 clamp(4px, 1vw, 14px);
 }
-
-.c2c__card--navy   { background: var(--color-navy); }
-.c2c__card--teal   { background: var(--color-teal); }
-.c2c__card--accent { background: var(--color-accent); }
-.c2c__card--gold   { background: var(--color-gold); }
-
-.c2c__card-number {
+.c2c__node-num {
   font-family: var(--font-serif);
-  font-size: clamp(28px, 3.5vw, 40px);
+  font-size: clamp(26px, 3vw, 38px);
   font-weight: 400;
   font-style: italic;
   line-height: 1;
+  color: var(--node-ink);
 }
-
-.c2c__card--navy .c2c__card-number,
-.c2c__card--teal .c2c__card-number,
-.c2c__card--accent .c2c__card-number { color: rgba(232, 168, 56, 0.9); }
-.c2c__card--gold .c2c__card-number   { color: rgba(26, 25, 22, 0.5); }
-
-.c2c__card-title {
+.c2c__node-title {
   font-family: var(--font-display);
-  font-size: clamp(18px, 2vw, 24px);
+  font-size: clamp(17px, 1.9vw, 22px);
   font-weight: 600;
   margin: 0;
+  color: var(--color-dark);
 }
-
-.c2c__card--navy .c2c__card-title,
-.c2c__card--teal .c2c__card-title,
-.c2c__card--accent .c2c__card-title { color: var(--color-cream); }
-.c2c__card--gold .c2c__card-title   { color: var(--color-dark); }
-
-.c2c__card-desc {
+.c2c__node-desc {
   font-family: var(--font-body);
   font-size: clamp(13px, 1.4vw, 15px);
   font-weight: 400;
   line-height: 1.6;
   margin: 0;
+  max-width: 27ch;
+  color: rgba(26, 25, 22, 0.68);
 }
-
-.c2c__card--navy .c2c__card-desc,
-.c2c__card--teal .c2c__card-desc,
-.c2c__card--accent .c2c__card-desc { color: rgba(242, 228, 206, 0.78); }
-.c2c__card--gold .c2c__card-desc   { color: rgba(26, 25, 22, 0.72); }
 
 .c2c__closing {
   font-family: var(--font-serif);
@@ -1332,13 +1366,58 @@ ul { list-style: none; }
 }
 
 /* ---- C2C Responsive ---- */
+/* Below desktop the horizontal path rotates into a vertical timeline:
+   dots run down the left rail, content reads to the right. */
 @media (max-width: 1023px) {
-  .c2c__grid { grid-template-columns: repeat(2, 1fr); }
   .c2c__title-img { width: clamp(260px, 58vw, 480px); }
+
+  .c2c__pipeline {
+    grid-template-columns: 1fr;
+    gap: 0;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .c2c__node {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .c2c__node-marker {
+    flex: 0 0 18px;
+    width: 18px;
+    height: auto;
+    align-items: flex-start;
+  }
+  /* segments rotate to a single vertical rail, capped at the dot on the ends */
+  .c2c__node-marker::before {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    right: auto;
+    width: 2px;
+    height: auto;
+    transform: translateX(-50%);
+    display: block;
+  }
+  .c2c__node-marker::after { display: none; }
+  .c2c__node:first-child .c2c__node-marker::before { top: 13px; }
+  .c2c__node:last-child  .c2c__node-marker::before { bottom: calc(100% - 13px); }
+  .c2c__node-dot { margin-top: 5px; }
+
+  .c2c__node-body {
+    align-items: flex-start;
+    text-align: left;
+    padding: 0 0 clamp(26px, 5vw, 38px);
+    gap: 6px;
+    max-width: none;
+  }
+  .c2c__node:last-child .c2c__node-body { padding-bottom: 0; }
+  .c2c__node-num   { font-size: clamp(24px, 6vw, 32px); }
+  .c2c__node-title { font-size: clamp(18px, 4.5vw, 22px); }
+  .c2c__node-desc  { max-width: 56ch; font-size: clamp(14px, 3.6vw, 15px); }
 }
 
 @media (max-width: 767px) {
-  .c2c__grid { grid-template-columns: 1fr; }
   .c2c__title-img { width: clamp(220px, 72vw, 360px); }
   .c2c__lead { font-size: clamp(17px, 4vw, 24px); }
   .c2c__closing { white-space: normal; max-width: 600px; }
