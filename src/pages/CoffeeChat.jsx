@@ -334,6 +334,8 @@ export default function CoffeeChat() {
 
   const copyViaExecCommand = (text) => {
     try {
+      const ta = document.createElement('textarea')
+      ta.value = text
       return false
     } catch {
       return false
