@@ -618,6 +618,7 @@ export default function CoffeeChat() {
         .cc-modal__copy-btn { width: 100%; padding: 14px; background: var(--color-dark); color: var(--color-cream); border: none; border-radius: 999px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.005em; cursor: pointer; box-shadow: 0 8px 20px -10px rgba(26,25,22,.4), inset 0 1px 0 rgba(255,255,255,.08); transition: background .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s; }
         .cc-modal__copy-btn:hover { background: var(--color-teal); transform: translateY(-1px); box-shadow: 0 12px 24px -10px rgba(58,125,107,.5); }
         .cc-modal__copy-btn.copied { background: var(--color-teal); }
+        .cc-modal__copy-btn.copy-failed { background: var(--color-accent); }
         .cc-modal__close:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
         .cc-modal__copy-btn:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 8px; }
         .cc-card__cta-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 8px; }
