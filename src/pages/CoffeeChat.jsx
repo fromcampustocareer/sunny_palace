@@ -332,6 +332,8 @@ export default function CoffeeChat() {
     setTimeout(() => setCopied(false), 2500)
   }
 
+  // Legacy/denied-permission fallback: select the text in a hidden textarea and
+  // ask the browser to copy. Returns true if the copy command succeeded.
   const copyViaExecCommand = (text) => {
     try {
       const ta = document.createElement('textarea')
@@ -354,6 +356,8 @@ export default function CoffeeChat() {
       navigator.clipboard.writeText(text)
         .then(markCopied)
         .catch(() => {
+          // Clipboard API rejected (denied permission, non-secure context, unfocused
+          // document) — fall back to the legacy command before giving up.
           if (copyViaExecCommand(text)) markCopied()
           else { setCopyFailed(true); setTimeout(() => setCopyFailed(false), 3500) }
         })
