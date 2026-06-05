@@ -477,20 +477,21 @@ export default function CoffeeChat() {
         .cc-btn-secondary:hover { border-color: var(--color-dark); color: var(--color-accent); background: rgba(179,69,57,.04); transform: translateY(-2px); }
         .cc-btn-secondary:active { transform: translateY(0); }
 
-        .cc-how { max-width: 1040px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
+        /* How-it-works is a full-bleed teal color band (was flat cream) — light text + gold step accents */
+        .cc-how { background: var(--color-teal); padding: clamp(72px,9vw,104px) clamp(20px,5vw,56px); }
+        .cc-how__inner { max-width: 1040px; margin: 0 auto; }
+        .cc-how .cc-kicker { color: var(--color-cream); }
+        .cc-how .cc-kicker::after { background: var(--color-cream); opacity: .55; }
+        .cc-how .cc-section-title { color: var(--color-cream); }
+        .cc-how .cc-section-sub { color: rgba(242,228,206,.9); }
+        .cc-how .cc-section-body { color: rgba(242,228,206,.8); }
+        .cc-how .cc-section-body strong { color: var(--color-cream); }
         .cc-how__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 60px; margin-top: 40px; }
         .cc-how__step { display: flex; flex-direction: column; gap: 10px; position: relative; padding-top: 6px; }
-        .cc-how__step::before { content: ''; position: absolute; top: 0; left: 0; width: 28px; height: 2px; background: var(--color-accent); border-radius: 2px; opacity: .8; }
-        .cc-how__step:nth-child(1)::before { background: var(--color-accent); }
-        .cc-how__step:nth-child(2)::before { background: var(--color-teal); }
-        .cc-how__step:nth-child(3)::before { background: var(--color-gold-dark); }
-        .cc-how__step:nth-child(4)::before { background: var(--color-navy); }
-        .cc-how__num { font-family: var(--font-display); font-size: 11px; font-weight: 800; color: var(--color-accent); letter-spacing: .2em; text-transform: uppercase; }
-        .cc-how__step:nth-child(2) .cc-how__num { color: var(--color-teal); }
-        .cc-how__step:nth-child(3) .cc-how__num { color: var(--color-gold-dark); }
-        .cc-how__step:nth-child(4) .cc-how__num { color: var(--color-navy); }
-        .cc-how__step-title { font-family: var(--font-display); font-size: clamp(20px,2.4vw,26px); font-weight: 700; color: var(--color-dark); line-height: 1.2; letter-spacing: -.01em; }
-        .cc-how__step-body { font-size: clamp(14px,1.6vw,15px); color: var(--color-muted); line-height: 1.7; }
+        .cc-how__step::before { content: ''; position: absolute; top: 0; left: 0; width: 28px; height: 2px; background: var(--color-gold); border-radius: 2px; opacity: 1; }
+        .cc-how__num { font-family: var(--font-display); font-size: 11px; font-weight: 800; color: var(--color-gold); letter-spacing: .2em; text-transform: uppercase; }
+        .cc-how__step-title { font-family: var(--font-display); font-size: clamp(20px,2.4vw,26px); font-weight: 700; color: var(--color-cream); line-height: 1.2; letter-spacing: -.01em; }
+        .cc-how__step-body { font-size: clamp(14px,1.6vw,15px); color: rgba(242,228,206,.78); line-height: 1.7; }
 
         .cc-browse { max-width: 1040px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
         .cc-browse__head { margin-bottom: 36px; }
@@ -552,20 +553,26 @@ export default function CoffeeChat() {
         .cc-card__cta-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 12px 14px; background: transparent; color: var(--color-dark); border-radius: 999px; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid rgba(26,25,22,.18); cursor: pointer; transition: border-color .25s, color .25s, background .25s, transform .22s cubic-bezier(.16,1,.3,1); flex-shrink: 0; }
         .cc-card__cta-secondary:hover { border-color: var(--color-accent); color: var(--color-accent); background: rgba(179,69,57,.04); transform: translateY(-1px); }
 
-        .cc-reach { max-width: 1040px; margin: 0 auto; padding: 80px clamp(20px,5vw,56px); }
+        /* How-to-reach-out is a full-bleed plum color band (echoes the plum "Chat" wordmark) — cream text, gold accents */
+        .cc-reach { background: var(--color-plum); padding: clamp(72px,9vw,104px) clamp(20px,5vw,56px); }
+        .cc-reach__inner { max-width: 1040px; margin: 0 auto; }
+        .cc-reach .cc-kicker { color: var(--color-cream); }
+        .cc-reach .cc-kicker::after { background: var(--color-cream); opacity: .55; }
+        .cc-reach .cc-section-title { color: var(--color-cream); }
+        .cc-reach .cc-section-sub { color: rgba(242,228,206,.9); }
         .cc-reach__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 32px; }
-        .cc-reach__col-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--color-dark); margin-bottom: 14px; }
-        .cc-reach__body { font-size: clamp(14px,1.6vw,15px); color: var(--color-muted); line-height: 1.75; margin-bottom: 20px; }
-        .cc-reach__body strong { color: var(--color-dark); font-weight: 600; }
+        .cc-reach__col-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--color-cream); margin-bottom: 14px; }
+        .cc-reach__body { font-size: clamp(14px,1.6vw,15px); color: rgba(242,228,206,.82); line-height: 1.75; margin-bottom: 20px; }
+        .cc-reach__body strong { color: var(--color-cream); font-weight: 600; }
         .cc-do-list { display: flex; flex-direction: column; gap: 10px; }
-        .cc-do-item { display: flex; align-items: flex-start; gap: 10px; font-size: clamp(13px,1.5vw,14px); color: var(--color-muted); line-height: 1.6; }
+        .cc-do-item { display: flex; align-items: flex-start; gap: 10px; font-size: clamp(13px,1.5vw,14px); color: rgba(242,228,206,.82); line-height: 1.6; }
         .cc-do-item__icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 1px; }
-        .cc-do-item__icon--do   { background: rgba(58,125,107,.12); color: var(--color-teal); }
-        .cc-do-item__icon--dont { background: rgba(179,69,57,.1);   color: var(--color-accent); }
-        .cc-do-item strong { color: var(--color-dark); font-weight: 600; }
-        .cc-reach__templates-link { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--color-dark); text-decoration: none; margin-top: 20px; transition: color .2s; }
-        .cc-reach__templates-link::before { content: '→'; color: var(--color-accent); transition: transform .2s; }
-        .cc-reach__templates-link:hover { color: var(--color-accent); }
+        .cc-do-item__icon--do   { background: rgba(232,168,56,.22); color: var(--color-gold); }
+        .cc-do-item__icon--dont { background: rgba(255,255,255,.14); color: var(--color-cream); }
+        .cc-do-item strong { color: var(--color-cream); font-weight: 600; }
+        .cc-reach__templates-link { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--color-cream); text-decoration: none; margin-top: 20px; transition: color .2s; }
+        .cc-reach__templates-link::before { content: '→'; color: var(--color-gold); transition: transform .2s; }
+        .cc-reach__templates-link:hover { color: var(--color-gold); }
 
         .cc-bridge { max-width: 1040px; margin: 0 auto; padding: 0 clamp(20px,5vw,56px) 24px; }
         .cc-bridge__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; padding: 24px 28px; background: rgba(232,168,56,.06); border: 1px solid rgba(232,168,56,.22); border-radius: 14px; }
@@ -624,20 +631,21 @@ export default function CoffeeChat() {
         .cc-safety__text a { color: var(--color-navy); font-weight: 700; text-decoration: underline; text-decoration-color: rgba(22,43,68,.3); text-underline-offset: 2px; transition: text-decoration-color .2s; }
         .cc-safety__text a:hover { text-decoration-color: var(--color-navy); }
 
-        .cc-eco { background: linear-gradient(180deg, rgba(242,228,206,.55) 0%, rgba(242,228,206,.25) 100%); padding: 88px clamp(20px,5vw,56px); position: relative; overflow: hidden; }
+        /* Ecosystem is a full-bleed terracotta color band (was flat cream) — cream text + gold accents, translucent link cards */
+        .cc-eco { background: var(--color-accent); padding: clamp(80px,10vw,112px) clamp(20px,5vw,56px); position: relative; overflow: hidden; }
         .cc-eco__inner { max-width: 1040px; margin: 0 auto; position: relative; }
-        .cc-eco__kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 10px; }
-        .cc-eco__kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-accent); opacity: .5; }
-        .cc-eco__title { font-family: var(--font-display); font-size: clamp(28px,4.4vw,46px); font-weight: 700; color: var(--color-dark); margin-bottom: 14px; line-height: 1.05; letter-spacing: -.02em; max-width: 18ch; }
-        .cc-eco__title em { font-style: italic; font-family: var(--font-serif, var(--font-display)); color: var(--color-gold-dark); font-weight: 500; padding-right: .04em; }
-        .cc-eco__body { font-size: clamp(15px,1.7vw,16px); color: rgba(26,25,22,.7); line-height: 1.65; max-width: 580px; margin-bottom: 40px; }
+        .cc-eco__kicker { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--color-gold); margin-bottom: 14px; display: inline-flex; align-items: center; gap: 10px; }
+        .cc-eco__kicker::after { content: ''; width: 24px; height: 1px; background: var(--color-gold); opacity: .6; }
+        .cc-eco__title { font-family: var(--font-display); font-size: clamp(28px,4.4vw,46px); font-weight: 700; color: var(--color-cream); margin-bottom: 14px; line-height: 1.05; letter-spacing: -.02em; max-width: 18ch; }
+        .cc-eco__title em { font-style: italic; font-family: var(--font-serif, var(--font-display)); color: var(--color-gold); font-weight: 500; padding-right: .04em; }
+        .cc-eco__body { font-size: clamp(15px,1.7vw,16px); color: rgba(242,228,206,.82); line-height: 1.65; max-width: 580px; margin-bottom: 40px; }
         .cc-eco__grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 14px; }
-        .cc-eco__link { background: rgba(255,255,255,.6); border: 1px solid rgba(26,25,22,.08); border-radius: 14px; padding: 22px 24px; text-decoration: none; transition: background .25s, border-color .25s, transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s; display: block; position: relative; }
-        .cc-eco__link::after { content: '→'; position: absolute; top: 22px; right: 22px; font-size: 14px; color: var(--color-accent); opacity: 0; transform: translateX(-4px); transition: opacity .25s, transform .25s cubic-bezier(.16,1,.3,1); }
-        .cc-eco__link:hover { background: rgba(255,255,255,.9); border-color: rgba(179,69,57,.22); transform: translateY(-2px); box-shadow: 0 12px 24px -16px rgba(var(--xx-shadow-warm,58,38,22),.18); }
+        .cc-eco__link { background: rgba(255,255,255,.07); border: 1px solid rgba(242,228,206,.16); border-radius: 14px; padding: 22px 24px; text-decoration: none; transition: background .25s, border-color .25s, transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s; display: block; position: relative; }
+        .cc-eco__link::after { content: '→'; position: absolute; top: 22px; right: 22px; font-size: 14px; color: var(--color-gold); opacity: 0; transform: translateX(-4px); transition: opacity .25s, transform .25s cubic-bezier(.16,1,.3,1); }
+        .cc-eco__link:hover { background: rgba(255,255,255,.14); border-color: rgba(232,168,56,.5); transform: translateY(-2px); box-shadow: 0 14px 28px -18px rgba(0,0,0,.45); }
         .cc-eco__link:hover::after { opacity: 1; transform: translateX(0); }
-        .cc-eco__link-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--color-dark); margin-bottom: 6px; letter-spacing: -.005em; }
-        .cc-eco__link-desc { font-size: 12px; color: rgba(26,25,22,.6); line-height: 1.55; }
+        .cc-eco__link-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--color-cream); margin-bottom: 6px; letter-spacing: -.005em; }
+        .cc-eco__link-desc { font-size: 12px; color: rgba(242,228,206,.68); line-height: 1.55; }
 
         .cc-modal-overlay { position: fixed; inset: 0; background: rgba(26,25,22,.55); backdrop-filter: blur(4px); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s; }
         .cc-modal-overlay.open { opacity: 1; pointer-events: all; }
@@ -750,32 +758,30 @@ export default function CoffeeChat() {
         </div>
       </header>
 
-      <hr className="cc-divider" />
-
       <section className="cc-how" id="how-it-works">
-        <div>
-          <p className="cc-kicker">{t.howKicker}</p>
-          <h2 className="cc-section-title">{t.howTitle}</h2>
-          <p className="cc-section-sub">{t.howSub}</p>
-        </div>
-        <p className="cc-section-body">
-          {t.howBody1}
-        </p>
-        <p className="cc-section-body" style={{ marginTop: '16px' }}>
-          {t.howBody2Part1} <strong>{t.howBody2Strong}</strong> {t.howBody2Part2}
-        </p>
-        <div className="cc-how__grid">
-          {t.howSteps.map(s => (
-            <div key={s.num} className="cc-how__step">
-              <span className="cc-how__num">{s.num}</span>
-              <h3 className="cc-how__step-title">{s.title}</h3>
-              <p className="cc-how__step-body">{s.body}</p>
-            </div>
-          ))}
+        <div className="cc-how__inner">
+          <div>
+            <p className="cc-kicker">{t.howKicker}</p>
+            <h2 className="cc-section-title">{t.howTitle}</h2>
+            <p className="cc-section-sub">{t.howSub}</p>
+          </div>
+          <p className="cc-section-body">
+            {t.howBody1}
+          </p>
+          <p className="cc-section-body" style={{ marginTop: '16px' }}>
+            {t.howBody2Part1} <strong>{t.howBody2Strong}</strong> {t.howBody2Part2}
+          </p>
+          <div className="cc-how__grid">
+            {t.howSteps.map(s => (
+              <div key={s.num} className="cc-how__step">
+                <span className="cc-how__num">{s.num}</span>
+                <h3 className="cc-how__step-title">{s.title}</h3>
+                <p className="cc-how__step-body">{s.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
-
-      <hr className="cc-divider" />
 
       <section className="cc-browse" id="browse">
         <div className="cc-browse__head">
@@ -944,9 +950,8 @@ export default function CoffeeChat() {
         </div>
       </section>
 
-      <hr className="cc-divider" />
-
       <section className="cc-reach" id="how-to-reach-out">
+        <div className="cc-reach__inner">
         <p className="cc-kicker">{t.reachKicker}</p>
         <h2 className="cc-section-title">{t.reachTitle}</h2>
         <p className="cc-section-sub">{t.reachSub}</p>
@@ -973,6 +978,7 @@ export default function CoffeeChat() {
               ))}
             </div>
           </div>
+        </div>
         </div>
       </section>
 
@@ -1169,8 +1175,6 @@ export default function CoffeeChat() {
           </p>
         </div>
       </section>
-
-      <hr className="cc-divider" />
 
       <section className="cc-eco">
         <div className="cc-eco__inner">
