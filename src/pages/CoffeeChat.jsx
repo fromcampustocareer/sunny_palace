@@ -193,6 +193,7 @@ export default function CoffeeChat() {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalName, setModalName] = useState('')
   const [copied, setCopied] = useState(false)
+  const [copyFailed, setCopyFailed] = useState(false)
 
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [formLoading, setFormLoading] = useState(false)
@@ -325,12 +326,47 @@ export default function CoffeeChat() {
     }
   }, [])
 
+  const markCopied = () => {
+    setCopyFailed(false)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2500)
+  }
+
+  // Legacy/denied-permission fallback: select the text in a hidden textarea and
+  // ask the browser to copy. Returns true if the copy command succeeded.
+  const copyViaExecCommand = (text) => {
+    try {
+      const ta = document.createElement('textarea')
+      ta.value = text
+      ta.setAttribute('readonly', '')
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;'
+      document.body.appendChild(ta)
+      ta.select()
+      const ok = document.execCommand('copy')
+      document.body.removeChild(ta)
+      return ok
+    } catch {
+      return false
+    }
+  }
+
   const copyTemplate = () => {
     const text = TEMPLATE_TEXT.replace('[Name]', modalName)
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2500)
-    })
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text)
+        .then(markCopied)
+        .catch(() => {
+          // Clipboard API rejected (denied permission, non-secure context, unfocused
+          // document) — fall back to the legacy command before giving up.
+          if (copyViaExecCommand(text)) markCopied()
+          else { setCopyFailed(true); setTimeout(() => setCopyFailed(false), 3500) }
+        })
+    } else if (copyViaExecCommand(text)) {
+      markCopied()
+    } else {
+      setCopyFailed(true)
+      setTimeout(() => setCopyFailed(false), 3500)
+    }
   }
 
   const setFormField = (k, v) => {
@@ -617,6 +653,7 @@ export default function CoffeeChat() {
         .cc-modal__copy-btn { width: 100%; padding: 14px; background: var(--color-dark); color: var(--color-cream); border: none; border-radius: 999px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: -.005em; cursor: pointer; box-shadow: 0 8px 20px -10px rgba(26,25,22,.4), inset 0 1px 0 rgba(255,255,255,.08); transition: background .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s; }
         .cc-modal__copy-btn:hover { background: var(--color-teal); transform: translateY(-1px); box-shadow: 0 12px 24px -10px rgba(58,125,107,.5); }
         .cc-modal__copy-btn.copied { background: var(--color-teal); }
+        .cc-modal__copy-btn.copy-failed { background: var(--color-accent); }
         .cc-modal__close:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
         .cc-modal__copy-btn:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 8px; }
         .cc-card__cta-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; border-radius: 8px; }
@@ -1159,8 +1196,12 @@ export default function CoffeeChat() {
           <h2 id="cc-modal-title" className="cc-modal__title">{t.modalTitlePrefix} {modalName}</h2>
           <p className="cc-modal__sub">{t.modalSub}</p>
           <div className="cc-modal__template">{TEMPLATE_TEXT.replace('[Name]', modalName)}</div>
-          <button className={`cc-modal__copy-btn${copied ? ' copied' : ''}`} onClick={copyTemplate}>
-            {copied ? t.modalCopied : t.modalCopyBtn}
+          <button
+            className={`cc-modal__copy-btn${copied ? ' copied' : ''}${copyFailed ? ' copy-failed' : ''}`}
+            onClick={copyTemplate}
+            aria-live="polite"
+          >
+            {copied ? t.modalCopied : copyFailed ? t.modalCopyFailed : t.modalCopyBtn}
           </button>
         </div>
       </div>

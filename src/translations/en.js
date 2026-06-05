@@ -1091,6 +1091,7 @@ export const en = {
     modalSub: 'Personalize the bracketed fields before sending. Keep your final message under 80 words.',
     modalCopyBtn: 'Copy to clipboard',
     modalCopied: 'Copied!',
+    modalCopyFailed: 'Press Ctrl/Cmd+C to copy',
     modalClose: 'Close',
     signoffLine: 'The yeses we wished someone had handed us.',
     signoffSub: 'A directory of people who have already raised their hand. Tell us what you’re trying to ask.',
