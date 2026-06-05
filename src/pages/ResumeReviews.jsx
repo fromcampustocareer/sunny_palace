@@ -472,7 +472,7 @@ export default function ResumeReviews() {
         .rr-tag--navy   { background: rgba(22,43,68,.1);     color: var(--color-navy); }
         .rr-tag--accent { background: rgba(179,69,57,.1);    color: var(--color-accent); }
 
-        .rr-tag--muted  { background: rgba(0,0,0,.06);       color: var(--color-muted); }
+        .rr-tag--muted  { background: rgba(0,0,0,.1);        color: #3E3A35; }
 
         .rr-btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; background: var(--color-dark); color: var(--color-cream); border-radius: 999px; font-family: var(--font-display); font-size: 14px; font-weight: 700; letter-spacing: -.005em; text-decoration: none; border: 1.5px solid var(--color-dark); cursor: pointer; box-shadow: 0 8px 20px -10px rgba(58,38,22,.4), inset 0 1px 0 rgba(255,255,255,.08); transition: background .25s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .25s, border-color .25s; }
         .rr-btn-primary:hover { background: var(--color-accent); border-color: var(--color-accent); transform: translateY(-2px); box-shadow: 0 14px 26px -12px rgba(179,69,57,.5), inset 0 1px 0 rgba(255,255,255,.12); }
@@ -596,7 +596,7 @@ export default function ResumeReviews() {
         .rr-pill--fulltime      { background: rgba(22,43,68,.16);    color: var(--color-navy); }
         .rr-pill--apprenticeship{ background: rgba(232,168,56,.24);  color: var(--color-gold-dark); }
         .rr-pill--pivot         { background: rgba(179,69,57,.14);   color: var(--color-accent); }
-        .rr-pill--contract      { background: rgba(0,0,0,.1);        color: var(--color-muted); }
+        .rr-pill--contract      { background: rgba(0,0,0,.13);       color: #3E3A35; }
         .rr-card__featured-badge { position: absolute; top: 12px; right: 14px; display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px 5px 9px; border-radius: 999px; background: var(--color-gold); color: var(--color-dark); font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; box-shadow: 0 2px 6px -2px rgba(232,168,56,.6), inset 0 1px 0 rgba(255,255,255,.3); }
         .rr-card__featured-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--color-dark); flex-shrink: 0; }
         .rr-card:has(.rr-card__featured-badge) { box-shadow: 0 0 0 1.5px rgba(232,168,56,.4), 0 1px 0 rgba(232,168,56,.2) inset; }
@@ -609,7 +609,7 @@ export default function ResumeReviews() {
         .rr-card__logo-cell--more { background: var(--color-white); color: var(--color-dark); font-family: var(--font-display); font-size: 13px; font-weight: 800; }
         .rr-card__logo-cell--empty { background: rgba(0,0,0,.04); box-shadow: none; }
         .rr-card__story { font-size: 12px; color: var(--color-muted); line-height: 1.55; padding: 4px 4px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 38px; font-style: italic; }
-        .rr-card__story::before { content: '“'; color: var(--color-gold); font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-right: 3px; line-height: 1; }
+        .rr-card__story::before { content: '“'; color: var(--color-gold-dark); font-family: var(--font-display); font-size: 16px; font-weight: 700; margin-right: 3px; line-height: 1; }
         .rr-card__story--empty { color: rgba(63,42,28,.3); font-style: normal; }
         .rr-card__story--empty::before { content: '·'; color: rgba(63,42,28,.3); margin-right: 6px; }
 

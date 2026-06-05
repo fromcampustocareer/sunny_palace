@@ -256,7 +256,7 @@ export default function OpportunityBoard() {
         .ob-hero__stats { display: flex; flex-wrap: wrap; gap: 0; border-top: 1px solid rgba(26,25,22,.12); padding-top: 26px; }
         .ob-hero__stat { padding-right: clamp(24px,4vw,52px); margin-right: clamp(24px,4vw,52px); border-right: 1px solid rgba(26,25,22,.12); }
         .ob-hero__stat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
-        .ob-hero__stat-value { font-family: var(--font-display); font-size: clamp(28px,4vw,40px); font-weight: 700; color: var(--color-accent); line-height: 1; margin-bottom: 6px; }
+        .ob-hero__stat-value { font-family: var(--font-display); font-size: clamp(28px,4vw,40px); font-weight: 700; color: var(--color-dark); line-height: 1; margin-bottom: 6px; }
         .ob-hero__stat-label { font-size: 13px; font-weight: 500; color: var(--color-muted); line-height: 1.35; max-width: 18ch; }
 
         .ob-board { max-width: 1240px; margin: 0 auto; padding: 72px clamp(20px,5vw,56px) 80px; }
@@ -314,7 +314,7 @@ export default function OpportunityBoard() {
         .ob-tag--newgrad   { background: rgba(232,168,56,.12);  color: var(--color-gold-dark); }
         .ob-tag--fellowship{ background: rgba(22,43,68,.08);    color: var(--color-navy); }
         .ob-tag--program   { background: rgba(179,69,57,.08);   color: var(--color-accent); }
-        .ob-tag--muted     { background: rgba(0,0,0,.05);       color: var(--color-muted); }
+        .ob-tag--muted     { background: rgba(0,0,0,.1);        color: #3E3A35; }
         .ob-tag--bridge    { background: rgba(58,125,107,.1);   color: var(--color-teal); }
         .ob-card__meta { display: flex; flex-wrap: wrap; gap: 12px; }
         .ob-card__meta-item { font-size: 12px; color: var(--color-muted); display: flex; align-items: center; gap: 4px; }
