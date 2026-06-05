@@ -193,6 +193,7 @@ export default function CoffeeChat() {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalName, setModalName] = useState('')
   const [copied, setCopied] = useState(false)
+  const [copyFailed, setCopyFailed] = useState(false)
 
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [formLoading, setFormLoading] = useState(false)
