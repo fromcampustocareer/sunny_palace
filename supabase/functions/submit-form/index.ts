@@ -134,3 +134,37 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
+  if (req.method !== 'POST') {
+    return json({ error: 'Method not allowed' }, 405)
+  }
+
+  // Reject oversized bodies up front when the client declares a length.
+  const declaredLen = Number(req.headers.get('content-length') || '0')
+  if (declaredLen > MAX_BODY_BYTES) {
+    return json({ error: 'Payload too large' }, 413)
+  }
+
+  try {
+    const raw = await req.text()
+    if (raw.length > MAX_BODY_BYTES) {
+      return json({ error: 'Payload too large' }, 413)
+    }
+
+    let parsed: Record<string, unknown>
+    try {
+      parsed = JSON.parse(raw)
+    } catch {
+      return json({ error: 'Invalid JSON' }, 400)
+    }
+
+    const { type, turnstileToken, payload } = parsed as {
+      type?: string
+      turnstileToken?: string
+      payload?: Record<string, unknown>
+    }
+
+    // 1. Turnstile gate — generic 403 on failure, no work done.
+    const remoteip = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    const ok = await verifyTurnstile(turnstileToken, remoteip)
+    if (!ok) {
+      return json({ error: 'Verification failed' }, 403)
