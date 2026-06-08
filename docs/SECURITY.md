@@ -297,3 +297,37 @@ the form referenced.
 (verify_jwt=false, Turnstile) · `send-welcome-email` / `coffee-chat-welcome`
 (verify_jwt=true, webhook secret) · `verify-turnstile` (legacy, superseded by submit-form).
 
+---
+
+## 9. Measures evaluated as Not Applicable
+
+These were assessed and do not apply to this architecture (anonymous public SPA, Supabase +
+RLS, no user accounts, no payments). Recorded for completeness.
+
+| # | Measure | Why N/A |
+|---|---------|---------|
+| 2 | Public `.env` files | none committed; only `.env.example` |
+| 4 | Weak/missing authentication | the app has **no auth** — the analog (open inserts) is CRIT-2 |
+| 7 | Open DB read/write | RLS on every table; writes intentionally gated via submit-form |
+| 9 | Admin routes unprotected | no admin routes; admin is the Supabase dashboard (enable 2FA) |
+| 10 | Debug pages in prod | none; Vite strips dev tooling |
+| 17 | SQL injection | all access via parameterized supabase-js / RLS; no string-built SQL |
+| 18 | NoSQL injection | no NoSQL datastore |
+| 20 | CSRF | no cookie sessions; requests use an explicit bearer header |
+| 22 | Path traversal | storage keys are timestamp/random-prefixed and sanitized |
+| 23 | SSRF | no server-side fetch of user-supplied URLs |
+| 24 | Broken password reset | no passwords exist |
+| 25 | Weak session management | no server session; always anonymous |
+| 26 | Weak/leaked JWT secret | only the public anon key; Supabase manages the JWT secret |
+| 29 | Public test/staging env | no staging app or seed data in the repo |
+| 30 | Default credentials | no app login |
+| 32 | Frontend-only payment checks | no payments |
+| 33 | IDOR | no per-user resources by ID (the column-leak analog was CRIT-3) |
+| 36 | Source maps in prod | Vite default is no prod sourcemaps |
+| 39 / 40 | Prompt injection / AI data access | the AI feature was deleted (CRIT-1) — no AI path remains |
+| 41 | Excessive DB perms | browser uses the RLS-limited anon role; service role only in edge functions |
+| 45 | Public internal dashboards | none; Supabase Studio is behind Supabase auth |
+| 47 | Cookie flags | the app sets no cookies |
+| 48 | Unencrypted sensitive data | Supabase encrypts at rest + TLS; resume PDFs in a private bucket |
+| 49 | Poor tenant isolation | single-tenant; the moderation-status flaw (CRIT-2) is the closest analog |
+
