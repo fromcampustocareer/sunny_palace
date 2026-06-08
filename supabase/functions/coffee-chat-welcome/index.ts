@@ -1,12 +1,46 @@
-// Coffee Chat Network — confirmation email after a profile is added.
+// Coffee Chat Network — confirmation email sent when a profile is APPROVED.
 //
-// Deploy:  supabase functions deploy coffee-chat-welcome --no-verify-jwt
-// Secret:  supabase secrets set RESEND_API_KEY=<your Resend key>
+// SECURITY (HIGH-4 follow-up):
+//   This function used to be an unauthenticated email-send vector: it ran with
+//   verify_jwt=false and accepted {name,email,profileId} straight from the POST
+//   body, so anyone holding the public anon/publishable key could make it blast
+//   a "You're in the Coffee Chat Network" email to ANY address (spam/abuse).
 //
-// The CoffeeChat page invokes this after a successful insert.
-// Failures are silent on the client side — the directory listing is the source of truth.
+//   It is now secured exactly like send-welcome-email:
+//     1. It is NOT in the verify_jwt=false list in config.toml, so the gateway
+//        requires a valid Authorization bearer (the anon key alone is rejected).
+//     2. A shared-secret gate runs BEFORE the body is read: the caller must send
+//        an `x-webhook-secret` header equal to env var WEBHOOK_SECRET. We fail
+//        CLOSED if WEBHOOK_SECRET is unset, and compare in constant time.
+//
+// REPURPOSED: it is now fired by a Supabase **Database Webhook** on the
+//   coffee_chat_profiles table (UPDATE), and only sends on the
+//   pending -> approved transition (it self-guards; see the approval check).
+//
+// OPERATOR WIRING (Supabase Dashboard -> Database -> Webhooks):
+//   - Create a webhook on table `coffee_chat_profiles`, event UPDATE.
+//   - HTTP request -> POST to this function's URL
+//       (https://<project-ref>.functions.supabase.co/coffee-chat-welcome).
+//   - Headers:
+//       Authorization: Bearer <a valid JWT, e.g. the service_role key>
+//       x-webhook-secret: <the WEBHOOK_SECRET value>
+//       Content-Type: application/json
+//   - Supabase DB webhooks POST the standard payload shape:
+//       { type, table, record, old_record }
+//     This function reads email/name/id from `record`, and only emails when the
+//     row transitioned into status='approved' (old_record.status !== 'approved'
+//     && record.status === 'approved'). Webhook firings on any non-approval
+//     update are a no-op (200 {skipped:true}, no email sent).
+//
+// Secrets:
+//   supabase secrets set RESEND_API_KEY=<your Resend key>
+//   supabase secrets set WEBHOOK_SECRET=<same secret used by send-welcome-email>
+//
+// Deploy (note: NO --no-verify-jwt; the gateway must keep JWT verification on):
+//   supabase functions deploy coffee-chat-welcome
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET')
 // Resend won't let you send "from" a gmail.com address you don't own (no SPF/DKIM control).
 // So the visible sender uses Resend's verified test domain, and replies route to the
 // real campus-to-career inbox via reply_to. When fromcampuscareer.com is verified in
@@ -14,6 +48,9 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const FROM_EMAIL = 'Jose & Jocelyn <onboarding@resend.dev>'
 const REPLY_TO = 'campustocareerteam@gmail.com'
 
+// Basic email shape check — not RFC-perfect, just enough to reject garbage
+// before we hand it to Resend / interpolate it.
+const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 // Max length for the user-controlled first name (used in HTML and text bodies).
 const MAX_NAME_LENGTH = 100
 
@@ -26,6 +63,16 @@ function escapeHtml(str: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
+}
+
+// Constant-time-ish string comparison to avoid leaking the secret via timing.
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let mismatch = 0
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return mismatch === 0
 }
 
 const corsHeaders = {
@@ -41,6 +88,22 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405, headers: corsHeaders })
   }
+
+  // --- Shared-secret gate (must run BEFORE reading the body) ---
+  // This function is intentionally NOT in the verify_jwt=false list, so the
+  // gateway already requires a valid Authorization bearer. The shared secret
+  // below is the real gate: the operator configures the Supabase DB webhook
+  // (Dashboard -> Database -> Webhooks) to send the same value in the
+  // `x-webhook-secret` header. Fail CLOSED if the env var is unset.
+  if (!WEBHOOK_SECRET) {
+    console.error('WEBHOOK_SECRET is not configured; rejecting request')
+    return new Response('Unauthorized', { status: 401, headers: corsHeaders })
+  }
+  const providedSecret = req.headers.get('x-webhook-secret') ?? ''
+  if (!timingSafeEqual(providedSecret, WEBHOOK_SECRET)) {
+    return new Response('Unauthorized', { status: 401, headers: corsHeaders })
+  }
+
   if (!RESEND_API_KEY) {
     return new Response(JSON.stringify({ sent: false, error: 'RESEND_API_KEY not configured' }), {
       status: 500,
@@ -49,14 +112,34 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { name, email, profileId } = await req.json()
-    if (!email) {
-      return new Response(JSON.stringify({ sent: false, error: 'missing email' }), {
+    // Supabase DB webhook payload shape: { type, table, record, old_record }.
+    const payload = await req.json()
+    const record = payload?.record
+    const oldRecord = payload?.old_record
+
+    // Only email on the pending -> approved transition. If we have an old_record
+    // (a real UPDATE webhook), require the status to have just become 'approved'.
+    // If called with only a record (manual/testing), still require approved.
+    const isApproval = oldRecord
+      ? oldRecord.status !== 'approved' && record?.status === 'approved'
+      : record?.status === 'approved'
+    if (!isApproval) {
+      return new Response(JSON.stringify({ skipped: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    const email = typeof record?.email === 'string' ? record.email.trim() : ''
+    if (!email || !EMAIL_REGEX.test(email)) {
+      return new Response(JSON.stringify({ sent: false, error: 'invalid email' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
+    const name = record?.name
+    const profileId = record?.id
     const firstName = ((name || '').toString().split(/\s+/)[0] || 'there').slice(0, MAX_NAME_LENGTH)
     // profileId goes into a URL and an href attribute — URL-encode it so it can't
     // break out of the attribute / href.
@@ -85,7 +168,8 @@ Deno.serve(async (req) => {
 
     if (!res.ok) {
       const err = await res.text()
-      return new Response(JSON.stringify({ sent: false, error: err }), {
+      console.error('Resend error:', err)
+      return new Response(JSON.stringify({ sent: false, error: 'Failed to send email' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
@@ -96,7 +180,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (err) {
-    return new Response(JSON.stringify({ sent: false, error: err.message }), {
+    console.error('Function error:', err)
+    return new Response(JSON.stringify({ sent: false, error: 'Internal error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

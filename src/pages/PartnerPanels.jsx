@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 const UPCOMING_PANELS = [
   {
@@ -155,6 +156,8 @@ export default function PartnerPanels() {
   const [panelistSubmitted, setPanelistSubmitted] = useState(false)
   const [panelistLoading, setPanelistLoading] = useState(false)
   const [panelistError, setPanelistError] = useState('')
+  const [panelistTurnstileToken, setPanelistTurnstileToken] = useState('')
+  const panelistTurnstileReset = useRef(null)
   const [suggestForm, setSuggestForm] = useState({ topic: '', why: '', stage: '', stageOther: '', category: '', categoryOther: '', email: '' })
   const [panelistForm, setPanelistForm] = useState({ name: '', email: '', linkedin: '', role: '', topic: '', interest: '', notes: '' })
 
@@ -208,22 +211,49 @@ export default function PartnerPanels() {
       setPanelistError(t.panelistErrorRequired)
       return
     }
+    if (TURNSTILE_ENABLED && !panelistTurnstileToken) {
+      setPanelistError(t.panelistErrorGeneric)
+      return
+    }
     setPanelistLoading(true)
     setPanelistError('')
-    const { error } = await supabase.from('panelists').insert({
-      name: panelistForm.name,
-      email: panelistForm.email,
-      linkedin_url: panelistForm.linkedin,
-      role_title: panelistForm.role,
-      topic: panelistForm.topic,
-      interested_in: panelistForm.interest,
-      notes: panelistForm.notes || null,
-    })
+    // Insert now flows through the Turnstile-gated submit-form edge function
+    // (service role). status is forced to 'pending' server-side (moderation queue).
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'panelist',
+          turnstileToken: panelistTurnstileToken,
+          payload: {
+            name: panelistForm.name,
+            email: panelistForm.email,
+            linkedin_url: panelistForm.linkedin,
+            role_title: panelistForm.role,
+            topic: panelistForm.topic,
+            interested_in: panelistForm.interest,
+            notes: panelistForm.notes || null,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setPanelistLoading(false)
-    if (error) {
+    if (!ok) {
       setPanelistError(t.panelistErrorGeneric)
+      setPanelistTurnstileToken('')
+      panelistTurnstileReset.current?.()
     } else {
       setPanelistSubmitted(true)
+      setPanelistTurnstileToken('')
+      panelistTurnstileReset.current?.()
     }
   }
 
@@ -1471,7 +1501,8 @@ export default function PartnerPanels() {
                   <textarea className="pp-form-textarea" id="plNotes" placeholder={t.panelistPlaceholderNotes} value={panelistForm.notes} onChange={e => setPanelistForm(f => ({ ...f, notes: e.target.value }))} />
                 </div>
                 {panelistError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: 13, marginBottom: 10 }}>{panelistError}</p>}
-                <button className="pp-form-btn" type="submit" disabled={panelistLoading || !panelistForm.name.trim() || !panelistForm.email.trim() || !panelistForm.linkedin.trim() || !panelistForm.role.trim() || !panelistForm.topic.trim() || !panelistForm.interest}>{panelistLoading ? t.panelistBtnSubmitting : t.panelistBtnSubmit}</button>
+                <Turnstile onToken={setPanelistTurnstileToken} resetRef={panelistTurnstileReset} />
+                <button className="pp-form-btn" type="submit" disabled={panelistLoading || !panelistForm.name.trim() || !panelistForm.email.trim() || !panelistForm.linkedin.trim() || !panelistForm.role.trim() || !panelistForm.topic.trim() || !panelistForm.interest || (TURNSTILE_ENABLED && !panelistTurnstileToken)}>{panelistLoading ? t.panelistBtnSubmitting : t.panelistBtnSubmit}</button>
               </form>
             ))}
           </div>
