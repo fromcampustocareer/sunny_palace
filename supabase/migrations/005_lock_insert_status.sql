@@ -12,3 +12,9 @@
 -- intentionally left untouched.
 -- Safe to re-run: uses DROP POLICY IF EXISTS.
 -- ============================================================
+
+-- ── coffee_chat_profiles ───────────────────────────────────
+-- Has both `status` and `public_profile` columns: lock both so
+-- a client cannot self-publish a public, approved profile.
+DROP POLICY IF EXISTS "coffee_chat_insert" ON coffee_chat_profiles;
+CREATE POLICY "coffee_chat_insert" ON coffee_chat_profiles FOR INSERT
