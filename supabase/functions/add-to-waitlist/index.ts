@@ -7,6 +7,9 @@ const FROM_EMAIL = 'Jose x Jocelyn <newsletter@fromcampuscareer.com>'
 
 const TURNSTILE_SECRET = Deno.env.get('TURNSTILE_SECRET')
 
+// Generic message returned to the client; detailed errors stay in console.error.
+const GENERIC_ERROR = 'Something went wrong. Please try again.'
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -95,8 +98,16 @@ serve(async (req) => {
 
     if (dbErr) {
       console.error('Insert error:', dbErr)
+      // Map the unique-violation (duplicate email) case to a friendly message;
+      // everything else returns the generic error. Never leak the DB message.
+      if (dbErr.code === '23505') {
+        return new Response(
+          JSON.stringify({ error: "You're already on the list." }),
+          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
       return new Response(
-        JSON.stringify({ error: dbErr.message }),
+        JSON.stringify({ error: GENERIC_ERROR }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -136,7 +147,7 @@ serve(async (req) => {
   } catch (err) {
     console.error('Function error:', err)
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: GENERIC_ERROR }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
