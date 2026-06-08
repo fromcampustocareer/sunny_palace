@@ -1649,7 +1649,6 @@ export const en = {
     chatSuggested4: 'What keywords am I missing?',
     chatThinking: 'Thinking…',
     chatNeedResume: 'Upload a resume first so I can help.',
-    chatError: 'Couldn\'t reach Gemini. Check your API key and try again.',
 
     generateNeedJob: 'Add a job description first.',
     generateNeedResume: 'Upload a resume first.',
