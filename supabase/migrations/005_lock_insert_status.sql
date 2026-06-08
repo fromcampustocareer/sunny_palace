@@ -32,3 +32,9 @@ CREATE POLICY "opportunities_insert" ON opportunities FOR INSERT
 DROP POLICY IF EXISTS "resumes_insert" ON resume_submissions;
 CREATE POLICY "resumes_insert" ON resume_submissions FOR INSERT
   WITH CHECK (status = 'pending');
+
+-- ── panelists ──────────────────────────────────────────────
+-- Has `status` only (no public_profile column).
+DROP POLICY IF EXISTS "panelists_insert" ON panelists;
+CREATE POLICY "panelists_insert" ON panelists FOR INSERT
+  WITH CHECK (status = 'pending');
