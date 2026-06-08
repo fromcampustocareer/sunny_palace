@@ -18,3 +18,10 @@
 --       resume_submissions (avatar_url, like_count, view_count), so they
 --       were invalid against the live schema.
 --
+--   The correct, minimal fix — and the pattern the live DB ALREADY uses
+--   for coffee_chat_profiles — is PostgreSQL column-level GRANTs. RLS keeps
+--   gating rows; column GRANTs gate which COLUMNS anon may read. Revoking
+--   SELECT on the PII columns makes them unreadable while every non-PII
+--   column the public UI needs stays available.
+--
+-- This migration:
