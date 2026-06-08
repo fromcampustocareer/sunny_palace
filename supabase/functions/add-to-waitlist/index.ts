@@ -9,6 +9,21 @@ const TURNSTILE_SECRET = Deno.env.get('TURNSTILE_SECRET')
 // Generic message returned to the client; detailed errors stay in console.error.
 const GENERIC_ERROR = 'Something went wrong. Please try again.'
 
+// Max lengths for user-controlled inputs; oversized inputs are rejected with a 400.
+const MAX_FIELD_LENGTH = 200
+const MAX_LANG_LENGTH = 10
+
+// Escape user-controlled values before interpolating them into an email `html`
+// string, to prevent HTML/email injection. `&` MUST be escaped first.
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -67,6 +82,20 @@ Deno.serve(async (req) => {
       )
     }
 
+    // Length checks (before insert / building the email). Reject oversized inputs
+    // with the generic 400, consistent with the existing pattern.
+    if (
+      String(name).length > MAX_FIELD_LENGTH ||
+      String(email).length > MAX_FIELD_LENGTH ||
+      (school != null && String(school).length > MAX_FIELD_LENGTH) ||
+      (lang != null && String(lang).length > MAX_LANG_LENGTH)
+    ) {
+      return new Response(
+        JSON.stringify({ error: GENERIC_ERROR }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // Privileged client for the insert (bypasses RLS). Prefer the new secret key
     // (sb_secret_*), which survives revocation of the legacy HS256 JWT secret;
     // fall back to the legacy service_role key if the new API keys aren't
@@ -120,19 +149,20 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           from: FROM_EMAIL,
+          // subject is not HTML; strip newlines for header-injection safety.
+          subject: `New waitlist signup — ${String(name).replace(/[\r\n]+/g, ' ')}`,
           to: [ADMIN_NOTIFY],
-          subject: `New waitlist signup — ${name}`,
           html: `
             <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;">
               <h2 style="margin:0 0 24px;color:#162B44;">New waitlist signup</h2>
               <p style="margin:0 0 8px;color:#6B5E52;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Name</p>
-              <p style="margin:0 0 16px;font-size:16px;color:#1A1916;">${name}</p>
+              <p style="margin:0 0 16px;font-size:16px;color:#1A1916;">${escapeHtml(String(name))}</p>
               <p style="margin:0 0 8px;color:#6B5E52;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Email</p>
-              <p style="margin:0 0 16px;font-size:16px;color:#1A1916;">${email}</p>
+              <p style="margin:0 0 16px;font-size:16px;color:#1A1916;">${escapeHtml(String(email))}</p>
               <p style="margin:0 0 8px;color:#6B5E52;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">School or occupation</p>
-              <p style="margin:0 0 16px;font-size:16px;color:#1A1916;">${schoolValue ?? '<em style="color:#6B5E52;">(not provided)</em>'}</p>
+              <p style="margin:0 0 16px;font-size:16px;color:#1A1916;">${schoolValue != null ? escapeHtml(schoolValue) : '<em style="color:#6B5E52;">(not provided)</em>'}</p>
               <p style="margin:0 0 8px;color:#6B5E52;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Language</p>
-              <p style="margin:0;font-size:16px;color:#1A1916;">${lang ?? 'n/a'}</p>
+              <p style="margin:0;font-size:16px;color:#1A1916;">${lang != null ? escapeHtml(String(lang)) : 'n/a'}</p>
             </div>
           `,
         }),
