@@ -66,3 +66,37 @@ const TABLE_BY_TYPE: Record<string, string> = {
 const str = (v: unknown) => (typeof v === 'string' ? v : null)
 const trimOrNull = (v: unknown) => {
   const s = str(v)
+  const t = s?.trim()
+  return t ? t : null
+}
+const strArray = (v: unknown) =>
+  Array.isArray(v) ? v.filter((x) => typeof x === 'string').map((x) => String(x)) : []
+
+function buildRow(type: string, payload: Record<string, unknown>): Record<string, unknown> {
+  switch (type) {
+    case 'coffee_chat':
+      return {
+        name: trimOrNull(payload.name),
+        pronouns: trimOrNull(payload.pronouns),
+        email: trimOrNull(payload.email),
+        linkedin_url: trimOrNull(payload.linkedin_url),
+        role_title: trimOrNull(payload.role_title),
+        location: trimOrNull(payload.location),
+        role_function: strArray(payload.role_function),
+        identity_tags: strArray(payload.identity_tags),
+        topics: trimOrNull(payload.topics),
+        capacity: trimOrNull(payload.capacity),
+        avatar_url: trimOrNull(payload.avatar_url),
+        consented_at: new Date().toISOString(),
+        // Force server-side — never trust the client for these:
+        status: 'pending',
+        public_profile: false,
+      }
+    case 'resume':
+      return {
+        handle: trimOrNull(payload.handle),
+        email: trimOrNull(payload.email),
+        linkedin_url: trimOrNull(payload.linkedin_url),
+        role_title: trimOrNull(payload.role_title),
+        role_type: trimOrNull(payload.role_type),
+        stage: trimOrNull(payload.stage),
