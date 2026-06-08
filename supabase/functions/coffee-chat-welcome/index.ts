@@ -14,6 +14,20 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const FROM_EMAIL = 'Jose & Jocelyn <onboarding@resend.dev>'
 const REPLY_TO = 'campustocareerteam@gmail.com'
 
+// Max length for the user-controlled first name (used in HTML and text bodies).
+const MAX_NAME_LENGTH = 100
+
+// Escape user-controlled values before interpolating them into an email `html`
+// string, to prevent HTML/email injection. `&` MUST be escaped first.
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -43,9 +57,11 @@ Deno.serve(async (req) => {
       })
     }
 
-    const firstName = (name || '').toString().split(/\s+/)[0] || 'there'
+    const firstName = ((name || '').toString().split(/\s+/)[0] || 'there').slice(0, MAX_NAME_LENGTH)
+    // profileId goes into a URL and an href attribute — URL-encode it so it can't
+    // break out of the attribute / href.
     const profileUrl = profileId
-      ? `https://josexjocelyn.com/coffee-chat?profile=${profileId}`
+      ? `https://josexjocelyn.com/coffee-chat?profile=${encodeURIComponent(String(profileId))}`
       : 'https://josexjocelyn.com/coffee-chat'
 
     const html = buildEmailHtml(firstName, profileUrl)
@@ -128,7 +144,7 @@ function buildEmailHtml(firstName: string, profileUrl: string): string {
           </tr>
           <tr>
             <td style="background:#FFFFFF;padding:36px 40px;">
-              <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">Hi ${firstName},</p>
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">Hi ${escapeHtml(firstName)},</p>
               <p style="margin:0 0 16px;font-size:16px;line-height:1.65;">Your profile is live. Students and peers in the Jose × Jocelyn community can find you and reach out via your LinkedIn for short conversations about the work you do.</p>
               <p style="margin:0 0 24px;text-align:center;">
                 <a href="${profileUrl}" style="display:inline-block;background:#1A1916;color:#F2E4CE;padding:14px 28px;border-radius:8px;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;font-weight:600;">View your listing →</a>
