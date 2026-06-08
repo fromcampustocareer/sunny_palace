@@ -31,3 +31,10 @@
 --     on ONLY the non-PII columns. REVOKE + GRANT is idempotent, so this
 --     also codifies the coffee_chat_profiles grants that already exist live
 --     (making this repo the source of truth).
+-- ============================================================
+
+
+-- ── 1. resume_submissions — lock out email + linkedin_url ──
+-- email and linkedin_url are PII and are deliberately omitted. The
+-- granted set matches the explicit column list ResumeReviews.jsx and
+-- ResumeCompanies.jsx now select.
