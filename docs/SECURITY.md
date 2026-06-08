@@ -224,3 +224,37 @@ never blocks writes; anon cannot read the table.
 tracked in a public repo. It's now gitignored and untracked (`git rm --cached`); the CLI
 regenerates it locally.
 
+---
+
+## 7. Low-severity items, follow-ups & deliberate tradeoffs
+
+### LOW-1 — Backup/restore runbook  *(measure #44)*
+`docs/BACKUP.md` documents the active (free-tier) Supabase backup limits, a weekly manual
+export procedure (`supabase db dump` + per-table CSV for the data tables), a step-by-step
+restore checklist (migrations → data → secrets → function deploys → buckets), and an
+optional GitHub Action automation outline. PITR requires Supabase Pro (a flagged decision).
+
+### LOW-2 — PR security checklist  *(measure #50)*
+`docs/SECURITY-REVIEW-CHECKLIST.md` captures the 12 recurring pitfalls from this audit
+(RLS hides rows not columns, never let the client set status/role, validate at the
+server/DB boundary, sanitize `href` URLs, escape email input, no `VITE_` secrets, generic
+errors, anti-abuse on writes, locked buckets, CSP, webhook secrets, no `.temp`). It is wired
+into `.github/pull_request_template.md` so reviewers check them on every PR.
+
+### `coffee-chat-welcome` — secured + repurposed  *(follow-up)*
+This orphaned function was `verify_jwt=false` with no secret check — an open email-send/spam
+vector. It is now gated by `verify_jwt=true` + an `x-webhook-secret` shared secret (the
+HIGH-4 pattern), email-validated, and repurposed to the Supabase DB-webhook payload shape so
+it fires only on the `pending → approved` transition (other updates are a safe no-op). The
+`on-coffee-chat-approved` webhook drives it.
+
+### Deliberate tradeoff — instant publish for opportunities & resumes
+The site owner chose to auto-publish opportunities and resumes (vs. moderating them).
+This is implemented **safely**: `submit-form` force-sets `status='approved'` **server-side**
+for those two types only (coffee-chat and panelists stay moderated/`pending`), keeping the
+Turnstile gate, service-role insert, column whitelist, validation, and PII locks. The
+client never sets the status. **Residual risk:** content is published without human review,
+so a determined human (past Turnstile) can post junk — this is a product decision, not a
+vulnerability. Migration `013` also added the missing `opportunities.location`/`pay` columns
+the form referenced.
+
