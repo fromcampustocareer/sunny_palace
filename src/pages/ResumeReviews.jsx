@@ -238,6 +238,7 @@ function CompaniesPanel({ companies, onToggle, t }) {
 }
 
 export default function ResumeReviews() {
+  const GATED_ROUTES = ['/bridge-year', '/interview-prep', '/partner-panels']
   const t = useT('resumeReviews')
   const [dbResumes, setDbResumes] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -1271,7 +1272,7 @@ export default function ResumeReviews() {
           <h2 className="rr-eco__title">{t.ecoTitle}</h2>
           <p className="rr-eco__body">{t.ecoBody}</p>
           <div className="rr-eco__grid">
-            {t.ecoLinks.map(link => (
+            {t.ecoLinks.filter(link => !GATED_ROUTES.includes(link.to)).map(link => (
               <Link key={link.to} to={link.to} className="rr-eco__link">
                 <div className="rr-eco__link-title">{link.title}</div>
                 <div className="rr-eco__link-desc">{link.desc}</div>

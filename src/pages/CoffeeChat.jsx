@@ -172,6 +172,7 @@ function dbProfileToCard(row) {
 }
 
 export default function CoffeeChat() {
+  const GATED_ROUTES = ['/bridge-year', '/interview-prep', '/partner-panels']
   const t = useT('coffeeChat')
   const [searchParams, setSearchParams] = useSearchParams()
   const filterRole = searchParams.get('role') || ''
@@ -1226,7 +1227,7 @@ export default function CoffeeChat() {
           <h2 className="cc-eco__title">{t.ecoTitle}</h2>
           <p className="cc-eco__body">{t.ecoBody}</p>
           <div className="cc-eco__grid">
-            {t.ecoLinks.map(link => (
+            {t.ecoLinks.filter(link => !GATED_ROUTES.includes(link.to)).map(link => (
               <Link key={link.to} to={link.to} className="cc-eco__link">
                 <div className="cc-eco__link-title">{link.title}</div>
                 <div className="cc-eco__link-desc">{link.desc}</div>

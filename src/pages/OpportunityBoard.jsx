@@ -84,7 +84,7 @@ function OBCard({ card, featured, t, idx = 0 }) {
         {card.company && <div className="ob-card__company">{card.company}</div>}
       </div>
       <div className="ob-card__tags">
-        {card.tags.map(tag => <span key={tag.l} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
+        {card.tags.map((tag, i) => <span key={`${tag.l}-${i}`} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
       </div>
       {card.meta.length > 0 && (
         <div className="ob-card__meta">
@@ -105,6 +105,10 @@ function OBCard({ card, featured, t, idx = 0 }) {
     </article>
   )
 }
+
+// Eco links point at these routes, but they are gated and redirect to `/`,
+// so rendering them produces dead links — filter them out of the eco grid.
+const GATED_ROUTES = ['/bridge-year', '/interview-prep', '/partner-panels']
 
 export default function OpportunityBoard() {
   const t = useT('opportunityBoard')
@@ -179,7 +183,7 @@ export default function OpportunityBoard() {
   // successful submission — submitted opportunities are now auto-published server-side.
   const fetchOpportunities = useCallback(() => {
     supabase.from('opportunities')
-      .select('*')
+      .select('id,role,company,role_type,link,deadline,eligibility,why,status,created_at,location,pay')
       .in('status', ['approved', 'featured'])
       .order('created_at', { ascending: false })
       .then(({ data }) => {
@@ -727,7 +731,7 @@ export default function OpportunityBoard() {
           <h2 className="ob-eco__title">{t.ecoTitle}</h2>
           <p className="ob-eco__body">{t.ecoBody}</p>
           <div className="ob-eco__grid">
-            {t.ecoLinks.map(l => (
+            {t.ecoLinks.filter(l => !GATED_ROUTES.includes(l.to)).map(l => (
               <Link key={l.to} to={l.to} className="ob-eco__link">
                 <div className="ob-eco__link-title">{l.title}</div>
                 <div className="ob-eco__link-desc">{l.desc}</div>
