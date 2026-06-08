@@ -7,6 +7,21 @@ const TURNSTILE_SECRET = Deno.env.get('TURNSTILE_SECRET')
 // Generic message returned to the client; detailed errors stay in console.error.
 const GENERIC_ERROR = 'Something went wrong. Please try again.'
 
+// Max lengths for user-controlled inputs; oversized inputs are rejected with a 400.
+const MAX_MESSAGE_LENGTH = 5000
+const MAX_FIELD_LENGTH = 200
+
+// Escape user-controlled values before interpolating them into an email `html`
+// string, to prevent HTML/email injection. `&` MUST be escaped first.
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -62,6 +77,26 @@ Deno.serve(async (req) => {
       return new Response('Missing required fields', { status: 400, headers: corsHeaders })
     }
 
+    // Length checks (before building/sending the email). Reject oversized inputs
+    // with the generic 400, consistent with the existing pattern.
+    if (
+      String(message).length > MAX_MESSAGE_LENGTH ||
+      (name != null && String(name).length > MAX_FIELD_LENGTH) ||
+      String(email).length > MAX_FIELD_LENGTH
+    ) {
+      return new Response(GENERIC_ERROR, { status: 400, headers: corsHeaders })
+    }
+
+    // Escape user-controlled values before interpolating into the HTML body.
+    const safeName = name ? escapeHtml(String(name)) : '(no name)'
+    const safeEmail = escapeHtml(String(email))
+    const safeMessage = escapeHtml(String(message))
+    // `email` is also used in reply_to (not HTML) and the subject. The subject is
+    // not HTML, so don't HTML-escape it; instead strip newlines (header-injection
+    // safety).
+    const subjectEmail = String(email).replace(/[\r\n]+/g, ' ')
+    const subjectName = name ? String(name).replace(/[\r\n]+/g, ' ') : ''
+
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -72,14 +107,14 @@ Deno.serve(async (req) => {
         from: FROM_EMAIL,
         to: [TO_EMAIL],
         reply_to: email,
-        subject: `New message from ${name || email}`,
+        subject: `New message from ${subjectName || subjectEmail}`,
         html: `
           <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;">
             <h2 style="margin:0 0 24px;color:#162B44;">New message via Jose x Jocelyn</h2>
             <p style="margin:0 0 8px;color:#6B5E52;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">From</p>
-            <p style="margin:0 0 24px;font-size:16px;color:#1A1916;">${name || '(no name)'} &lt;${email}&gt;</p>
+            <p style="margin:0 0 24px;font-size:16px;color:#1A1916;">${safeName} &lt;${safeEmail}&gt;</p>
             <p style="margin:0 0 8px;color:#6B5E52;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Message</p>
-            <p style="margin:0;font-size:16px;color:#1A1916;line-height:1.7;white-space:pre-wrap;">${message}</p>
+            <p style="margin:0;font-size:16px;color:#1A1916;line-height:1.7;white-space:pre-wrap;">${safeMessage}</p>
           </div>
         `,
       }),
