@@ -17,3 +17,11 @@ verify_jwt = false
 # role after verifying the Turnstile token, since anon INSERT is revoked (migration 007).
 [functions.submit-form]
 verify_jwt = false
+
+# send-welcome-email is intentionally NOT listed here, so it keeps the gateway
+# default of verify_jwt = true. It is triggered by a Supabase DB webhook on
+# subscriber insert, not from the browser, so the anon/publishable key alone
+# cannot invoke it. The real authorization gate is the shared secret it checks
+# in the `x-webhook-secret` header (env var WEBHOOK_SECRET); the operator must
+# configure the DB webhook (Dashboard -> Database -> Webhooks) to send both a
+# valid Authorization bearer and that matching x-webhook-secret header.
