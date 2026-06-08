@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 
 const TEMPLATE_TEXT = `Hi [Name],
@@ -198,6 +199,8 @@ export default function CoffeeChat() {
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [formLoading, setFormLoading] = useState(false)
   const [formError, setFormError] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileReset = useRef(null)
   const [fieldErrors, setFieldErrors] = useState({ name: '', email: '', linkedin: '', role: '', func: '', topics: '', capacity: '', consent1: '', consent2: '' })
   const [funcChips, setFuncChips] = useState([])
   const [identityChips, setIdentityChips] = useState([])
@@ -397,6 +400,10 @@ export default function CoffeeChat() {
       setFormError('')
       return
     }
+    if (TURNSTILE_ENABLED && !turnstileToken) {
+      setFormError(t.formErrorGeneric)
+      return
+    }
     setFieldErrors({ name: '', email: '', linkedin: '', role: '', func: '', topics: '', capacity: '', consent1: '', consent2: '' })
     setFormLoading(true)
     setFormError('')
@@ -412,29 +419,49 @@ export default function CoffeeChat() {
     }
     const processedFuncChips = funcChips.map(c => c === 'Other' ? (funcOtherText.trim() || 'Other') : c)
     const processedIdentityChips = identityChips.map(c => c === 'Other' ? (identityOtherText.trim() || 'Other') : c)
-    const { error } = await supabase.from('coffee_chat_profiles').insert({
-      name: formData.name,
-      pronouns: formData.pronouns || null,
-      email: formData.email,
-      linkedin_url: formData.linkedin,
-      role_title: formData.role,
-      location: formData.location || null,
-      role_function: processedFuncChips,
-      identity_tags: processedIdentityChips,
-      topics: formData.topics,
-      capacity: formData.capacity,
-      consented_at: new Date().toISOString(),
-      status: 'pending',
-      public_profile: false,
-      avatar_url,
-    })
+    // Insert now flows through the Turnstile-gated submit-form edge function
+    // (service role). status/public_profile are forced server-side.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'coffee_chat',
+          turnstileToken,
+          payload: {
+            name: formData.name,
+            pronouns: formData.pronouns || null,
+            email: formData.email,
+            linkedin_url: formData.linkedin,
+            role_title: formData.role,
+            location: formData.location || null,
+            role_function: processedFuncChips,
+            identity_tags: processedIdentityChips,
+            topics: formData.topics,
+            capacity: formData.capacity,
+            avatar_url,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setFormLoading(false)
-    if (error) {
+    if (!ok) {
       setFormError(t.formErrorGeneric)
+      setTurnstileToken('')
+      turnstileReset.current?.()
     } else {
       // Submission goes to the moderation queue; the card is NOT shown live
       // until an admin approves it. Show the "submitted for review" confirmation.
       setFormSubmitted(true)
+      setTurnstileToken('')
+      turnstileReset.current?.()
     }
   }
 
@@ -1158,7 +1185,8 @@ export default function CoffeeChat() {
                     <button type="submit" className="cc-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formRetryLabel}</button>
                   </div>
                 )}
-                <button className="cc-form-btn" type="submit" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formSubmit}</button>
+                <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="cc-form-turnstile" />
+                <button className="cc-form-btn" type="submit" disabled={formLoading || (TURNSTILE_ENABLED && !turnstileToken)}>{formLoading ? t.formSubmitting : t.formSubmit}</button>
               </form>
             )}
           </div>
