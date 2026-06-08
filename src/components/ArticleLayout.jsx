@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useT } from '../hooks/useT'
 
-// Mirror Home.jsx: in pre-launch (production build) the Home page hides its
-// #contact footer, so interior CTAs route to '/' instead of a dead anchor.
-const WAITLIST_MODE = !import.meta.env.DEV
+// Mirror Home.jsx: when waitlist mode is on, the Home page hides its #contact
+// footer, so interior CTAs route to '/' instead of a dead anchor.
+// LAUNCHED — keep in sync with Home.jsx (waitlist mode is OFF).
+const WAITLIST_MODE = false
 
 /**
  * Standard interior-page chrome: nav, mobile menu, main content slot,
