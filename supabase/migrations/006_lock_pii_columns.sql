@@ -25,3 +25,9 @@
 --   column the public UI needs stays available.
 --
 -- This migration:
+--   * Leaves the RLS SELECT policies (coffee_chat_read_approved,
+--     resumes_read_approved) untouched.
+--   * Revokes the broad table-level SELECT from anon and re-grants SELECT
+--     on ONLY the non-PII columns. REVOKE + GRANT is idempotent, so this
+--     also codifies the coffee_chat_profiles grants that already exist live
+--     (making this repo the source of truth).
