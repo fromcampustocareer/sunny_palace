@@ -131,8 +131,9 @@ function buildRow(type: string, payload: Record<string, unknown>): Record<string
         story: trimOrNull(payload.story),
         file_name: trimOrNull(payload.file_name),
         avatar_url: trimOrNull(payload.avatar_url),
-        // Force server-side:
-        status: 'pending',
+        // Force server-side — resumes are auto-published (status 'approved') so they
+        // appear in the library immediately. Coffee-chat/panelists stay moderated.
+        status: 'approved',
       }
     case 'opportunity':
       return {
@@ -146,8 +147,9 @@ function buildRow(type: string, payload: Record<string, unknown>): Record<string
         submitted_by: trimOrNull(payload.submitted_by),
         location: trimOrNull(payload.location),
         pay: trimOrNull(payload.pay),
-        // Force server-side — opportunities also enter the moderation queue now:
-        status: 'pending',
+        // Force server-side — opportunities are auto-published (status 'approved') so
+        // they show on the board immediately. Coffee-chat/panelists stay moderated.
+        status: 'approved',
       }
     case 'panelist':
       return {

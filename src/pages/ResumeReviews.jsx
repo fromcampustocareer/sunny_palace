@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import ResumeSubNav from '../components/ResumeSubNav'
@@ -329,24 +329,27 @@ export default function ResumeReviews() {
 
   const panelResume = panelId ? allResumes.find(r => r.id === panelId) : null
 
-  useEffect(() => {
-    let active = true
+  // Public list fetch. Callable so we can re-fetch after a successful submission —
+  // submitted resumes are now auto-published server-side.
+  // Reads resume_submissions directly. RLS (resumes_read_approved) gates
+  // which rows are visible; column GRANTs (migration 006) make PII (email,
+  // linkedin_url) unreadable by anon. We must enumerate the granted non-PII
+  // columns — '*' would expand to email and get "permission denied".
+  const fetchResumes = useCallback(() => {
     setIsLoading(true)
-    // Reads resume_submissions directly. RLS (resumes_read_approved) gates
-    // which rows are visible; column GRANTs (migration 006) make PII (email,
-    // linkedin_url) unreadable by anon. We must enumerate the granted non-PII
-    // columns — '*' would expand to email and get "permission denied".
-    supabase.from('resume_submissions')
+    return supabase.from('resume_submissions')
       .select('id,handle,role_title,role_type,stage,target_companies,background_tags,file_name,allow_download,story,allow_annotation,status,created_at')
       .in('status', ['approved', 'featured'])
       .order('created_at', { ascending: false })
       .then(({ data }) => {
-        if (!active) return
         if (data?.length) setDbResumes(data.map(dbResumeToCard))
         setIsLoading(false)
-      }, () => { if (active) setIsLoading(false) })
-    return () => { active = false }
+      }, () => { setIsLoading(false) })
   }, [])
+
+  useEffect(() => {
+    fetchResumes()
+  }, [fetchResumes])
 
   useEffect(() => {
     if (panelId || sheetOpen) {
@@ -466,7 +469,8 @@ export default function ResumeReviews() {
     }
     // Insert now flows through the Turnstile-gated submit-form edge function
     // (service role); the resume PDF + avatar were already uploaded to storage above.
-    // status is forced to 'pending' server-side.
+    // status is forced to 'approved' server-side, so the row is published immediately
+    // and we re-fetch the public list on success.
     let ok = false
     try {
       const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
@@ -505,12 +509,12 @@ export default function ResumeReviews() {
       setTurnstileToken('')
       turnstileReset.current?.()
     }
-    // Submission enters the moderation queue; it is NOT shown live until an
-    // admin approves it. Show the "submitted for review" confirmation.
+    // Row is live (approved) — re-fetch so the new resume appears in the library.
     else {
       setSubmitSubmitted(true)
       setTurnstileToken('')
       turnstileReset.current?.()
+      fetchResumes()
     }
   }
 
@@ -1141,8 +1145,8 @@ export default function ResumeReviews() {
             {submitSubmitted ? (
               <div className="rr-form-success">
                 <div className="rr-form-success__icon">{t.formSuccessIcon}</div>
-                <div className="rr-form-success__title">{t.formSuccessTitle}</div>
-                <p className="rr-form-success__body">{t.formSuccessBody}</p>
+                <div className="rr-form-success__title">Your resume is now live</div>
+                <p className="rr-form-success__body">It has been added to the library below for the community to learn from. If you opted in for annotation, Jose or Jocelyn may review it and feature it with a note.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit}>

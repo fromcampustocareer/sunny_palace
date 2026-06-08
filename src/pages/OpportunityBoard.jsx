@@ -175,7 +175,9 @@ export default function OpportunityBoard() {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [])
 
-  useEffect(() => {
+  // Public list fetch (status approved/featured). Callable so we can re-fetch after a
+  // successful submission — submitted opportunities are now auto-published server-side.
+  const fetchOpportunities = useCallback(() => {
     supabase.from('opportunities')
       .select('*')
       .in('status', ['approved', 'featured'])
@@ -184,6 +186,10 @@ export default function OpportunityBoard() {
         if (data?.length) setDbOpportunities(data.map(row => dbOpportunityToCard(row, t)))
       })
   }, [t])
+
+  useEffect(() => {
+    fetchOpportunities()
+  }, [fetchOpportunities])
 
   const filters = { tab, query: search.toLowerCase().trim(), stage, location, deadline }
 
@@ -215,7 +221,8 @@ export default function OpportunityBoard() {
     setFormLoading(true)
     setFormError('')
     // Insert now flows through the Turnstile-gated submit-form edge function
-    // (service role). status is forced to 'pending' server-side (moderation queue).
+    // (service role). status is forced to 'approved' server-side, so the row is
+    // published immediately and we re-fetch the public list on success.
     let ok = false
     try {
       const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
@@ -254,6 +261,8 @@ export default function OpportunityBoard() {
       setFormSubmitted(true)
       setTurnstileToken('')
       turnstileReset.current?.()
+      // Row is live (approved) — re-fetch so the new opportunity appears in the board.
+      fetchOpportunities()
     }
   }
 
@@ -612,8 +621,8 @@ export default function OpportunityBoard() {
             {formSubmitted ? (
               <div className="ob-form-success">
                 <div className="ob-form-success__icon">✓</div>
-                <div className="ob-form-success__title">{t.formSuccessTitle}</div>
-                <p className="ob-form-success__body">{t.formSuccessBody}</p>
+                <div className="ob-form-success__title">Your opportunity is now live</div>
+                <p className="ob-form-success__body">It has been added to the board below for the community to see. Thank you for helping keep the board current.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit}>
