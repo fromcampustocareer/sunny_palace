@@ -49,3 +49,16 @@ export default function Turnstile({ onToken, resetRef, className }) {
 
   const handleToken = useCallback((token) => { onToken?.(token) }, [onToken])
   const handleClear = useCallback(() => { onToken?.('') }, [onToken])
+
+  useEffect(() => {
+    // No site key configured → no-op (local dev / build without the var).
+    if (!SITE_KEY) return
+    let cancelled = false
+
+    loadTurnstile()
+      .then((turnstile) => {
+        if (cancelled || !containerRef.current) return
+        // Avoid double-render in React StrictMode / re-mounts.
+        if (widgetIdRef.current != null) return
+        widgetIdRef.current = turnstile.render(containerRef.current, {
+          sitekey: SITE_KEY,
