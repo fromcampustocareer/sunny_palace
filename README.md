@@ -209,8 +209,7 @@ src/
 ├── hooks/
 │   └── useT.js               # Translation hook — reads namespace from EN/ES
 ├── lib/
-│   ├── supabase.js           # Supabase client
-│   └── gemini.js             # Gemini Flash REST client (resume builder AI chat)
+│   └── supabase.js           # Supabase client
 └── main.jsx                  # Root + router
 ```
 
@@ -230,7 +229,6 @@ src/
 - **Tailwind CSS 3** + **PostCSS**
 - **GSAP 3** + **ScrollTrigger** — scroll-driven animations on long-form articles
 - **Supabase** — backend, auth, database, storage (resume PDFs, profile avatars)
-- **Gemini Flash** (Google AI Studio) — default LLM for resume-builder chat
 - **Fontshare** — Clash Display + Satoshi
 - **Google Fonts** — Playfair Display (italic editorial accents)
 
@@ -257,7 +255,6 @@ Create `.env.local` with:
 ```bash
 VITE_SUPABASE_URL=your-supabase-url
 VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-VITE_GEMINI_API_KEY=your-gemini-api-key   # for /resume-reviews/builder
 ```
 
 The Vite dev server is fixed to **port 3000** with `awaitWriteFinish` watcher tuning (see `vite.config.js`) to avoid HMR white-screens from atomic IDE saves.
