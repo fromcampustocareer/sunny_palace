@@ -18,6 +18,14 @@ const ALLOWED_ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? '')
 const TURNSTILE_SECRET = Deno.env.get('TURNSTILE_SECRET')
 const MAX_BODY_BYTES = 1_000_000 // ~1MB — these are JSON rows, not file uploads.
 
+// Server-side email format check at the trust boundary. Must match the DB-layer
+// CHECK constraint (migration 011) and the other edge functions.
+const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+
+// Cap long free-text fields so a crafted client can't push a 100k-char value
+// through to the DB. Mirrors the char_length caps in migration 011.
+const MAX_LONGTEXT = 5000
+
 // Build CORS headers per request: echo the request Origin only if it's allow-listed,
 // fall back to `*` when no allow-list is configured, otherwise omit the ACAO header.
 function corsHeadersFor(req: Request): Record<string, string> {
@@ -194,6 +202,24 @@ Deno.serve(async (req) => {
     }
     const table = TABLE_BY_TYPE[type]
     const row = buildRow(type, (payload && typeof payload === 'object') ? payload : {})
+
+    // 2b. Server-side input validation at the trust boundary (MED-3).
+    //   - email format for the types that carry an email (coffee_chat, resume),
+    //   - max length on long free-text fields so an absurdly long value can't be
+    //     inserted. Generic 400 on failure — no DB internals leaked.
+    if (type === 'coffee_chat' || type === 'resume') {
+      const email = row.email
+      if (typeof email !== 'string' || !EMAIL_REGEX.test(email)) {
+        return json({ error: 'Invalid submission' }, 400)
+      }
+    }
+    const longTextFields = ['story', 'topics', 'why', 'eligibility', 'target_companies']
+    for (const field of longTextFields) {
+      const val = row[field]
+      if (typeof val === 'string' && val.length > MAX_LONGTEXT) {
+        return json({ error: 'Invalid submission' }, 400)
+      }
+    }
 
     // 3. Service-role client (bypasses RLS). Prefer the new secret key, fall back
     //    to the legacy service_role key — mirrors add-to-waitlist.
