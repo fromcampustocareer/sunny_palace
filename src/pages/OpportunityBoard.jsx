@@ -4,6 +4,7 @@ import ArticleLayout from '../components/ArticleLayout'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
 import { OPPORTUNITIES, ARCHIVED_OPPORTUNITIES } from '../data/opportunities'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 const TAB_KEYS = ['all', 'internship', 'research', 'program', 'scholarship']
 
@@ -122,6 +123,8 @@ export default function OpportunityBoard() {
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [formLoading, setFormLoading] = useState(false)
   const [formError, setFormError] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileReset = useRef(null)
   const [fieldErrors, setFieldErrors] = useState({ role: '', company: '', type: '', link: '', why: '', email: '' })
   const [form, setForm] = useState({ role: '', company: '', type: '', link: '', deadline: '', eligibility: '', why: '', email: '', location: '', pay: '' })
 
@@ -201,27 +204,53 @@ export default function OpportunityBoard() {
       setFormError('')
       return
     }
+    if (TURNSTILE_ENABLED && !turnstileToken) {
+      setFormError(t.formErrorGeneric)
+      return
+    }
     setFieldErrors({ role: '', company: '', type: '', link: '', why: '', email: '' })
     setFormLoading(true)
     setFormError('')
-    const { error } = await supabase.from('opportunities').insert({
-      role: form.role.trim(),
-      company: form.company.trim(),
-      role_type: form.type,
-      link: form.link.trim(),
-      deadline: form.deadline.trim() || null,
-      eligibility: form.eligibility.trim() || null,
-      why: form.why.trim(),
-      submitted_by: form.email.trim() || null,
-      status: 'approved',
-      location: form.location.trim() || null,
-      pay: form.pay.trim() || null,
-    })
+    // Insert now flows through the Turnstile-gated submit-form edge function
+    // (service role). status is forced to 'pending' server-side (moderation queue).
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'opportunity',
+          turnstileToken,
+          payload: {
+            role: form.role.trim(),
+            company: form.company.trim(),
+            role_type: form.type,
+            link: form.link.trim(),
+            deadline: form.deadline.trim() || null,
+            eligibility: form.eligibility.trim() || null,
+            why: form.why.trim(),
+            submitted_by: form.email.trim() || null,
+            location: form.location.trim() || null,
+            pay: form.pay.trim() || null,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setFormLoading(false)
-    if (error) {
+    if (!ok) {
       setFormError(t.formErrorGeneric)
+      setTurnstileToken('')
+      turnstileReset.current?.()
     } else {
       setFormSubmitted(true)
+      setTurnstileToken('')
+      turnstileReset.current?.()
     }
   }
 
@@ -666,7 +695,8 @@ export default function OpportunityBoard() {
                     <button type="submit" className="ob-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formRetryLabel}</button>
                   </div>
                 )}
-                <button className="ob-form-btn" type="submit" disabled={formLoading}>
+                <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="ob-form-turnstile" />
+                <button className="ob-form-btn" type="submit" disabled={formLoading || (TURNSTILE_ENABLED && !turnstileToken)}>
                   {formLoading ? t.formSubmitting : t.formSubmit}
                 </button>
               </form>
