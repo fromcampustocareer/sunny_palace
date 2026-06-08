@@ -5,9 +5,36 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const ADMIN_NOTIFY = 'campustocareerteam@gmail.com'
 const FROM_EMAIL = 'Jose x Jocelyn <newsletter@fromcampuscareer.com>'
 
+const TURNSTILE_SECRET = Deno.env.get('TURNSTILE_SECRET')
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+// Verify a Cloudflare Turnstile token before doing any work.
+async function verifyTurnstile(token: unknown, remoteip?: string | null): Promise<boolean> {
+  if (!TURNSTILE_SECRET) {
+    console.error('TURNSTILE_SECRET is not set — rejecting submission')
+    return false
+  }
+  if (!token || typeof token !== 'string') return false
+  try {
+    const form = new URLSearchParams()
+    form.set('secret', TURNSTILE_SECRET)
+    form.set('response', token)
+    if (remoteip) form.set('remoteip', remoteip)
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form.toString(),
+    })
+    const data = await res.json()
+    return data?.success === true
+  } catch (err) {
+    console.error('Turnstile verify error:', err)
+    return false
+  }
 }
 
 serve(async (req) => {
@@ -20,7 +47,16 @@ serve(async (req) => {
   }
 
   try {
-    const { name, email, school, lang } = await req.json()
+    const { name, email, school, lang, turnstileToken } = await req.json()
+
+    // Anti-abuse gate: a valid Turnstile token is required before we insert or email.
+    const remoteip = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    if (!(await verifyTurnstile(turnstileToken, remoteip))) {
+      return new Response(
+        JSON.stringify({ error: 'Verification failed' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
     if (!name || !email) {
       return new Response(
