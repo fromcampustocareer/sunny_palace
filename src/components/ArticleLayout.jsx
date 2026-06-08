@@ -149,6 +149,7 @@ export default function ArticleLayout({ children, title, footerWidth = 680, sign
         <div className="art-footer__links">
           <Link to="/" className="art-footer__link">{t.footerHome}</Link>
           <Link to={WAITLIST_MODE ? '/' : '/#contact'} className="art-footer__link">{t.footerContact}</Link>
+          <Link to="/privacy" className="art-footer__link">{t.footerPrivacy}</Link>
         </div>
       </footer>
     </>

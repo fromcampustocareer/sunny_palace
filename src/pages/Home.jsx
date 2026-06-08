@@ -1379,6 +1379,7 @@ export default function Home() {
         <p className="footer__signoff" lang="es">{t.footerSignoff}</p>
         <div className="footer__bottom">
           <span className="footer__credit">{t.footerCredit}</span>
+          <Link to="/privacy" className="footer__credit" style={{ marginLeft: '1.25rem', textDecoration: 'underline', textUnderlineOffset: '2px' }}>{t.footerPrivacy}</Link>
         </div>
       </footer>
       </>)}
