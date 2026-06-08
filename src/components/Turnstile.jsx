@@ -62,3 +62,16 @@ export default function Turnstile({ onToken, resetRef, className }) {
         if (widgetIdRef.current != null) return
         widgetIdRef.current = turnstile.render(containerRef.current, {
           sitekey: SITE_KEY,
+          callback: handleToken,
+          'expired-callback': handleClear,
+          'error-callback': handleClear,
+          'timeout-callback': handleClear,
+        })
+      })
+      .catch((err) => {
+        // Network/adblock failure — don't hard-block; log for diagnostics.
+        console.error('Turnstile load error:', err)
+      })
+
+    return () => {
+      cancelled = true
