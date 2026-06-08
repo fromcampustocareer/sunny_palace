@@ -4,6 +4,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLang } from '../context/LanguageContext'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 gsap.registerPlugin(ScrollTrigger)
 
 const SEARCH_INDEX = [
@@ -58,6 +59,8 @@ export default function Home() {
   const [modalMessage, setModalMessage] = useState('')
   const [modalLoading, setModalLoading] = useState(false)
   const [modalError, setModalError] = useState('')
+  const [modalToken, setModalToken] = useState('')
+  const modalTurnstileReset = useRef(null)
   const [waitlistOpen, setWaitlistOpen] = useState(false)
   const [waitlistSent, setWaitlistSent] = useState(false)
   const [waitlistName, setWaitlistName] = useState('')
@@ -65,6 +68,8 @@ export default function Home() {
   const [waitlistSchool, setWaitlistSchool] = useState('')
   const [waitlistLoading, setWaitlistLoading] = useState(false)
   const [waitlistError, setWaitlistError] = useState('')
+  const [waitlistToken, setWaitlistToken] = useState('')
+  const waitlistTurnstileReset = useRef(null)
   const waitlistRef = useRef(null)
   const [newsletterOpen, setNewsletterOpen] = useState(false)
   const [newsletterSent, setNewsletterSent] = useState(false)
@@ -106,31 +111,34 @@ export default function Home() {
       setModalEmail('')
       setModalMessage('')
       setModalError('')
+      setModalToken('')
+      modalTurnstileReset.current?.()
     }, 400)
   }, [])
 
   const handleModalSubmit = useCallback(async () => {
     if (!modalEmail.trim() || !modalMessage.trim()) return
+    if (TURNSTILE_ENABLED && !modalToken) return
     setModalLoading(true)
     setModalError('')
     try {
-      const { supabase } = await import('../lib/supabase')
-      const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
-        body: JSON.stringify({ name: modalName.trim(), email: modalEmail.trim(), message: modalMessage.trim() }),
+        body: JSON.stringify({ name: modalName.trim(), email: modalEmail.trim(), message: modalMessage.trim(), turnstileToken: modalToken }),
       })
       if (!res.ok) throw new Error('Failed to send')
       setModalSent(true)
     } catch {
       setModalError(t.modalError)
+      setModalToken('')
+      modalTurnstileReset.current?.()
     }
     setModalLoading(false)
-  }, [modalName, modalEmail, modalMessage, t])
+  }, [modalName, modalEmail, modalMessage, modalToken, t])
 
   const handleModalKeyDown = useCallback((e) => {
     if (e.key !== 'Tab' || !modalRef.current) return
@@ -176,11 +184,14 @@ export default function Home() {
       setWaitlistEmail('')
       setWaitlistSchool('')
       setWaitlistError('')
+      setWaitlistToken('')
+      waitlistTurnstileReset.current?.()
     }, 400)
   }, [])
 
   const handleWaitlistSubmit = useCallback(async () => {
     if (!waitlistName.trim() || !waitlistEmail.trim()) return
+    if (TURNSTILE_ENABLED && !waitlistToken) return
     setWaitlistLoading(true)
     setWaitlistError('')
     try {
@@ -195,15 +206,18 @@ export default function Home() {
           email: waitlistEmail.trim(),
           school: waitlistSchool.trim() || null,
           lang,
+          turnstileToken: waitlistToken,
         }),
       })
       if (!res.ok) throw new Error('Failed to sign up')
       setWaitlistSent(true)
     } catch {
       setWaitlistError(t.waitlistError)
+      setWaitlistToken('')
+      waitlistTurnstileReset.current?.()
     }
     setWaitlistLoading(false)
-  }, [waitlistName, waitlistEmail, waitlistSchool, lang, t])
+  }, [waitlistName, waitlistEmail, waitlistSchool, lang, waitlistToken, t])
 
   const handleWaitlistKeyDown = useCallback((e) => {
     if (e.key !== 'Tab' || !waitlistRef.current) return
@@ -1394,8 +1408,9 @@ export default function Home() {
                 <textarea id="modalMessage" className="modal__input modal__textarea" placeholder={t.modalMessagePlaceholder} value={modalMessage} onChange={e => setModalMessage(e.target.value)} rows={4} />
               </div>
               {modalError && <p role="alert" className="modal__error">{modalError}</p>}
+              <Turnstile onToken={setModalToken} resetRef={modalTurnstileReset} className="modal__turnstile" />
               <div className="modal__footer">
-                <button className="modal__btn" disabled={modalLoading || !modalEmail.trim() || !modalMessage.trim()} onClick={handleModalSubmit}>
+                <button className="modal__btn" disabled={modalLoading || !modalEmail.trim() || !modalMessage.trim() || (TURNSTILE_ENABLED && !modalToken)} onClick={handleModalSubmit}>
                   {modalLoading ? t.modalSending : t.modalSend}
                 </button>
                 <span className="modal__reassurance">{t.modalReassurance}</span>
@@ -1439,8 +1454,9 @@ export default function Home() {
                 <input type="text" id="waitlistSchool" className="modal__input" placeholder={t.waitlistSchoolPlaceholder} value={waitlistSchool} onChange={e => setWaitlistSchool(e.target.value)} />
               </div>
               {waitlistError && <p role="alert" className="modal__error">{waitlistError}</p>}
+              <Turnstile onToken={setWaitlistToken} resetRef={waitlistTurnstileReset} className="modal__turnstile" />
               <div className="modal__footer">
-                <button className="modal__btn" disabled={waitlistLoading || !waitlistName.trim() || !waitlistEmail.trim()} onClick={handleWaitlistSubmit}>
+                <button className="modal__btn" disabled={waitlistLoading || !waitlistName.trim() || !waitlistEmail.trim() || (TURNSTILE_ENABLED && !waitlistToken)} onClick={handleWaitlistSubmit}>
                   {waitlistLoading ? t.waitlistSubmitting : t.waitlistSubmit}
                 </button>
                 <span className="modal__reassurance">{t.waitlistReassurance}</span>
