@@ -84,6 +84,7 @@ const TABLE_BY_TYPE: Record<string, string> = {
   coffee_chat: 'coffee_chat_profiles',
   resume: 'resume_submissions',
   opportunity: 'opportunities',
+  panelist: 'panelists',
 }
 
 const str = (v: unknown) => (typeof v === 'string' ? v : null)
@@ -148,6 +149,18 @@ function buildRow(type: string, payload: Record<string, unknown>): Record<string
         // Force server-side — opportunities also enter the moderation queue now:
         status: 'pending',
       }
+    case 'panelist':
+      return {
+        name: trimOrNull(payload.name),
+        email: trimOrNull(payload.email),
+        linkedin_url: trimOrNull(payload.linkedin_url),
+        role_title: trimOrNull(payload.role_title),
+        topic: trimOrNull(payload.topic),
+        interested_in: trimOrNull(payload.interested_in),
+        notes: trimOrNull(payload.notes),
+        // Force server-side — panelist applications enter the moderation queue:
+        status: 'pending',
+      }
     default:
       return {}
   }
@@ -204,10 +217,10 @@ Deno.serve(async (req) => {
     const row = buildRow(type, (payload && typeof payload === 'object') ? payload : {})
 
     // 2b. Server-side input validation at the trust boundary (MED-3).
-    //   - email format for the types that carry an email (coffee_chat, resume),
+    //   - email format for the types that carry an email (coffee_chat, resume, panelist),
     //   - max length on long free-text fields so an absurdly long value can't be
     //     inserted. Generic 400 on failure — no DB internals leaked.
-    if (type === 'coffee_chat' || type === 'resume') {
+    if (type === 'coffee_chat' || type === 'resume' || type === 'panelist') {
       const email = row.email
       if (typeof email !== 'string' || !EMAIL_REGEX.test(email)) {
         return json({ error: 'Invalid submission' }, 400)
