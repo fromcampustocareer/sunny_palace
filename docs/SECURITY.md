@@ -110,3 +110,31 @@ with the anon key (no Turnstile), the one form HIGH-1 missed.
 migration `012` revokes anon `INSERT` on `panelists`.
 **Verification:** direct anon insert → 401; `submit-form` panelist with a bad token → 403.
 
+---
+
+## 4. High-severity fixes — injection & uploads
+
+### HIGH-2 — Stored XSS via user URLs rendered as `href`  *(measure #19)*
+**Risk:** user-controlled URLs (`linkedin_url`, opportunity `link`) were rendered straight
+into anchor `href`s. A `javascript:alert(document.cookie)` value became a clickable XSS
+payload (and combined with CRIT-2 could be published instantly).
+**Fix:** `src/lib/safeUrl.js` exports `safeHttpUrl(raw)`, which returns the URL only if it
+parses as an absolute `http:`/`https:` URL (blocking `javascript:`, `data:`, `vbscript:`,
+relative URLs). It is applied at every `href` sink. Migration `008` adds DB-layer
+`CHECK (... LIKE 'https://%')` constraints (NOT VALID) on the URL columns as a backstop.
+**Verification:** `safeHttpUrl('javascript:alert(1)')` → null; the DB rejects a non-https
+link insert. Confirmed live.
+
+### HIGH-3 — Insecure file uploads + public avatars bucket  *(measures #21, #8)*
+**Risk:** the `avatars` bucket was public, accepted anon uploads of any type/size, and used
+the **user-controlled** `file.type` as the stored content type — an attacker could upload an
+HTML/SVG file with a spoofed `image/*` type and get a hosted URL on the storage domain
+(phishing / stored content). The `resumes` bucket had no size limit and no content sniffing.
+**Fix:** migration `009` codifies both buckets in version control and sets
+`allowed_mime_types` + `file_size_limit` (avatars: png/jpeg/webp, 2 MB; resumes:
+application/pdf, 5 MB), re-asserting the resume storage policies. The client validates size
+and type before upload, passes an explicit allowed MIME (never `file.type`), and checks the
+`%PDF` **magic-byte** header for resumes. The bucket limits are a server-side backstop.
+**Verification:** live `storage.buckets` shows the limits on both buckets; a `.html`
+renamed to `.png`, an oversized image, and a non-PDF resume are all rejected.
+
