@@ -1,0 +1,5 @@
+-- ============================================================
+-- 005 — Lock INSERT status (re-enable real moderation)
+-- CRIT-2: Anonymous clients must NOT be able to self-approve.
+-- Every new submission to a user-writable table that has a
+-- `status` column must land as `status = 'pending'` and only
