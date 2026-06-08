@@ -100,3 +100,37 @@ function buildRow(type: string, payload: Record<string, unknown>): Record<string
         role_title: trimOrNull(payload.role_title),
         role_type: trimOrNull(payload.role_type),
         stage: trimOrNull(payload.stage),
+        target_companies: str(payload.target_companies), // free-text column, not an array
+        background_tags: strArray(payload.background_tags),
+        allow_download: payload.allow_download === true,
+        allow_annotation: payload.allow_annotation === true,
+        story: trimOrNull(payload.story),
+        file_name: trimOrNull(payload.file_name),
+        avatar_url: trimOrNull(payload.avatar_url),
+        // Force server-side:
+        status: 'pending',
+      }
+    case 'opportunity':
+      return {
+        role: trimOrNull(payload.role),
+        company: trimOrNull(payload.company),
+        role_type: trimOrNull(payload.role_type),
+        link: trimOrNull(payload.link),
+        deadline: trimOrNull(payload.deadline),
+        eligibility: trimOrNull(payload.eligibility),
+        why: trimOrNull(payload.why),
+        submitted_by: trimOrNull(payload.submitted_by),
+        location: trimOrNull(payload.location),
+        pay: trimOrNull(payload.pay),
+        // Force server-side — opportunities also enter the moderation queue now:
+        status: 'pending',
+      }
+    default:
+      return {}
+  }
+}
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
