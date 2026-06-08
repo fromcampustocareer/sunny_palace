@@ -329,8 +329,12 @@ export default function ResumeReviews() {
   useEffect(() => {
     let active = true
     setIsLoading(true)
+    // Reads resume_submissions directly. RLS (resumes_read_approved) gates
+    // which rows are visible; column GRANTs (migration 006) make PII (email,
+    // linkedin_url) unreadable by anon. We must enumerate the granted non-PII
+    // columns — '*' would expand to email and get "permission denied".
     supabase.from('resume_submissions')
-      .select('*')
+      .select('id,handle,role_title,role_type,stage,target_companies,background_tags,file_name,allow_download,story,allow_annotation,status,created_at')
       .in('status', ['approved', 'featured'])
       .order('created_at', { ascending: false })
       .then(({ data }) => {
