@@ -11,3 +11,10 @@
 --     * RLS policies are ROW-level — they gate WHICH rows are visible
 --       (approved / featured / public). They are NOT the PII leak and
 --       must stay intact.
+--     * A SECURITY INVOKER view runs with the *caller's* privileges. With
+--       the SELECT policies dropped AND no table grant for anon, the view
+--       would return 0 rows for the public — breaking every page.
+--     * The views also referenced columns that don't exist on
+--       resume_submissions (avatar_url, like_count, view_count), so they
+--       were invalid against the live schema.
+--
