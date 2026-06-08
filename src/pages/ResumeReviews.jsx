@@ -6,6 +6,7 @@ import CompanyLogo from '../components/CompanyLogo'
 import { COMPANIES } from '../data/companies'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 const LIKES_KEY = 'jxj_resume_likes_v1'
 
@@ -248,6 +249,8 @@ export default function ResumeReviews() {
   const [submitSubmitted, setSubmitSubmitted] = useState(false)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileReset = useRef(null)
   const [submitForm, setSubmitForm] = useState({ handle: '', email: '', linkedin: '', roleTitle: '', roleType: '', roleTypeOther: '', stage: '', stageOther: '', companies: '', bgTags: [], bgOther: '', download: 'no', story: '', annotate: 'no' })
   const [fileName, setFileName] = useState('')
   const [avatarFile, setAvatarFile] = useState(null)
@@ -329,8 +332,12 @@ export default function ResumeReviews() {
   useEffect(() => {
     let active = true
     setIsLoading(true)
+    // Reads resume_submissions directly. RLS (resumes_read_approved) gates
+    // which rows are visible; column GRANTs (migration 006) make PII (email,
+    // linkedin_url) unreadable by anon. We must enumerate the granted non-PII
+    // columns — '*' would expand to email and get "permission denied".
     supabase.from('resume_submissions')
-      .select('*')
+      .select('id,handle,role_title,role_type,stage,target_companies,background_tags,file_name,allow_download,story,allow_annotation,status,created_at')
       .in('status', ['approved', 'featured'])
       .order('created_at', { ascending: false })
       .then(({ data }) => {
@@ -402,6 +409,28 @@ export default function ResumeReviews() {
       setSubmitError(t.formErrorNoFile)
       return
     }
+    if (TURNSTILE_ENABLED && !turnstileToken) {
+      setSubmitError(t.formErrorGeneric)
+      return
+    }
+    // Validate the PDF against an allow-list BEFORE uploading: size, declared
+    // MIME, AND the magic-bytes header (%PDF). The header check defends against
+    // a renamed/spoofed file whose declared type can't be trusted.
+    const PDF_MAX_BYTES = 5 * 1024 * 1024 // 5MB — matches the bucket file_size_limit
+    if (file.size > PDF_MAX_BYTES || file.type !== 'application/pdf') {
+      setSubmitError('Please upload a PDF under 5MB.')
+      return
+    }
+    try {
+      const header = await file.slice(0, 4).text()
+      if (header !== '%PDF') {
+        setSubmitError('Please upload a PDF under 5MB.')
+        return
+      }
+    } catch {
+      setSubmitError('Please upload a PDF under 5MB.')
+      return
+    }
     setSubmitLoading(true)
     setSubmitError('')
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
@@ -416,33 +445,73 @@ export default function ResumeReviews() {
     }
     let avatar_url = null
     if (avatarFile) {
+      // Validate the avatar against an allow-list BEFORE uploading. We never
+      // trust avatarFile.type for the stored contentType (it is user-controlled);
+      // instead we map the validated type to an explicit MIME from the allow-list.
+      const AVATAR_MIME = { 'image/png': 'image/png', 'image/jpeg': 'image/jpeg', 'image/webp': 'image/webp' }
+      const AVATAR_MAX_BYTES = 2 * 1024 * 1024 // 2MB — matches the bucket file_size_limit
+      const safeMime = AVATAR_MIME[avatarFile.type]
+      if (!safeMime || avatarFile.size > AVATAR_MAX_BYTES) {
+        setSubmitLoading(false)
+        setSubmitError('Please upload a PNG, JPEG, or WebP avatar under 2MB.')
+        return
+      }
       const ext = avatarFile.name.split('.').pop()
       const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      const { error: avErr } = await supabase.storage.from('avatars').upload(path, avatarFile, { contentType: avatarFile.type })
+      const { error: avErr } = await supabase.storage.from('avatars').upload(path, avatarFile, { contentType: safeMime })
       if (!avErr) {
         const { data } = supabase.storage.from('avatars').getPublicUrl(path)
         avatar_url = data.publicUrl
       }
     }
-    const { error } = await supabase.from('resume_submissions').insert({
-      handle: submitForm.handle,
-      email: submitForm.email,
-      linkedin_url: submitForm.linkedin || null,
-      role_title: submitForm.roleTitle || null,
-      role_type: submitForm.roleType === 'other' ? submitForm.roleTypeOther.trim() : submitForm.roleType,
-      stage: submitForm.stage === 'other' ? submitForm.stageOther.trim() : submitForm.stage,
-      target_companies: submitForm.companies,
-      background_tags: submitForm.bgTags.map(tag => tag === 'other' ? submitForm.bgOther.trim() : tag).filter(Boolean),
-      allow_download: submitForm.download === 'yes',
-      story: submitForm.story || null,
-      allow_annotation: submitForm.annotate === 'yes',
-      file_name: storagePath,
-      status: 'approved',
-      avatar_url,
-    })
+    // Insert now flows through the Turnstile-gated submit-form edge function
+    // (service role); the resume PDF + avatar were already uploaded to storage above.
+    // status is forced to 'pending' server-side.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'resume',
+          turnstileToken,
+          payload: {
+            handle: submitForm.handle,
+            email: submitForm.email,
+            linkedin_url: submitForm.linkedin || null,
+            role_title: submitForm.roleTitle || null,
+            role_type: submitForm.roleType === 'other' ? submitForm.roleTypeOther.trim() : submitForm.roleType,
+            stage: submitForm.stage === 'other' ? submitForm.stageOther.trim() : submitForm.stage,
+            target_companies: submitForm.companies,
+            background_tags: submitForm.bgTags.map(tag => tag === 'other' ? submitForm.bgOther.trim() : tag).filter(Boolean),
+            allow_download: submitForm.download === 'yes',
+            story: submitForm.story || null,
+            allow_annotation: submitForm.annotate === 'yes',
+            file_name: storagePath,
+            avatar_url,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setSubmitLoading(false)
-    if (error) { setSubmitError(t.formErrorGeneric) }
-    else { setSubmitSubmitted(true) }
+    if (!ok) {
+      setSubmitError(t.formErrorGeneric)
+      setTurnstileToken('')
+      turnstileReset.current?.()
+    }
+    // Submission enters the moderation queue; it is NOT shown live until an
+    // admin approves it. Show the "submitted for review" confirmation.
+    else {
+      setSubmitSubmitted(true)
+      setTurnstileToken('')
+      turnstileReset.current?.()
+    }
   }
 
   function toggleBgTag(tag) {
@@ -1182,7 +1251,8 @@ export default function ResumeReviews() {
                   </div>
                 </div>
                 {submitError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: '13px', marginBottom: '10px' }}>{submitError}</p>}
-                <button className="rr-form-btn" type="submit" disabled={submitLoading}>{submitLoading ? t.formSubmitting : t.formSubmit}</button>
+                <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="rr-form-turnstile" />
+                <button className="rr-form-btn" type="submit" disabled={submitLoading || (TURNSTILE_ENABLED && !turnstileToken)}>{submitLoading ? t.formSubmitting : t.formSubmit}</button>
                 <p className="rr-form-note">{t.formNote}</p>
               </form>
             )}

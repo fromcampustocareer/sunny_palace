@@ -1,25 +1,66 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET')
 const FROM_EMAIL = 'Jose & Jocelyn <newsletter@fromcampuscareer.com>'
 const REPLY_TO = 'jose@fromcampuscareer.com'
 
-serve(async (req) => {
-  // Supabase database webhooks send a POST with the record payload
+// Basic email shape check — not RFC-perfect, just enough to reject garbage
+// before we hand it to Resend / interpolate it.
+const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+const MAX_NAME_LENGTH = 100
+
+// Escape user-controlled values before interpolating them into an email `html`
+// string, to prevent HTML/email injection. `&` MUST be escaped first.
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+// Constant-time-ish string comparison to avoid leaking the secret via timing.
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let mismatch = 0
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return mismatch === 0
+}
+
+Deno.serve(async (req) => {
+  // Supabase database webhooks send a POST with the record payload.
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 })
+  }
+
+  // --- Shared-secret gate (must run BEFORE reading the body) ---
+  // This function is intentionally NOT in the verify_jwt=false list, so the
+  // gateway already requires a valid Authorization bearer. The shared secret
+  // below is the real gate: the operator configures the Supabase DB webhook
+  // (Dashboard -> Database -> Webhooks) to send the same value in the
+  // `x-webhook-secret` header. Fail CLOSED if the env var is unset.
+  if (!WEBHOOK_SECRET) {
+    console.error('WEBHOOK_SECRET is not configured; rejecting request')
+    return new Response('Unauthorized', { status: 401 })
+  }
+  const providedSecret = req.headers.get('x-webhook-secret') ?? ''
+  if (!timingSafeEqual(providedSecret, WEBHOOK_SECRET)) {
+    return new Response('Unauthorized', { status: 401 })
   }
 
   try {
     const payload = await req.json()
     const record = payload.record
 
-    if (!record?.email) {
-      return new Response('No email in payload', { status: 400 })
+    const email = typeof record?.email === 'string' ? record.email.trim() : ''
+    if (!email || !EMAIL_REGEX.test(email)) {
+      return new Response('Invalid email in payload', { status: 400 })
     }
 
-    const firstName = record.name?.split(' ')[0] || 'there'
-    const email = record.email
+    const rawName = typeof record?.name === 'string' ? record.name : ''
+    const firstName = (rawName.split(' ')[0] || 'there').slice(0, MAX_NAME_LENGTH)
 
     const html = buildEmailHtml(firstName)
 
@@ -41,7 +82,7 @@ serve(async (req) => {
     if (!res.ok) {
       const err = await res.text()
       console.error('Resend error:', err)
-      return new Response(`Resend error: ${err}`, { status: 500 })
+      return new Response('Failed to send email', { status: 500 })
     }
 
     return new Response(JSON.stringify({ sent: true }), {
@@ -50,7 +91,7 @@ serve(async (req) => {
     })
   } catch (err) {
     console.error('Function error:', err)
-    return new Response(`Error: ${err.message}`, { status: 500 })
+    return new Response('Internal error', { status: 500 })
   }
 })
 
@@ -79,7 +120,7 @@ function buildEmailHtml(firstName: string): string {
           <!-- Body -->
           <tr>
             <td style="background:#ffffff;padding:40px 40px 32px;">
-              <p style="margin:0 0 20px;font-size:17px;color:#2A2117;line-height:1.75;">Hey ${firstName},</p>
+              <p style="margin:0 0 20px;font-size:17px;color:#2A2117;line-height:1.75;">Hey ${escapeHtml(firstName)},</p>
               <p style="margin:0 0 20px;font-size:16px;color:#6B5E52;line-height:1.8;">
                 You're in. Welcome to <strong style="color:#2A2117;">La Voz del Día</strong> — the weekly newsletter from Jose &amp; Jocelyn built for first-gen and underrepresented students navigating internships, early careers, and everything in between.
               </p>

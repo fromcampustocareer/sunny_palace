@@ -23,7 +23,7 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 // and swap its <Navigate> below for the real element, e.g.:
 //   const InterviewPrep = lazy(() => import('./pages/InterviewPrep'))
 //   <Route path="/interview-prep" element={<InterviewPrep />} />
-// Gated: InterviewPrep, ResumeCompanies, ResumeBuilder, PartnerPanels, BridgeYear.
+// Gated: InterviewPrep, ResumeCompanies, PartnerPanels, BridgeYear.
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -52,7 +52,7 @@ export default function App() {
           {/* Sprint not open yet — redirect direct visits home. Restore <InterviewPrep /> at launch. */}
           <Route path="/interview-prep" element={<Navigate to="/" replace />} />
           <Route path="/resume-reviews" element={<ResumeReviews />} />
-          {/* Coming soon — shown as disabled "Coming soon" tabs in ResumeSubNav. Restore <ResumeCompanies /> / <ResumeBuilder /> at launch. */}
+          {/* Coming soon — shown as disabled "Coming soon" tabs in ResumeSubNav. Restore <ResumeCompanies /> at launch. */}
           <Route path="/resume-reviews/companies" element={<Navigate to="/resume-reviews" replace />} />
           <Route path="/resume-reviews/builder" element={<Navigate to="/resume-reviews" replace />} />
           {/* Not open yet — redirect direct visits home. Restore <PartnerPanels /> at launch. */}
