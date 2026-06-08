@@ -2871,6 +2871,7 @@ export const en = {
     footerCopy: 'Jose x Jocelyn © 2026',
     footerHome: 'Home',
     footerContact: 'Contact',
+    footerPrivacy: 'Privacy',
     // subscribe widget
     subscribeTitle: 'Stay in the loop',
     subscribeDesc: 'Get new articles from La Voz del Día delivered to your inbox.',

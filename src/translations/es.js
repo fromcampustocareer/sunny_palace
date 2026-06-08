@@ -2871,6 +2871,7 @@ export const es = {
     footerCopy: 'Jose x Jocelyn © 2026',
     footerHome: 'Inicio',
     footerContact: 'Contacto',
+    footerPrivacy: 'Privacidad',
     // subscribe widget
     subscribeTitle: 'Mantente al tanto',
     subscribeDesc: 'Recibe nuevos artículos de La Voz del Día en tu bandeja de entrada.',

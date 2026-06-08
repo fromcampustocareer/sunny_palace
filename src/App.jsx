@@ -16,6 +16,7 @@ const FirstGenPlaybook = lazy(() => import('./pages/articles/FirstGenPlaybook'))
 const CoffeeChatFramework = lazy(() => import('./pages/articles/CoffeeChatFramework'))
 const NegotiateSalary = lazy(() => import('./pages/articles/NegotiateSalary'))
 const Rejection = lazy(() => import('./pages/articles/Rejection'))
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 // Pre-launch, these routes redirect instead of rendering, so their components are not
@@ -68,6 +69,7 @@ export default function App() {
           <Route path="/articles/coffee-chat-framework" element={<CoffeeChatFramework />} />
           <Route path="/articles/negotiate-salary" element={<NegotiateSalary />} />
           <Route path="/articles/rejection" element={<Rejection />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
