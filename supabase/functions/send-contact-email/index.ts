@@ -11,6 +11,10 @@ const GENERIC_ERROR = 'Something went wrong. Please try again.'
 const MAX_MESSAGE_LENGTH = 5000
 const MAX_FIELD_LENGTH = 200
 
+// Server-side email format check at the trust boundary. Matches the DB-layer
+// CHECK constraint (migration 011) and the other edge functions.
+const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+
 // Escape user-controlled values before interpolating them into an email `html`
 // string, to prevent HTML/email injection. `&` MUST be escaped first.
 function escapeHtml(str: string): string {
@@ -105,6 +109,12 @@ Deno.serve(async (req) => {
       (name != null && String(name).length > MAX_FIELD_LENGTH) ||
       String(email).length > MAX_FIELD_LENGTH
     ) {
+      return new Response(GENERIC_ERROR, { status: 400, headers: corsHeaders })
+    }
+
+    // Email format check at the trust boundary. Reject malformed addresses with
+    // the generic 400, consistent with the existing pattern.
+    if (!EMAIL_REGEX.test(String(email).trim())) {
       return new Response(GENERIC_ERROR, { status: 400, headers: corsHeaders })
     }
 
