@@ -3,3 +3,8 @@
 -- CRIT-2: Anonymous clients must NOT be able to self-approve.
 -- Every new submission to a user-writable table that has a
 -- `status` column must land as `status = 'pending'` and only
+-- become visible after a human approves it (read policies in
+-- 001_initial_schema.sql already gate SELECT on status).
+--
+-- This migration drops and recreates the existing `_insert`
+-- policies (names taken verbatim from 001_initial_schema.sql)
