@@ -338,7 +338,7 @@ export default function ResumeReviews() {
   const fetchResumes = useCallback(() => {
     setIsLoading(true)
     return supabase.from('resume_submissions')
-      .select('id,handle,role_title,role_type,stage,target_companies,background_tags,file_name,allow_download,story,allow_annotation,status,created_at')
+      .select('id,handle,role_title,role_type,stage,target_companies,background_tags,file_name,allow_download,story,allow_annotation,status,created_at,avatar_url')
       .in('status', ['approved', 'featured'])
       .order('created_at', { ascending: false })
       .then(({ data }) => {
