@@ -75,3 +75,16 @@ export default function Turnstile({ onToken, resetRef, className }) {
 
     return () => {
       cancelled = true
+      if (widgetIdRef.current != null && window.turnstile) {
+        try { window.turnstile.remove(widgetIdRef.current) } catch (_) { /* noop */ }
+      }
+      widgetIdRef.current = null
+    }
+  }, [handleToken, handleClear])
+
+  // Expose a reset() so parents can re-challenge after a submit.
+  useEffect(() => {
+    if (!resetRef) return
+    resetRef.current = () => {
+      handleClear()
+      if (widgetIdRef.current != null && window.turnstile) {
