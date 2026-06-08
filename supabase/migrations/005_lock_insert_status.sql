@@ -28,3 +28,7 @@ CREATE POLICY "opportunities_insert" ON opportunities FOR INSERT
 
 -- ── resume_submissions ─────────────────────────────────────
 -- Has `status` only (no public_profile column).
+-- NB: the existing insert policy is named "resumes_insert".
+DROP POLICY IF EXISTS "resumes_insert" ON resume_submissions;
+CREATE POLICY "resumes_insert" ON resume_submissions FOR INSERT
+  WITH CHECK (status = 'pending');
