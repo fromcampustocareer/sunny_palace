@@ -1649,7 +1649,6 @@ export const es = {
     chatSuggested4: '¿Qué palabras clave me faltan?',
     chatThinking: 'Pensando…',
     chatNeedResume: 'Sube un currículum primero para que pueda ayudarte.',
-    chatError: 'No se pudo conectar con Gemini. Revisa tu clave API.',
 
     generateNeedJob: 'Añade primero una descripción del empleo.',
     generateNeedResume: 'Sube primero un currículum.',
