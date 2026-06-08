@@ -1,0 +1,6 @@
+-- ============================================================
+-- CRIT-3 — Stop exposing PII via public table reads
+-- ============================================================
+-- The anon (public REST) role could SELECT entire rows — including
+-- `email` and `linkedin_url` — from resume_submissions, leaking PII.
+--
