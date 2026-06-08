@@ -258,3 +258,42 @@ so a determined human (past Turnstile) can post junk — this is a product decis
 vulnerability. Migration `013` also added the missing `opportunities.location`/`pay` columns
 the form referenced.
 
+---
+
+## 8. Secrets, webhooks & migration inventory
+
+### Edge function secrets (Supabase — private, server-side only)
+| Secret | Used by | Purpose |
+|---|---|---|
+| `TURNSTILE_SECRET` | submit-form, send-contact-email, add-to-waitlist | verify Turnstile tokens |
+| `WEBHOOK_SECRET` | send-welcome-email, coffee-chat-welcome | shared-secret webhook gate |
+| `ALLOWED_ORIGINS` | submit-form, send-contact-email, add-to-waitlist | CORS allow-list (e.g. `https://fromcampuscareer.com`) |
+| `RESEND_API_KEY` | all email functions | Resend API |
+| `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_SECRET_KEYS` | service-role functions | privileged DB access (auto-provided) |
+
+### Frontend env vars (Cloudflare Pages — PUBLIC by design, shipped in the bundle)
+| Variable | Notes |
+|---|---|
+| `VITE_SUPABASE_URL` | project URL — public |
+| `VITE_SUPABASE_ANON_KEY` | publishable key — public, governed by RLS/GRANTs |
+| `VITE_TURNSTILE_SITE_KEY` | Turnstile site key — public by design |
+
+> **Rule:** never add a `VITE_`-prefixed secret. If it isn't safe in the browser, it must
+> live as an edge secret and be used only inside an edge function.
+
+### Database webhooks
+| Webhook | Fires on | Calls | Auth |
+|---|---|---|---|
+| `on-new-subscriber` | `subscribers` INSERT | `send-welcome-email` | Authorization bearer + `x-webhook-secret` |
+| `on-coffee-chat-approved` | `coffee_chat_profiles` UPDATE | `coffee-chat-welcome` | Authorization bearer + `x-webhook-secret` |
+
+### Migrations added by the audit
+`005` lock insert status · `006` lock PII columns · `007` revoke anon insert ·
+`008` https URL checks · `009` storage hardening · `010` audit log ·
+`011` input constraints · `012` revoke panelists insert · `013` opportunities location/pay.
+
+### Edge functions
+`submit-form` (verify_jwt=false, Turnstile) · `send-contact-email` / `add-to-waitlist`
+(verify_jwt=false, Turnstile) · `send-welcome-email` / `coffee-chat-welcome`
+(verify_jwt=true, webhook secret) · `verify-turnstile` (legacy, superseded by submit-form).
+
