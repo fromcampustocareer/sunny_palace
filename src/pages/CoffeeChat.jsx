@@ -255,6 +255,10 @@ export default function CoffeeChat() {
   }, [])
 
   useEffect(() => {
+    // Reads coffee_chat_profiles directly. RLS (coffee_chat_read_approved)
+    // gates which rows are visible; column GRANTs (migration 006) make
+    // PII (email, consented_at) unreadable. We select only the non-PII
+    // PUBLIC_PROFILE_COLUMNS, so '*' would error on the revoked columns.
     supabase.from('coffee_chat_profiles')
       .select(PUBLIC_PROFILE_COLUMNS)
       .eq('status', 'approved')
