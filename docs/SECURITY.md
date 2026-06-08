@@ -138,3 +138,47 @@ and type before upload, passes an explicit allowed MIME (never `file.type`), and
 **Verification:** live `storage.buckets` shows the limits on both buckets; a `.html`
 renamed to `.png`, an oversized image, and a non-PDF resume are all rejected.
 
+---
+
+## 5. High-severity fixes — webhooks, errors, headers, dependencies
+
+### HIGH-4 — Webhook had no signature verification  *(measure #31)*
+**Risk:** `send-welcome-email` is triggered by a Supabase database webhook and trusted the
+payload entirely. The only "auth" was the public anon key, so anyone could POST a crafted
+`{record:{email:"victim@x.com"}}` and send mail from the verified domain to arbitrary
+addresses (spam/phishing, Resend abuse, sender-reputation damage).
+**Fix:** the function reads `WEBHOOK_SECRET` and requires a matching `x-webhook-secret`
+header **before** reading the body (timing-safe compare, fail-closed if unset), validates
+`record.email`, caps name length, and stays at `verify_jwt=true` so the publishable key
+alone cannot invoke it. The DB webhook sends the matching header.
+**Verification:** POST without a valid JWT + secret → 401, no email. (The same pattern was
+later applied to `coffee-chat-welcome` — see section 7.)
+
+### HIGH-5 — Verbose errors leaked internals  *(measures #12, #11)*
+**Risk:** edge functions returned raw Resend bodies, `dbErr.message`, and stack info to the
+browser, leaking schema and upstream details.
+**Fix:** all responses now return generic messages (e.g. "Something went wrong"); the real
+error stays in `console.error` only. Known cases map to safe messages (duplicate email →
+"You're already on the list", 409). No DB/Resend body ever reaches the client.
+
+### HIGH-6 — Missing security headers / CSP  *(measure #46)*
+**Risk:** no `Content-Security-Policy`, `HSTS`, `X-Frame-Options`, etc. — open to
+clickjacking, MIME-sniffing, and no defense-in-depth against XSS.
+**Fix:** `public/_headers` (Cloudflare Pages) and a mirrored `vercel.json` set
+`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, a 2-year
+`Strict-Transport-Security` (preload), `Permissions-Policy`, and a strict **CSP** scoped to
+exactly what the app loads (self, Cloudflare Turnstile, Fontshare/Google Fonts,
+`*.supabase.co`, `cdn.simpleicons.org`, `data:`/`blob:`). No `unsafe-eval`, no wildcard
+`script-src`, no dead Gemini origin.
+**Verification:** `curl -I https://fromcampuscareer.com` shows all headers live; the CSP
+allows the Turnstile script/iframe with zero violations.
+
+### HIGH-7 — Dependency vulnerabilities & unpinned imports  *(measures #37, #38)*
+**Risk:** no `npm audit` in CI; edge functions imported an old `deno.land/std` and an
+unpinned `@supabase/supabase-js@2`.
+**Fix:** `npm audit fix` patched the reachable advisories (production scope → 0 vulns; the
+2 remaining are dev-only esbuild/Vite). Edge functions dropped the stale std `serve` import
+for the built-in `Deno.serve`, and `@supabase/supabase-js` is pinned. A
+`.github/workflows/audit.yml` runs `npm audit` on every PR. Major upgrades (React 19,
+Vite 8, etc.) were deliberately deferred — no security driver.
+
