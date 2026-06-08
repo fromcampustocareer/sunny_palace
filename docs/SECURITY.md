@@ -331,3 +331,50 @@ RLS, no user accounts, no payments). Recorded for completeness.
 | 48 | Unencrypted sensitive data | Supabase encrypts at rest + TLS; resume PDFs in a private bucket |
 | 49 | Poor tenant isolation | single-tenant; the moderation-status flaw (CRIT-2) is the closest analog |
 
+---
+
+## 10. Ongoing maintenance & incident response
+
+The audit closed the known issues; staying secure is an ongoing responsibility. Most
+real-world breaches are **account/credential compromise**, not code bugs — so the first
+items below matter most.
+
+### Do these now / keep them true
+1. **Enable 2FA** on the GitHub, Supabase, and Cloudflare accounts. This is the single
+   highest-impact control — the admin surface (dashboard SQL, deploys, secrets) is protected
+   only by these logins.
+2. **Disable any auto-merge automation.** During this audit an integration auto-merged PRs
+   to `main` within seconds, unreviewed — that is itself a supply-chain risk. PRs to `main`
+   should require human review.
+3. **Never add a `VITE_`-prefixed secret.** Anything `VITE_*` ships in the public bundle.
+4. **Rotate keys on any suspected leak:** Supabase keys (dashboard → API), Turnstile keys
+   (Cloudflare), `RESEND_API_KEY`, and the `WEBHOOK_SECRET` / `TURNSTILE_SECRET` edge
+   secrets. After rotating, redeploy the functions / frontend.
+
+### Routine hygiene
+- **Dependencies:** the `audit.yml` workflow runs `npm audit` on every PR. Address
+  high/critical promptly; schedule periodic major-version upgrades (React/Vite/Tailwind).
+- **PR reviews:** use `docs/SECURITY-REVIEW-CHECKLIST.md` for every change so the same bug
+  classes (client-set status, PII via REST, unsanitized URLs, `VITE_` secrets) don't return.
+- **Monitoring:** review `audit_log` (who approved what), Supabase logs / advisors, and
+  Resend delivery for anomalies. Consider a Sentry DSN and/or log drains as the site grows.
+- **Backups:** follow `docs/BACKUP.md`; run one export end-to-end to confirm it works, and
+  re-evaluate Supabase Pro / PITR before launch.
+
+### If you suspect a compromise
+1. Rotate all keys/secrets immediately (see above) and redeploy.
+2. Check `audit_log` and Supabase logs for unexpected status changes or inserts.
+3. Revoke suspicious GitHub/Supabase/Cloudflare sessions and OAuth apps; review installed
+   GitHub Apps.
+4. If data was altered, restore from a backup per `docs/BACKUP.md`.
+5. Review recent commits/PRs to `main` for unauthorized changes.
+
+### Known residual risks (by design or out of scope)
+- **Auto-published content** (opportunities/resumes) is not human-reviewed — Turnstile stops
+  bots, not determined humans posting junk.
+- **Admin is dashboard-only**, so its security == the Supabase account's security (hence 2FA).
+- The free Supabase tier has **limited backup retention and no PITR**.
+
+---
+
+*Last updated for the 2026-06 security audit. Keep this document current as the app evolves.*
