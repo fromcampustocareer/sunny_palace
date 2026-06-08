@@ -8,6 +8,17 @@ const REPLY_TO = 'jose@fromcampuscareer.com'
 const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
 const MAX_NAME_LENGTH = 100
 
+// Escape user-controlled values before interpolating them into an email `html`
+// string, to prevent HTML/email injection. `&` MUST be escaped first.
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 // Constant-time-ish string comparison to avoid leaking the secret via timing.
 function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false
@@ -109,7 +120,7 @@ function buildEmailHtml(firstName: string): string {
           <!-- Body -->
           <tr>
             <td style="background:#ffffff;padding:40px 40px 32px;">
-              <p style="margin:0 0 20px;font-size:17px;color:#2A2117;line-height:1.75;">Hey ${firstName},</p>
+              <p style="margin:0 0 20px;font-size:17px;color:#2A2117;line-height:1.75;">Hey ${escapeHtml(firstName)},</p>
               <p style="margin:0 0 20px;font-size:16px;color:#6B5E52;line-height:1.8;">
                 You're in. Welcome to <strong style="color:#2A2117;">La Voz del Día</strong> — the weekly newsletter from Jose &amp; Jocelyn built for first-gen and underrepresented students navigating internships, early careers, and everything in between.
               </p>
