@@ -23,3 +23,8 @@ CREATE POLICY "coffee_chat_insert" ON coffee_chat_profiles FOR INSERT
 -- ── opportunities ──────────────────────────────────────────
 -- Has `status` only (no public_profile column).
 DROP POLICY IF EXISTS "opportunities_insert" ON opportunities;
+CREATE POLICY "opportunities_insert" ON opportunities FOR INSERT
+  WITH CHECK (status = 'pending');
+
+-- ── resume_submissions ─────────────────────────────────────
+-- Has `status` only (no public_profile column).
