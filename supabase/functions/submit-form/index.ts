@@ -168,3 +168,37 @@ serve(async (req) => {
     const ok = await verifyTurnstile(turnstileToken, remoteip)
     if (!ok) {
       return json({ error: 'Verification failed' }, 403)
+    }
+
+    // 2. Validate type → table.
+    if (!type || !(type in TABLE_BY_TYPE)) {
+      return json({ error: 'Invalid submission type' }, 400)
+    }
+    const table = TABLE_BY_TYPE[type]
+    const row = buildRow(type, (payload && typeof payload === 'object') ? payload : {})
+
+    // 3. Service-role client (bypasses RLS). Prefer the new secret key, fall back
+    //    to the legacy service_role key — mirrors add-to-waitlist.
+    const serviceKey = (() => {
+      try {
+        const secretKeys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}')
+        if (secretKeys?.default) return secretKeys.default
+      } catch (_) { /* fall through to legacy key */ }
+      return Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    })()
+
+    const supabase = createClient(Deno.env.get('SUPABASE_URL') ?? '', serviceKey)
+
+    const { error: dbErr } = await supabase.from(table).insert(row)
+    if (dbErr) {
+      // Keep DB internals out of the client response.
+      console.error(`Insert error (${table}):`, dbErr)
+      return json({ error: 'Could not save submission' }, 500)
+    }
+
+    return json({ ok: true }, 200)
+  } catch (err) {
+    console.error('Function error:', err)
+    return json({ error: 'Unexpected error' }, 500)
+  }
+})
