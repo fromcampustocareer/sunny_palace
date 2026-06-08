@@ -408,7 +408,7 @@ export default function CoffeeChat() {
     }
     const processedFuncChips = funcChips.map(c => c === 'Other' ? (funcOtherText.trim() || 'Other') : c)
     const processedIdentityChips = identityChips.map(c => c === 'Other' ? (identityOtherText.trim() || 'Other') : c)
-    const { data: inserted, error } = await supabase.from('coffee_chat_profiles').insert({
+    const { error } = await supabase.from('coffee_chat_profiles').insert({
       name: formData.name,
       pronouns: formData.pronouns || null,
       email: formData.email,
@@ -420,16 +420,16 @@ export default function CoffeeChat() {
       topics: formData.topics,
       capacity: formData.capacity,
       consented_at: new Date().toISOString(),
-      status: 'approved',
-      public_profile: true,
+      status: 'pending',
+      public_profile: false,
       avatar_url,
-    }).select(PUBLIC_PROFILE_COLUMNS).single()
+    })
     setFormLoading(false)
     if (error) {
       setFormError(t.formErrorGeneric)
     } else {
-      // Show the new card immediately instead of waiting for a page reload.
-      if (inserted) setDbProfiles(prev => [dbProfileToCard(inserted), ...prev])
+      // Submission goes to the moderation queue; the card is NOT shown live
+      // until an admin approves it. Show the "submitted for review" confirmation.
       setFormSubmitted(true)
     }
   }
