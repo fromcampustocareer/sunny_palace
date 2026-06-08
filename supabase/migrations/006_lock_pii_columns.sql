@@ -4,3 +4,10 @@
 -- The anon (public REST) role could SELECT entire rows — including
 -- `email` and `linkedin_url` — from resume_submissions, leaking PII.
 --
+-- WHY COLUMN-LEVEL GRANTS (and NOT views):
+--   The previous attempt (006_public_views.sql) dropped the broad RLS
+--   SELECT policies and exposed SECURITY INVOKER views instead. That is
+--   WRONG for this live database:
+--     * RLS policies are ROW-level — they gate WHICH rows are visible
+--       (approved / featured / public). They are NOT the PII leak and
+--       must stay intact.
