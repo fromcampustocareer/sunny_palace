@@ -10,3 +10,10 @@ verify_jwt = false
 
 [functions.add-to-waitlist]
 verify_jwt = false
+
+# Turnstile-gated insert proxy for the coffee-chat / resume / opportunity forms.
+# Called from the browser with the publishable key (not a JWT), so it MUST run with
+# verify_jwt = false like the others. It performs the row INSERT with the service
+# role after verifying the Turnstile token, since anon INSERT is revoked (migration 007).
+[functions.submit-form]
+verify_jwt = false
