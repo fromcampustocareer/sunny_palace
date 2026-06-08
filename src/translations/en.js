@@ -1650,7 +1650,6 @@ export const en = {
     chatThinking: 'Thinking…',
     chatNeedResume: 'Upload a resume first so I can help.',
     chatError: 'Couldn\'t reach Gemini. Check your API key and try again.',
-    chatNeedKey: 'Set VITE_GEMINI_API_KEY in .env.local to enable AI features.',
 
     generateNeedJob: 'Add a job description first.',
     generateNeedResume: 'Upload a resume first.',
