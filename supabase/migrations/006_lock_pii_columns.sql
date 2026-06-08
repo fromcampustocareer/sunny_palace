@@ -45,3 +45,9 @@ GRANT SELECT (id, handle, role_title, role_type, stage, target_companies,
 
 
 -- ── 2. coffee_chat_profiles — codify existing live grants ──
+-- Matches PUBLIC_PROFILE_COLUMNS in src/pages/CoffeeChat.jsx exactly.
+-- Deliberately omits PII: email, consented_at.
+REVOKE SELECT ON coffee_chat_profiles FROM anon;
+GRANT SELECT (id, name, pronouns, linkedin_url, role_title, location,
+              role_function, identity_tags, topics, capacity, public_profile,
+              status, created_at, avatar_url) ON coffee_chat_profiles TO anon;
