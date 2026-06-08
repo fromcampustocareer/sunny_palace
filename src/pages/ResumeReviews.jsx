@@ -437,11 +437,13 @@ export default function ResumeReviews() {
       story: submitForm.story || null,
       allow_annotation: submitForm.annotate === 'yes',
       file_name: storagePath,
-      status: 'approved',
+      status: 'pending',
       avatar_url,
     })
     setSubmitLoading(false)
     if (error) { setSubmitError(t.formErrorGeneric) }
+    // Submission enters the moderation queue; it is NOT shown live until an
+    // admin approves it. Show the "submitted for review" confirmation.
     else { setSubmitSubmitted(true) }
   }
 
