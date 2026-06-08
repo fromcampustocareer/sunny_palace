@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import ResumeSubNav from '../components/ResumeSubNav'
 import CompanyLogo from '../components/CompanyLogo'

@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useT } from '../hooks/useT'
 
+// Mirror Home.jsx: in pre-launch (production build) the Home page hides its
+// #contact footer, so interior CTAs route to '/' instead of a dead anchor.
+const WAITLIST_MODE = !import.meta.env.DEV
+
 /**
  * Standard interior-page chrome: nav, mobile menu, main content slot,
  * art-signoff section, and wide footer.
@@ -99,7 +103,7 @@ export default function ArticleLayout({ children, title, footerWidth = 680, sign
               {label}
             </Link>
           ))}
-          <Link to="/#contact" className="art-nav__link art-nav__link--cta">{t.navGetInTouch}</Link>
+          <Link to={WAITLIST_MODE ? '/' : '/#contact'} className="art-nav__link art-nav__link--cta">{t.navGetInTouch}</Link>
         </div>
         <button
           ref={burgerRef}
@@ -125,7 +129,7 @@ export default function ArticleLayout({ children, title, footerWidth = 680, sign
               {label}
             </Link>
           ))}
-          <Link to="/#contact" className="art-nav__mobile-link" onClick={closeMenu}>{t.navGetInTouch}</Link>
+          <Link to={WAITLIST_MODE ? '/' : '/#contact'} className="art-nav__mobile-link" onClick={closeMenu}>{t.navGetInTouch}</Link>
         </div>
       </div>
 
@@ -135,7 +139,7 @@ export default function ArticleLayout({ children, title, footerWidth = 680, sign
         <div className="art-signoff__inner" style={{ maxWidth: footerWidth }}>
           <p className="art-signoff__line">{signoffLine ?? t.signoffLine}</p>
           <p className="art-signoff__sub">{signoffSub ?? t.signoffSub}</p>
-          <Link to="/#contact" className="art-signoff__cta">{signoffCta ?? t.signoffCta}</Link>
+          <Link to={WAITLIST_MODE ? '/' : '/#contact'} className="art-signoff__cta">{signoffCta ?? t.signoffCta}</Link>
         </div>
       </section>
 
@@ -143,7 +147,7 @@ export default function ArticleLayout({ children, title, footerWidth = 680, sign
         <span className="art-footer__copy">{t.footerCopy}</span>
         <div className="art-footer__links">
           <Link to="/" className="art-footer__link">{t.footerHome}</Link>
-          <Link to="/#contact" className="art-footer__link">{t.footerContact}</Link>
+          <Link to={WAITLIST_MODE ? '/' : '/#contact'} className="art-footer__link">{t.footerContact}</Link>
         </div>
       </footer>
     </>

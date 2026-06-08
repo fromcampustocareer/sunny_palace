@@ -150,6 +150,7 @@ export const es = {
     ],
   },
   bridgeYear: {
+    featuredLabel: 'Empieza aquí',
     // ── Hero ──────────────────────────────────────────────────────────────
     heroKicker: 'Del Campus a la Carrera · Sprint del Año Puente',
     heroTitle: 'Hub del',

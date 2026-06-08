@@ -150,6 +150,7 @@ export const en = {
     ],
   },
   bridgeYear: {
+    featuredLabel: 'Start here',
     // ── Hero ──────────────────────────────────────────────────────────────
     heroKicker: 'From Campus to Career · Bridge Year Sprint',
     heroTitle: 'Bridge Year',

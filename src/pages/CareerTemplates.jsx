@@ -107,7 +107,7 @@ export default function CareerTemplates() {
     navigator.clipboard.writeText(body).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2200)
-    })
+    }).catch(() => { /* clipboard unavailable */ })
   }
 
   // Copy an available template's body straight from its card.
@@ -116,7 +116,7 @@ export default function CareerTemplates() {
     navigator.clipboard.writeText(tmpl.body).then(() => {
       setCopiedCardId(tmpl.id)
       setTimeout(() => setCopiedCardId(null), 2200)
-    })
+    }).catch(() => { /* clipboard unavailable */ })
   }
 
   // Multi-option templates open a picker so users copy just the version they want.
@@ -150,7 +150,7 @@ export default function CareerTemplates() {
     navigator.clipboard.writeText(text).then(() => {
       setCopiedVariantKey(`${templateId}-${index}`)
       setTimeout(() => setCopiedVariantKey(null), 2200)
-    })
+    }).catch(() => { /* clipboard unavailable */ })
   }
 
   const handleSubmit = async e => {
