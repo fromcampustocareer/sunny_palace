@@ -27,6 +27,9 @@ export default function ResumeCompanies() {
   const [reqStatus, setReqStatus] = useState('idle')
 
   useEffect(() => {
+    // Reads resume_submissions directly. RLS gates rows; column GRANTs
+    // (migration 006) make PII unreadable. target_companies is granted, so
+    // this works. We only need target_companies for the per-company counts.
     supabase.from('resume_submissions')
       .select('target_companies')
       .in('status', ['approved', 'featured'])
