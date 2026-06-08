@@ -36,3 +36,16 @@ function loadTurnstile() {
     script.defer = true
     script.addEventListener('load', onReady, { once: true })
     script.addEventListener('error', () => reject(new Error('Turnstile script failed to load')), { once: true })
+    document.head.appendChild(script)
+  })
+  return scriptPromise
+}
+
+// `resetRef` (optional): pass a ref object; we attach a reset() fn so the parent can
+// clear the widget after a successful submit.
+export default function Turnstile({ onToken, resetRef, className }) {
+  const containerRef = useRef(null)
+  const widgetIdRef = useRef(null)
+
+  const handleToken = useCallback((token) => { onToken?.(token) }, [onToken])
+  const handleClear = useCallback(() => { onToken?.('') }, [onToken])
