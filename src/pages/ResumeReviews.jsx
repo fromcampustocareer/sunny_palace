@@ -413,6 +413,24 @@ export default function ResumeReviews() {
       setSubmitError(t.formErrorGeneric)
       return
     }
+    // Validate the PDF against an allow-list BEFORE uploading: size, declared
+    // MIME, AND the magic-bytes header (%PDF). The header check defends against
+    // a renamed/spoofed file whose declared type can't be trusted.
+    const PDF_MAX_BYTES = 5 * 1024 * 1024 // 5MB — matches the bucket file_size_limit
+    if (file.size > PDF_MAX_BYTES || file.type !== 'application/pdf') {
+      setSubmitError('Please upload a PDF under 5MB.')
+      return
+    }
+    try {
+      const header = await file.slice(0, 4).text()
+      if (header !== '%PDF') {
+        setSubmitError('Please upload a PDF under 5MB.')
+        return
+      }
+    } catch {
+      setSubmitError('Please upload a PDF under 5MB.')
+      return
+    }
     setSubmitLoading(true)
     setSubmitError('')
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
@@ -427,9 +445,20 @@ export default function ResumeReviews() {
     }
     let avatar_url = null
     if (avatarFile) {
+      // Validate the avatar against an allow-list BEFORE uploading. We never
+      // trust avatarFile.type for the stored contentType (it is user-controlled);
+      // instead we map the validated type to an explicit MIME from the allow-list.
+      const AVATAR_MIME = { 'image/png': 'image/png', 'image/jpeg': 'image/jpeg', 'image/webp': 'image/webp' }
+      const AVATAR_MAX_BYTES = 2 * 1024 * 1024 // 2MB — matches the bucket file_size_limit
+      const safeMime = AVATAR_MIME[avatarFile.type]
+      if (!safeMime || avatarFile.size > AVATAR_MAX_BYTES) {
+        setSubmitLoading(false)
+        setSubmitError('Please upload a PNG, JPEG, or WebP avatar under 2MB.')
+        return
+      }
       const ext = avatarFile.name.split('.').pop()
       const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      const { error: avErr } = await supabase.storage.from('avatars').upload(path, avatarFile, { contentType: avatarFile.type })
+      const { error: avErr } = await supabase.storage.from('avatars').upload(path, avatarFile, { contentType: safeMime })
       if (!avErr) {
         const { data } = supabase.storage.from('avatars').getPublicUrl(path)
         avatar_url = data.publicUrl
