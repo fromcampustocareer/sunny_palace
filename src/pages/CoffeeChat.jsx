@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import { safeHttpUrl } from '../lib/safeUrl'
 import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 
@@ -976,7 +977,7 @@ export default function CoffeeChat() {
                 <span className="cc-card__updated">{p.updated}</span>
               </div>
               <div className="cc-card__actions">
-                {p.linkedIn && <a href={p.linkedIn} target="_blank" rel="noopener noreferrer" className="cc-card__cta-primary">{t.cardCtaPrimary}</a>}
+                {safeHttpUrl(p.linkedIn) && <a href={safeHttpUrl(p.linkedIn) || undefined} target="_blank" rel="noopener noreferrer" className="cc-card__cta-primary">{t.cardCtaPrimary}</a>}
                 <button className="cc-card__cta-secondary" onClick={() => openModal(p.name.split(' ')[0])}>{t.cardCtaSecondary}</button>
               </div>
             </article>
