@@ -6,6 +6,7 @@ import CompanyLogo from '../components/CompanyLogo'
 import { COMPANIES } from '../data/companies'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 const LIKES_KEY = 'jxj_resume_likes_v1'
 
@@ -248,6 +249,8 @@ export default function ResumeReviews() {
   const [submitSubmitted, setSubmitSubmitted] = useState(false)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileReset = useRef(null)
   const [submitForm, setSubmitForm] = useState({ handle: '', email: '', linkedin: '', roleTitle: '', roleType: '', roleTypeOther: '', stage: '', stageOther: '', companies: '', bgTags: [], bgOther: '', download: 'no', story: '', annotate: 'no' })
   const [fileName, setFileName] = useState('')
   const [avatarFile, setAvatarFile] = useState(null)
@@ -406,6 +409,10 @@ export default function ResumeReviews() {
       setSubmitError(t.formErrorNoFile)
       return
     }
+    if (TURNSTILE_ENABLED && !turnstileToken) {
+      setSubmitError(t.formErrorGeneric)
+      return
+    }
     setSubmitLoading(true)
     setSubmitError('')
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
@@ -428,27 +435,54 @@ export default function ResumeReviews() {
         avatar_url = data.publicUrl
       }
     }
-    const { error } = await supabase.from('resume_submissions').insert({
-      handle: submitForm.handle,
-      email: submitForm.email,
-      linkedin_url: submitForm.linkedin || null,
-      role_title: submitForm.roleTitle || null,
-      role_type: submitForm.roleType === 'other' ? submitForm.roleTypeOther.trim() : submitForm.roleType,
-      stage: submitForm.stage === 'other' ? submitForm.stageOther.trim() : submitForm.stage,
-      target_companies: submitForm.companies,
-      background_tags: submitForm.bgTags.map(tag => tag === 'other' ? submitForm.bgOther.trim() : tag).filter(Boolean),
-      allow_download: submitForm.download === 'yes',
-      story: submitForm.story || null,
-      allow_annotation: submitForm.annotate === 'yes',
-      file_name: storagePath,
-      status: 'pending',
-      avatar_url,
-    })
+    // Insert now flows through the Turnstile-gated submit-form edge function
+    // (service role); the resume PDF + avatar were already uploaded to storage above.
+    // status is forced to 'pending' server-side.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'resume',
+          turnstileToken,
+          payload: {
+            handle: submitForm.handle,
+            email: submitForm.email,
+            linkedin_url: submitForm.linkedin || null,
+            role_title: submitForm.roleTitle || null,
+            role_type: submitForm.roleType === 'other' ? submitForm.roleTypeOther.trim() : submitForm.roleType,
+            stage: submitForm.stage === 'other' ? submitForm.stageOther.trim() : submitForm.stage,
+            target_companies: submitForm.companies,
+            background_tags: submitForm.bgTags.map(tag => tag === 'other' ? submitForm.bgOther.trim() : tag).filter(Boolean),
+            allow_download: submitForm.download === 'yes',
+            story: submitForm.story || null,
+            allow_annotation: submitForm.annotate === 'yes',
+            file_name: storagePath,
+            avatar_url,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setSubmitLoading(false)
-    if (error) { setSubmitError(t.formErrorGeneric) }
+    if (!ok) {
+      setSubmitError(t.formErrorGeneric)
+      setTurnstileToken('')
+      turnstileReset.current?.()
+    }
     // Submission enters the moderation queue; it is NOT shown live until an
     // admin approves it. Show the "submitted for review" confirmation.
-    else { setSubmitSubmitted(true) }
+    else {
+      setSubmitSubmitted(true)
+      setTurnstileToken('')
+      turnstileReset.current?.()
+    }
   }
 
   function toggleBgTag(tag) {
@@ -1188,7 +1222,8 @@ export default function ResumeReviews() {
                   </div>
                 </div>
                 {submitError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: '13px', marginBottom: '10px' }}>{submitError}</p>}
-                <button className="rr-form-btn" type="submit" disabled={submitLoading}>{submitLoading ? t.formSubmitting : t.formSubmit}</button>
+                <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="rr-form-turnstile" />
+                <button className="rr-form-btn" type="submit" disabled={submitLoading || (TURNSTILE_ENABLED && !turnstileToken)}>{submitLoading ? t.formSubmitting : t.formSubmit}</button>
                 <p className="rr-form-note">{t.formNote}</p>
               </form>
             )}
