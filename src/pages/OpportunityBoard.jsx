@@ -560,6 +560,7 @@ export default function OpportunityBoard() {
           }
         </div>
 
+        {ARCHIVED_OPPORTUNITIES.length > 0 && (
         <div className="ob-archive-strip">
           <p className="ob-archive-label">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, color: 'var(--color-muted)' }}><rect x="1" y="4" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M5 4V3a2 2 0 1 1 4 0v1" stroke="currentColor" strokeWidth="1.3"/></svg>
@@ -583,6 +584,7 @@ export default function OpportunityBoard() {
             ))}
           </div>
         </div>
+        )}
       </section>
 
       <section className="ob-source" id="source">
