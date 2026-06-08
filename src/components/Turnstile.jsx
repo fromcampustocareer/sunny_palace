@@ -23,3 +23,16 @@ function loadTurnstile() {
     const onReady = () => {
       if (window.turnstile) resolve(window.turnstile)
       else reject(new Error('Turnstile failed to initialize'))
+    }
+    if (existing) {
+      if (window.turnstile) return resolve(window.turnstile)
+      existing.addEventListener('load', onReady, { once: true })
+      existing.addEventListener('error', () => reject(new Error('Turnstile script failed to load')), { once: true })
+      return
+    }
+    const script = document.createElement('script')
+    script.src = SCRIPT_SRC
+    script.async = true
+    script.defer = true
+    script.addEventListener('load', onReady, { once: true })
+    script.addEventListener('error', () => reject(new Error('Turnstile script failed to load')), { once: true })
