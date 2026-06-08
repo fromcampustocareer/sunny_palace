@@ -182,3 +182,45 @@ for the built-in `Deno.serve`, and `@supabase/supabase-js` is pinned. A
 `.github/workflows/audit.yml` runs `npm audit` on every PR. Major upgrades (React 19,
 Vite 8, etc.) were deliberately deferred — no security driver.
 
+---
+
+## 6. Medium-severity fixes
+
+### MED-1 — HTML/email injection in notification emails  *(measure #19, output encoding)*
+User values (`name`, `email`, `message`, `school`, `firstName`, …) were interpolated raw
+into email HTML, allowing HTML/link injection into the inbox. Each function now has an
+`escapeHtml()` helper applied to every user value, strips newlines from subjects
+(header-injection), URL-encodes interpolated IDs, and enforces max lengths (400 on
+oversize).
+
+### MED-2 — Overly permissive CORS  *(measure #27)*
+`send-contact-email` and `add-to-waitlist` returned `Access-Control-Allow-Origin: *`. All
+three browser-facing functions now share one per-request helper that echoes the request
+`Origin` **only** if it's in the `ALLOWED_ORIGINS` allow-list (otherwise omits the header),
+falling back to `*` only when the var is unset (local dev). `Vary: Origin` is set.
+**Verification:** `Origin: https://evil.com` gets no ACAO header; `fromcampuscareer.com` is
+echoed.
+
+### MED-3 — Thin server-side input validation  *(measure #16)*
+Validation existed only client-side (bypassable via REST). The edge functions now validate
+email format and field lengths, and migration `011` adds DB-layer `CHECK` constraints (all
+NOT VALID): a `status` domain, an email-format regex on every email column, and
+`char_length` ceilings on free-text columns — so a crafted payload can't insert a malformed
+email or a 100k-char value.
+**Verification:** malformed email, invalid status, and oversized text are all rejected at
+the DB; valid rows succeed.
+
+### MED-5 — No audit log / monitoring  *(measures #42, #43)*
+There was no record of who approved/changed a submission. Migration `010` adds an
+`audit_log` table (RLS-on, no anon policy) and one shared `AFTER INSERT/UPDATE` trigger on
+the four moderated tables that records new submissions and **status changes** (with actor
+and from/to). Review queries live in `supabase/admin-queries.sql`. Alerting options
+(log drains, Resend webhooks, optional Sentry) are documented.
+**Verification:** an insert + a status change log rows; non-status edits don't; the trigger
+never blocks writes; anon cannot read the table.
+
+### MED-6 — CLI link metadata committed  *(measures #1, #13)*
+`supabase/.temp/` (project ref, pooler URL/host, versions — recon, not passwords) was
+tracked in a public repo. It's now gitignored and untracked (`git rm --cached`); the CLI
+regenerates it locally.
+
