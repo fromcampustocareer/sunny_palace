@@ -18,3 +18,8 @@
 -- a client cannot self-publish a public, approved profile.
 DROP POLICY IF EXISTS "coffee_chat_insert" ON coffee_chat_profiles;
 CREATE POLICY "coffee_chat_insert" ON coffee_chat_profiles FOR INSERT
+  WITH CHECK (status = 'pending' AND public_profile = false);
+
+-- ── opportunities ──────────────────────────────────────────
+-- Has `status` only (no public_profile column).
+DROP POLICY IF EXISTS "opportunities_insert" ON opportunities;
