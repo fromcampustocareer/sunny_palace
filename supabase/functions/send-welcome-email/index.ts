@@ -1,5 +1,3 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET')
 const FROM_EMAIL = 'Jose & Jocelyn <newsletter@fromcampuscareer.com>'
@@ -20,7 +18,7 @@ function timingSafeEqual(a: string, b: string): boolean {
   return mismatch === 0
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   // Supabase database webhooks send a POST with the record payload.
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405 })
