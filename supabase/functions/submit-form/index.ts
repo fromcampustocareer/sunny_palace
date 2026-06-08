@@ -1,5 +1,4 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.107.0'
 
 // Public, Turnstile-gated insert proxy for the three moderated forms:
 //   coffee_chat  -> coffee_chat_profiles
@@ -130,7 +129,7 @@ function buildRow(type: string, payload: Record<string, unknown>): Record<string
   }
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
