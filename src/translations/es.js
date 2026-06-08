@@ -1650,7 +1650,6 @@ export const es = {
     chatThinking: 'Pensando…',
     chatNeedResume: 'Sube un currículum primero para que pueda ayudarte.',
     chatError: 'No se pudo conectar con Gemini. Revisa tu clave API.',
-    chatNeedKey: 'Configura VITE_GEMINI_API_KEY en .env.local para activar la IA.',
 
     generateNeedJob: 'Añade primero una descripción del empleo.',
     generateNeedResume: 'Sube primero un currículum.',
