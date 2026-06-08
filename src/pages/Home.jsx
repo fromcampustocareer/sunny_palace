@@ -1181,12 +1181,12 @@ export default function Home() {
       {/* GALLERY */}
       <section className="gallery" id="gallery" aria-label="From Campus to Career highlights">
         <div className="gallery__track" id="galleryTrack" ref={galleryRef}>
-          <div className="gallery__card gallery__card--photo" data-index="0" role="img" aria-label="From Campus to Career launches May 31 — join the founding 1,000 waitlist" style={{ '--card-bg': '#E8A838', '--card-image': "url('/images/gallery-launch-may31.png')" }} />
-          <div className="gallery__card gallery__card--photo" data-index="1" role="img" aria-label="Some people learn the rules early: study how referrals, networking, and recruiter conversations work" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-learn-the-rules.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="0" role="img" aria-label="A degree helps, strategy gets you hired: turn class projects, club work, and jobs into proof of skills" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-degree-strategy.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="1" role="img" aria-label="The gap isn't effort, it's access: build access by asking questions and joining career communities" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-gap-access.png')" }} />
           <div className="gallery__card gallery__card--photo" data-index="2" role="img" aria-label="Your rejection isn't the end: what first-gen students need to hear right now" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-rejection.png')" }} />
-          <div className="gallery__card gallery__card--photo" data-index="3" role="img" aria-label="Your degree isn't enough: here's why" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-degree.png')" }} />
-          <div className="gallery__card gallery__card--photo" data-index="4" role="img" aria-label="Millennial vs Gen Z career tips" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-millennial-vs-genz.png')" }} />
-          <div className="gallery__card gallery__card--photo" data-index="5" role="img" aria-label="Rejection is redirection: your rejection is not a reflection of your worth" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-rejection-redirection.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="3" role="img" aria-label="Some people learn the rules early: study how referrals, networking, and recruiter conversations work" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-learn-the-rules-early.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="4" role="img" aria-label="Career clarity should not take years: start small with LinkedIn, resume bullets, and weekly career conversations" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-career-clarity.png')" }} />
+          <div className="gallery__card gallery__card--photo" data-index="5" role="img" aria-label="Students need more than advice: scripts, examples, checklists, and clear next steps" style={{ '--card-bg': '#B34539', '--card-image': "url('/images/gallery-students-need-more.png')" }} />
         </div>
       </section>
 
