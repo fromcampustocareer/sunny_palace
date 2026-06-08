@@ -10,23 +10,39 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.107.0'
 // require a valid Cloudflare Turnstile token. Server-side we force status/visibility
 // fields and whitelist columns so a crafted client payload can't self-approve a row.
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')
+// Allow-list of origins permitted to make cross-origin requests. Comma-separated
+// in ALLOWED_ORIGINS (e.g. `https://fromcampuscareer.com`). When unset, fall back
+// to `*` for local dev only.
+const ALLOWED_ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? '')
+  .split(',').map((o) => o.trim()).filter(Boolean)
 const TURNSTILE_SECRET = Deno.env.get('TURNSTILE_SECRET')
 const MAX_BODY_BYTES = 1_000_000 // ~1MB — these are JSON rows, not file uploads.
 
-const corsHeaders = {
-  // Lock to the production origin when configured; only fall back to '*' for local dev.
-  'Access-Control-Allow-Origin': ALLOWED_ORIGIN || '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Vary': 'Origin',
+// Build CORS headers per request: echo the request Origin only if it's allow-listed,
+// fall back to `*` when no allow-list is configured, otherwise omit the ACAO header.
+function corsHeadersFor(req: Request): Record<string, string> {
+  const origin = req.headers.get('Origin') ?? ''
+  const base: Record<string, string> = {
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Vary': 'Origin',
+  }
+  if (ALLOWED_ORIGINS.length === 0) {
+    base['Access-Control-Allow-Origin'] = '*' // local dev fallback only
+  } else if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    base['Access-Control-Allow-Origin'] = origin
+  }
+  // else: omit the ACAO header entirely (browser will block cross-origin)
+  return base
 }
 
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-  })
+// JSON response helper bound to a request's per-request CORS headers.
+const jsonWith = (corsHeaders: Record<string, string>) =>
+  (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
 
 // Verify a Cloudflare Turnstile token. Returns true only on a verified human.
 async function verifyTurnstile(token: unknown, remoteip?: string | null): Promise<boolean> {
@@ -130,6 +146,9 @@ function buildRow(type: string, payload: Record<string, unknown>): Record<string
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req)
+  const json = jsonWith(corsHeaders)
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
