@@ -24,9 +24,28 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#39;')
 }
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+// Allow-list of origins permitted to make cross-origin requests. Comma-separated
+// in ALLOWED_ORIGINS (e.g. `https://fromcampuscareer.com`). When unset, fall back
+// to `*` for local dev only.
+const ALLOWED_ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? '')
+  .split(',').map((o) => o.trim()).filter(Boolean)
+
+// Build CORS headers per request: echo the request Origin only if it's allow-listed,
+// fall back to `*` when no allow-list is configured, otherwise omit the ACAO header.
+function corsHeadersFor(req: Request): Record<string, string> {
+  const origin = req.headers.get('Origin') ?? ''
+  const base: Record<string, string> = {
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Vary': 'Origin',
+  }
+  if (ALLOWED_ORIGINS.length === 0) {
+    base['Access-Control-Allow-Origin'] = '*' // local dev fallback only
+  } else if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    base['Access-Control-Allow-Origin'] = origin
+  }
+  // else: omit the ACAO header entirely (browser will block cross-origin)
+  return base
 }
 
 // Verify a Cloudflare Turnstile token before doing any work.
@@ -55,6 +74,8 @@ async function verifyTurnstile(token: unknown, remoteip?: string | null): Promis
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req)
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
