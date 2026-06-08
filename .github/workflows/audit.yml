@@ -1,0 +1,28 @@
+name: Dependency Audit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  npm-audit:
+    name: npm audit (high/critical)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Fails the job on high/critical advisories. Moderate/low are reported
+      # but do not block (run the same command without --audit-level to see all).
+      - name: Run npm audit
+        run: npm audit --audit-level=high
