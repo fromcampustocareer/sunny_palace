@@ -8,3 +8,7 @@
 --
 -- This migration drops and recreates the existing `_insert`
 -- policies (names taken verbatim from 001_initial_schema.sql)
+-- so the WITH CHECK pins status to 'pending'. Read policies are
+-- intentionally left untouched.
+-- Safe to re-run: uses DROP POLICY IF EXISTS.
+-- ============================================================
