@@ -6,8 +6,6 @@
 // Client calls this from CoffeeChat.jsx with { token } before insert.
 // Returns { success: true } on pass, { success: false, errors } on fail.
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-
 const TURNSTILE_SECRET_KEY = Deno.env.get('TURNSTILE_SECRET_KEY')
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 
@@ -17,7 +15,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
