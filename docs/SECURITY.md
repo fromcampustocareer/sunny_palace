@@ -38,3 +38,44 @@ together, and the ongoing responsibilities required to keep it secure.
 3. **The browser is never trusted.** Client-side validation is treated as cosmetic;
    every constraint is re-enforced at the edge-function and/or database layer.
 
+---
+
+## 2. Critical fixes
+
+### CRIT-1 — Gemini API key shipped in the frontend bundle  *(measures #3, #14)*
+**Risk:** `src/lib/gemini.js` read `VITE_GEMINI_API_KEY`, and any `VITE_`-prefixed variable
+is inlined into the public JS bundle at build time. Anyone could extract the Google API key
+from DevTools / the deployed `dist/assets/*.js` and run unlimited Gemini calls on the
+project's bill and quota.
+**Fix:** the AI resume-builder feature was unreachable dead code, so it was **deleted**
+entirely (`src/lib/gemini.js`, `ResumeBuilder.jsx`, and all references/i18n strings). The
+leaked key was **rotated/deleted** in Google AI Studio and **removed** from the Cloudflare
+Pages environment.
+**Verification:** `grep -r "generativelanguage\|VITE_GEMINI\|AIza" dist/` returns nothing;
+confirmed against the live deployed bundle.
+**Lesson:** never use a `VITE_`-prefixed variable for a secret. Only values that are
+*designed* to be public (Supabase anon key, Turnstile site key) may be `VITE_`.
+
+### CRIT-2 — Submissions self-approved (moderation bypass)  *(measures #5, #15, #34)*
+**Risk:** every table's insert policy was `WITH CHECK (true)`, and the browser inserted rows
+with `status: 'approved'`. Anyone hitting the REST API with the public key could publish
+arbitrary content instantly, or pin it with `status:'featured'`.
+**Fix:** migration `005` rewrote the insert policies to pin `status='pending'`
+(`coffee_chat_profiles` also forces `public_profile=false`). Submissions now flow through
+the `submit-form` edge function, which sets the status server-side. Moderation happens in
+the dashboard. (Opportunities/resumes were later set to auto-publish *server-side* — see
+section 7 — without re-opening the client-controlled hole.)
+**Verification:** `POST /rest/v1/<table>` with `status:'approved'` via the anon key is
+rejected; the only insert path is the service-role edge function.
+
+### CRIT-3 — PII (emails) readable by anyone via the REST API  *(measures #6, #33, #35)*
+**Risk:** SELECT policies granted the anon role whole rows including `email`. The frontend's
+column allow-list was **cosmetic** — `GET /rest/v1/coffee_chat_profiles?select=name,email`
+returned every approved mentor's email. RLS governs rows, not columns.
+**Fix:** migration `006` uses **column-level GRANTs** — `REVOKE SELECT` on the table then
+`GRANT SELECT (<non-PII columns>)` to `anon` — so `email`/`linkedin_url` (resumes) and
+`email`/`consented_at` (coffee chat) are unreadable. Client reads stopped using
+`select('*')` and enumerate the granted columns.
+**Verification:** `?select=email` and `?select=*` return **401** for the anon role; non-PII
+selects return data. Confirmed live.
+
