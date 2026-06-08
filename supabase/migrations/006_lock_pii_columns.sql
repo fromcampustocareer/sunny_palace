@@ -38,3 +38,10 @@
 -- email and linkedin_url are PII and are deliberately omitted. The
 -- granted set matches the explicit column list ResumeReviews.jsx and
 -- ResumeCompanies.jsx now select.
+REVOKE SELECT ON resume_submissions FROM anon;
+GRANT SELECT (id, handle, role_title, role_type, stage, target_companies,
+              background_tags, file_name, allow_download, story, allow_annotation,
+              status, created_at) ON resume_submissions TO anon;
+
+
+-- ── 2. coffee_chat_profiles — codify existing live grants ──
