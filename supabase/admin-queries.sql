@@ -276,3 +276,53 @@ SELECT 'template_request',         request,        email,       created_at FROM 
 UNION ALL
 SELECT 'bridge_suggestion',        program_name,   email,       created_at FROM bridge_year_suggestions WHERE created_at  > NOW() - INTERVAL '7 days'
 ORDER BY created_at DESC;
+
+
+-- ══════════════════════════════════════════════════════════════
+-- AUDIT LOG (MED-5 — moderation action trail)
+-- ══════════════════════════════════════════════════════════════
+-- Populated by the record_status_audit() trigger (migration 010) on
+-- coffee_chat_profiles, opportunities, resume_submissions, panelists.
+-- Logs INSERTs (with initial status) and status changes. Reviewable here in
+-- the SQL editor only — anon has no read access.
+
+-- Recent audit entries (newest first)
+SELECT id, table_name, row_id, action, actor, detail, created_at
+FROM audit_log
+ORDER BY created_at DESC
+LIMIT 100;
+
+-- Status changes in the last 7 days (the actual moderation activity)
+SELECT id, table_name, row_id, actor,
+       detail->>'from' AS from_status,
+       detail->>'to'   AS to_status,
+       created_at
+FROM audit_log
+WHERE action = 'status_change'
+  AND created_at > NOW() - INTERVAL '7 days'
+ORDER BY created_at DESC;
+
+-- Per-table count of pending vs approved status changes (where did things go?)
+SELECT table_name,
+       COUNT(*) FILTER (WHERE detail->>'to' = 'pending')  AS to_pending,
+       COUNT(*) FILTER (WHERE detail->>'to' = 'approved') AS to_approved,
+       COUNT(*) FILTER (WHERE detail->>'to' = 'featured') AS to_featured,
+       COUNT(*) FILTER (WHERE detail->>'to' = 'rejected') AS to_rejected,
+       COUNT(*)                                           AS total_changes
+FROM audit_log
+WHERE action = 'status_change'
+GROUP BY table_name
+ORDER BY total_changes DESC;
+
+-- Full history for one specific row (paste a row_id from any table)
+SELECT id, table_name, action, actor, detail, created_at
+FROM audit_log
+WHERE row_id = 'PASTE-ROW-ID-HERE'
+ORDER BY created_at ASC;
+
+-- Most recently active moderators (who has been changing statuses?)
+SELECT actor, COUNT(*) AS actions, MAX(created_at) AS last_action
+FROM audit_log
+WHERE action = 'status_change'
+GROUP BY actor
+ORDER BY last_action DESC;
