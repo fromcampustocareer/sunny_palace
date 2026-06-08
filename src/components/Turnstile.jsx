@@ -88,3 +88,15 @@ export default function Turnstile({ onToken, resetRef, className }) {
     resetRef.current = () => {
       handleClear()
       if (widgetIdRef.current != null && window.turnstile) {
+        try { window.turnstile.reset(widgetIdRef.current) } catch (_) { /* noop */ }
+      }
+    }
+    return () => { if (resetRef) resetRef.current = null }
+  }, [resetRef, handleClear])
+
+  if (!SITE_KEY) return null
+  return <div ref={containerRef} className={className} />
+}
+
+// Whether Turnstile is active. When false, forms must not block on a token.
+export const TURNSTILE_ENABLED = !!SITE_KEY
