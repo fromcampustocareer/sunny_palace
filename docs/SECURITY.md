@@ -79,3 +79,34 @@ returned every approved mentor's email. RLS governs rows, not columns.
 **Verification:** `?select=email` and `?select=*` return **401** for the anon role; non-PII
 selects return data. Confirmed live.
 
+---
+
+## 3. High-severity fixes — anti-abuse
+
+### HIGH-1 — No rate limiting / anti-abuse on forms or functions  *(measure #28)*
+**Risk:** insert policies were `WITH CHECK (true)` with no throttle; the edge functions had
+no protection. A script with the public key could flood every table, email-bomb the contact
+inbox, and burn the Resend quota.
+**Fix (Cloudflare Turnstile + a single trusted insert path):**
+- A shared `src/components/Turnstile.jsx` widget was added to the contact, waitlist,
+  coffee-chat, resume, opportunity (and later panelist) forms; the token is sent with each
+  request.
+- `send-contact-email` and `add-to-waitlist` verify the token against Cloudflare's
+  `siteverify` endpoint before doing any work (403 on failure, fail-closed if the secret is
+  unset).
+- A new **`submit-form`** edge function is the **only** path for the direct-insert forms:
+  it verifies Turnstile, inserts with the **service role**, **whitelists columns**, and
+  **force-sets** `status`/`public_profile` server-side.
+- Migration `007` **revokes anon `INSERT`** on `coffee_chat_profiles`, `resume_submissions`,
+  and `opportunities`, so the REST API can no longer be used to bypass Turnstile.
+**Verification:** a replayed POST without a valid token → 403; a direct anon REST insert →
+401. Confirmed live.
+
+### HIGH-1b — Panelist form left an open anon insert  *(follow-up)*
+**Risk:** the Partner Panels "apply to speak" form still inserted into `panelists` directly
+with the anon key (no Turnstile), the one form HIGH-1 missed.
+**Fix:** `submit-form` gained a `panelist` type (whitelisted columns, forced
+`status='pending'`, email-validated); the form now posts through it with a Turnstile token;
+migration `012` revokes anon `INSERT` on `panelists`.
+**Verification:** direct anon insert → 401; `submit-form` panelist with a bad token → 403.
+
