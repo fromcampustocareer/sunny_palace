@@ -6,8 +6,6 @@
 // The CoffeeChat page invokes this after a successful insert.
 // Failures are silent on the client side — the directory listing is the source of truth.
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 // Resend won't let you send "from" a gmail.com address you don't own (no SPF/DKIM control).
 // So the visible sender uses Resend's verified test domain, and replies route to the
@@ -22,7 +20,7 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
