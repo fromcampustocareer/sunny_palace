@@ -77,6 +77,8 @@ export default function Home() {
   const [newsletterEmail, setNewsletterEmail] = useState('')
   const [newsletterLoading, setNewsletterLoading] = useState(false)
   const [newsletterError, setNewsletterError] = useState('')
+  const [newsletterToken, setNewsletterToken] = useState('')
+  const newsletterTurnstileReset = useRef(null)
   const newsletterRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [navOnHero, setNavOnHero] = useState(true)
