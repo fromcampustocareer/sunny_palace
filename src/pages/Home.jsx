@@ -266,26 +266,42 @@ export default function Home() {
 
   const handleNewsletterSubmit = useCallback(async () => {
     if (!newsletterEmail.trim()) return
+    if (TURNSTILE_ENABLED && !newsletterToken) return
     setNewsletterLoading(true)
     setNewsletterError('')
-    // Collect emails into the shared subscribers list so we can notify them when articles drop.
+    // Signup now flows through the Turnstile-gated submit-form edge function
+    // (service role) instead of a direct anon insert — the anon INSERT on
+    // subscribers is revoked (migration 017) so the welcome-email webhook can't
+    // be abused. A 409 means the email is already subscribed: treat as success.
     try {
-      const { supabase } = await import('../lib/supabase')
-      const { error } = await supabase
-        .from('subscribers')
-        .insert({ email: newsletterEmail.trim(), source: 'home-la-voz' })
-      if (error && error.code !== '23505') {
-        setNewsletterError(t.newsletterError)
-      } else {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'subscriber',
+          turnstileToken: newsletterToken,
+          payload: { email: newsletterEmail.trim(), source: 'home-la-voz' },
+        }),
+      })
+      if (res.ok || res.status === 409) {
         setNewsletterSent(true)
+      } else {
+        setNewsletterError(t.newsletterError)
+        setNewsletterToken('')
+        newsletterTurnstileReset.current?.()
       }
     } catch {
-      // Network/CORS failure throws rather than returning { error } — surface it instead of hanging.
+      // Network/CORS failure throws rather than returning a response — surface it instead of hanging.
       setNewsletterError(t.newsletterError)
+      setNewsletterToken('')
+      newsletterTurnstileReset.current?.()
     } finally {
       setNewsletterLoading(false)
     }
-  }, [newsletterEmail, t])
+  }, [newsletterEmail, newsletterToken, t])
 
   const handleNewsletterKeyDown = useCallback((e) => {
     if (e.key !== 'Tab' || !newsletterRef.current) return
