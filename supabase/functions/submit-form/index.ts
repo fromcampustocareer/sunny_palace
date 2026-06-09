@@ -239,7 +239,7 @@ Deno.serve(async (req) => {
     //   - email format for the types that carry an email (coffee_chat, resume, panelist),
     //   - max length on long free-text fields so an absurdly long value can't be
     //     inserted. Generic 400 on failure — no DB internals leaked.
-    if (type === 'coffee_chat' || type === 'resume' || type === 'panelist') {
+    if (type === 'coffee_chat' || type === 'resume' || type === 'panelist' || type === 'subscriber') {
       const email = row.email
       if (typeof email !== 'string' || !EMAIL_REGEX.test(email)) {
         return json({ error: 'Invalid submission' }, 400)
