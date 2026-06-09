@@ -960,3 +960,25 @@ export const OPPORTUNITIES = [
     desc: "Program (Rising Freshmen Women) for students.",
     source: 'Underclassmen Opportunities', viewLink: "https://www.janestreet.com/join-jane-street/programs-and-events/wise/", viewLabel: 'View opportunity', postLink: '', postLabel: '',
     type: "program", stage: "first-second", location: "us", deadline: "rolling", bridge: false,
+    keywords: "wise - women in science & engineering jane street program (rising freshmen women) program",
+  },
+]
+
+export const ARCHIVED_OPPORTUNITIES = [
+  {
+    id: "e9d6dbc1-f17d-44de-bdc8-28f47f8a6aa2", logo: "HR",
+    closed: "Closed", title: "Explore HRT - NYC", company: "Hudson River Trading",
+    tags: ["Program", "Students", "Spring"], desc: "Program for students.", viewLink: "https://www.hudsonrivertrading.com/hrt-job/explore-hrt-nyc/?gh_src=1117c3661us%3Futm_medium%3Dsocial",
+  },
+  {
+    id: "126bb08d-4b4b-4a55-a60a-174e3859b7f6", logo: "MI",
+    closed: "Closed", title: "Meet Millennium 2026 Miami", company: "Millennium",
+    tags: ["Program", "Students", "Summer"], desc: "Networking Event for students.", viewLink: "https://campusjobs.mlp.com/careers/job?pid=755953964259&domain=mlp.com",
+  },
+  {
+    id: "cd3230f3-61d7-4628-9d01-c6ca533d519a", logo: "MI",
+    closed: "Closed", title: "Meet Millennium 2026 London", company: "Millennium",
+    tags: ["Program", "Students", "Summer"], desc: "Networking Event for students.", viewLink: "https://campusjobs.mlp.com/careers/job?pid=755953964269&domain=mlp.com",
+  },
+  {
+    id: "0083557d-c132-45a9-a186-511f64086351", logo: "MI",
