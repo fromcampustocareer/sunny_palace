@@ -168,6 +168,18 @@ function buildRow(type: string, payload: Record<string, unknown>): Record<string
         // Force server-side — panelist applications enter the moderation queue:
         status: 'pending',
       }
+    case 'subscriber': {
+      // Newsletter signup. Whitelist ONLY email + source; never let the client set
+      // `name`, `confirmed`, `confirmation_token`, etc. email is normalized
+      // (trimmed + lowercased) so the UNIQUE(email) constraint dedupes case-variants;
+      // source is trimmed and capped so a crafted client can't push a huge value.
+      const email = trimOrNull(payload.email)
+      const source = trimOrNull(payload.source)
+      return {
+        email: email ? email.toLowerCase() : null,
+        source: source ? source.slice(0, 200) : null,
+      }
+    }
     default:
       return {}
   }
