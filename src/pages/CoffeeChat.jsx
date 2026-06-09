@@ -97,7 +97,7 @@ const FUNC_HEADLINE_MAP = {
 // Columns the public grid is allowed to read. The anon role is intentionally
 // NOT granted SELECT on `email` or `consented_at` (PII), so `select('*')` is
 // denied (Postgres 42501) — we must request only these granted columns.
-const PUBLIC_PROFILE_COLUMNS = 'id,name,pronouns,linkedin_url,role_title,location,role_function,identity_tags,topics,capacity,public_profile,status,created_at,avatar_url'
+const PUBLIC_PROFILE_COLUMNS = 'id,name,pronouns,linkedin_url,role_title,location,role_function,identity_tags,topics,capacity,public_profile,status,created_at,avatar_url,featured_rank'
 
 function dbProfileToCard(row) {
   const funcColorMap = {
@@ -158,7 +158,7 @@ function dbProfileToCard(row) {
   return {
     id: row.id,
     initial: (row.name || '?')[0].toUpperCase(),
-    name: row.name, badge: (Date.now() - new Date(row.created_at).getTime()) < 30 * 24 * 60 * 60 * 1000 ? 'New' : 'Active',
+    name: row.name, badge: (Date.now() - new Date(row.created_at).getTime()) < 3 * 24 * 60 * 60 * 1000 ? 'New' : 'Active',
     role: row.role_title,
     headline: funcs.length ? (FUNC_HEADLINE_MAP[funcs[0]] || funcs[0]) : row.role_title,
     topics: row.topics || '',
@@ -268,6 +268,7 @@ export default function CoffeeChat() {
       .select(PUBLIC_PROFILE_COLUMNS)
       .eq('status', 'approved')
       .eq('public_profile', true)
+      .order('featured_rank', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
       .then(({ data, error }) => {
         if (error) {
