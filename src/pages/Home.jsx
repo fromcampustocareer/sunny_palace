@@ -259,6 +259,8 @@ export default function Home() {
       setNewsletterSent(false)
       setNewsletterEmail('')
       setNewsletterError('')
+      setNewsletterToken('')
+      newsletterTurnstileReset.current?.()
     }, 400)
   }, [])
 
