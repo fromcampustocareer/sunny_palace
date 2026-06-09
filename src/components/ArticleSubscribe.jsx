@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { useState, useRef } from 'react'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from './Turnstile'
 
 export default function ArticleSubscribe({ source }) {
   const t = useT('articleLayout')
