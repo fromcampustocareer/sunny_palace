@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
-import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
 import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
@@ -153,6 +152,8 @@ export default function PartnerPanels() {
   const [suggestSubmitted, setSuggestSubmitted] = useState(false)
   const [suggestLoading, setSuggestLoading] = useState(false)
   const [suggestError, setSuggestError] = useState('')
+  const [suggestTurnstileToken, setSuggestTurnstileToken] = useState('')
+  const suggestTurnstileReset = useRef(null)
   const [panelistSubmitted, setPanelistSubmitted] = useState(false)
   const [panelistLoading, setPanelistLoading] = useState(false)
   const [panelistError, setPanelistError] = useState('')
@@ -182,6 +183,10 @@ export default function PartnerPanels() {
       setSuggestError(t.suggestErrorRequired)
       return
     }
+    if (TURNSTILE_ENABLED && !suggestTurnstileToken) {
+      setSuggestError(t.suggestErrorGeneric)
+      return
+    }
     const stagePayload = suggestForm.stage === 'Other'
       ? `Other: ${suggestForm.stageOther.trim()}`
       : suggestForm.stage
@@ -190,18 +195,42 @@ export default function PartnerPanels() {
       : suggestForm.category
     setSuggestLoading(true)
     setSuggestError('')
-    const { error } = await supabase.from('panel_suggestions').insert({
-      topic: suggestForm.topic,
-      why_helpful: suggestForm.why,
-      stage: stagePayload,
-      category: categoryPayload,
-      email: suggestForm.email || null,
-    })
+    // Suggestion now flows through the Turnstile-gated submit-form edge function
+    // (service role) — the direct anon INSERT on panel_suggestions is revoked
+    // (migration 019) so the open write-spam path is closed.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'panel_suggestion',
+          turnstileToken: suggestTurnstileToken,
+          payload: {
+            topic: suggestForm.topic,
+            why_helpful: suggestForm.why,
+            stage: stagePayload,
+            category: categoryPayload,
+            email: suggestForm.email || null,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setSuggestLoading(false)
-    if (error) {
-      setSuggestError(t.suggestErrorGeneric)
-    } else {
+    if (ok) {
       setSuggestSubmitted(true)
+      setSuggestTurnstileToken('')
+      suggestTurnstileReset.current?.()
+    } else {
+      setSuggestError(t.suggestErrorGeneric)
+      setSuggestTurnstileToken('')
+      suggestTurnstileReset.current?.()
     }
   }
 
@@ -1453,7 +1482,8 @@ export default function PartnerPanels() {
                   <input className="pp-form-input" type="email" id="suggestEmail" placeholder={t.suggestPlaceholderEmail} value={suggestForm.email} onChange={e => setSuggestForm(f => ({ ...f, email: e.target.value }))} />
                 </div>
                 {suggestError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: 13, marginBottom: 10 }}>{suggestError}</p>}
-                <button className="pp-form-btn" type="submit" disabled={suggestLoading || !suggestForm.topic.trim() || !suggestForm.why.trim() || !suggestForm.stage || !suggestForm.category || (suggestForm.stage === 'Other' && !suggestForm.stageOther.trim()) || (suggestForm.category === 'Other' && !suggestForm.categoryOther.trim())}>{suggestLoading ? t.suggestBtnSubmitting : t.suggestBtnSubmit}</button>
+                <Turnstile onToken={setSuggestTurnstileToken} resetRef={suggestTurnstileReset} />
+                <button className="pp-form-btn" type="submit" disabled={suggestLoading || !suggestForm.topic.trim() || !suggestForm.why.trim() || !suggestForm.stage || !suggestForm.category || (suggestForm.stage === 'Other' && !suggestForm.stageOther.trim()) || (suggestForm.category === 'Other' && !suggestForm.categoryOther.trim()) || (TURNSTILE_ENABLED && !suggestTurnstileToken)}>{suggestLoading ? t.suggestBtnSubmitting : t.suggestBtnSubmit}</button>
                 <p className="pp-form-note">{t.suggestFormNote}</p>
               </form>
             ))}

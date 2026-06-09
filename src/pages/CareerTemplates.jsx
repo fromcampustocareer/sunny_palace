@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
-import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 const CopyIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -41,6 +41,8 @@ export default function CareerTemplates() {
   const [formError, setFormError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({ request: '', email: '', category: '' })
   const [formSubmitted, setFormSubmitted] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileReset = useRef(null)
 
   const [previewId, setPreviewId] = useState(null)
   const [copied, setCopied] = useState(false)
@@ -164,20 +166,46 @@ export default function CareerTemplates() {
       setFormError('')
       return
     }
+    if (TURNSTILE_ENABLED && !turnstileToken) return
     setFieldErrors({ request: '', email: '', category: '' })
     setFormLoading(true)
     setFormError('')
     const categoryValue = reqCategory === 'other'
       ? `other: ${reqCategoryOther.trim()}`
       : (reqCategory || null)
-    const { error } = await supabase.from('template_requests').insert({
-      request: request.trim(),
-      email: reqEmail.trim() || null,
-      category: categoryValue,
-    })
+    // Request now flows through the Turnstile-gated submit-form edge function
+    // (service role) — the direct anon INSERT on template_requests is revoked
+    // (migration 019) so the open write-spam path is closed.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'template_request',
+          turnstileToken,
+          payload: {
+            request: request.trim(),
+            email: reqEmail.trim() || null,
+            category: categoryValue,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setFormLoading(false)
-    if (error) { setFormError(t.formErrorGeneric) }
-    else { setFormSubmitted(true) }
+    if (ok) {
+      setFormSubmitted(true)
+    } else {
+      setFormError(t.formErrorGeneric)
+      setTurnstileToken('')
+      turnstileReset.current?.()
+    }
   }
 
   const TEMPLATES = t.templates
@@ -998,7 +1026,8 @@ export default function CareerTemplates() {
                     <button type="submit" className="ct-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formBtnSubmitting : t.formRetryLabel}</button>
                   </div>
                 )}
-                <button className="ct-form-btn" type="submit" disabled={formLoading || !request.trim()}>{formLoading ? t.formBtnSubmitting : t.formBtnSubmit}</button>
+                <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} />
+                <button className="ct-form-btn" type="submit" disabled={formLoading || !request.trim() || (TURNSTILE_ENABLED && !turnstileToken)}>{formLoading ? t.formBtnSubmitting : t.formBtnSubmit}</button>
               </form>
             )}
           </div>

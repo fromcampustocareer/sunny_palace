@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
-import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 // Hide the episode roadmap browser (filters + jump-to TOC + episodes 01–10).
 // Flip to true to restore the full episode-browsing section.
@@ -386,6 +386,8 @@ export default function LinkedInSeries() {
   const [formError, setFormError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({ topic: '', email: '', category: '' })
   const [formSubmitted, setFormSubmitted] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileReset = useRef(null)
 
   const LENS_OPTIONS = [
     { v: 'jose',    label: t.filterJose,    desc: t.filterJoseDesc },
@@ -411,20 +413,45 @@ export default function LinkedInSeries() {
       setFormError('')
       return
     }
+    if (TURNSTILE_ENABLED && !turnstileToken) return
     setFieldErrors({ topic: '', email: '', category: '' })
     setFormLoading(true)
     setFormError('')
     const categoryValue = category === 'other'
       ? `other: ${categoryOther.trim()}`
       : (category || null)
-    const { error } = await supabase.from('linkedin_episode_requests').insert({
-      topic: topic.trim(),
-      email: email.trim() || null,
-      category: categoryValue,
-    })
+    // Request now flows through the Turnstile-gated submit-form edge function
+    // (service role) — the direct anon INSERT on linkedin_episode_requests is
+    // revoked (migration 019) so the open write-spam path is closed.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'linkedin_episode_request',
+          turnstileToken,
+          payload: {
+            topic: topic.trim(),
+            email: email.trim() || null,
+            category: categoryValue,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setFormLoading(false)
-    if (error) { setFormError(t.formErrorGeneric) }
-    else { setFormSubmitted(true) }
+    if (ok) { setFormSubmitted(true) }
+    else {
+      setFormError(t.formErrorGeneric)
+      setTurnstileToken('')
+      turnstileReset.current?.()
+    }
   }
 
   const visibleEps = EPISODES.filter(ep => {
@@ -799,7 +826,8 @@ export default function LinkedInSeries() {
                   <button type="submit" className="ls-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formBtnSubmitting : t.formRetryLabel}</button>
                 </div>
               )}
-              <button className="ls-form-btn" type="submit" disabled={formLoading || !topic.trim()}>{formLoading ? t.formBtnSubmitting : t.formBtnSubmit}</button>
+              <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} />
+              <button className="ls-form-btn" type="submit" disabled={formLoading || !topic.trim() || (TURNSTILE_ENABLED && !turnstileToken)}>{formLoading ? t.formBtnSubmitting : t.formBtnSubmit}</button>
             </form>
           )}
         </div>

@@ -1,11 +1,17 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.107.0'
 
 // Public, Turnstile-gated insert proxy for the moderated/public forms:
-//   coffee_chat  -> coffee_chat_profiles
-//   resume       -> resume_submissions
-//   opportunity  -> opportunities
-//   panelist     -> panelists
-//   subscriber   -> subscribers   (newsletter signup; anon INSERT revoked in migration 017)
+//   coffee_chat            -> coffee_chat_profiles
+//   resume                 -> resume_submissions
+//   opportunity            -> opportunities
+//   panelist               -> panelists
+//   subscriber             -> subscribers   (newsletter signup; anon INSERT revoked in migration 017)
+//   template_request       -> template_requests           (anon INSERT revoked in migration 019)
+//   bridge_year_suggestion -> bridge_year_suggestions      (anon INSERT revoked in migration 019)
+//   interview_prep_request -> interview_prep_requests      (anon INSERT revoked in migration 019)
+//   panel_suggestion       -> panel_suggestions            (anon INSERT revoked in migration 019)
+//   linkedin_episode_request -> linkedin_episode_requests  (anon INSERT revoked in migration 019)
+//   bridge_year_subscriber -> bridge_year_subscribers      (anon INSERT revoked in migration 019)
 //
 // The browser no longer inserts these rows directly (anon INSERT is revoked in
 // migration 007). All inserts flow through here, run with the service role, and
@@ -88,6 +94,12 @@ const TABLE_BY_TYPE: Record<string, string> = {
   opportunity: 'opportunities',
   panelist: 'panelists',
   subscriber: 'subscribers',
+  template_request: 'template_requests',
+  bridge_year_suggestion: 'bridge_year_suggestions',
+  interview_prep_request: 'interview_prep_requests',
+  panel_suggestion: 'panel_suggestions',
+  linkedin_episode_request: 'linkedin_episode_requests',
+  bridge_year_subscriber: 'bridge_year_subscribers',
 }
 
 const str = (v: unknown) => (typeof v === 'string' ? v : null)
@@ -180,6 +192,81 @@ function buildRow(type: string, payload: Record<string, unknown>): Record<string
         source: source ? source.slice(0, 200) : null,
       }
     }
+    case 'template_request': {
+      // Career Templates "request a template" form. email is optional/nullable.
+      const request = trimOrNull(payload.request)
+      const email = trimOrNull(payload.email)
+      const category = trimOrNull(payload.category)
+      return {
+        request: request ? request.slice(0, 5000) : null,
+        email: email ? email.toLowerCase().slice(0, 500) : null,
+        category: category ? category.slice(0, 500) : null,
+      }
+    }
+    case 'bridge_year_suggestion': {
+      // Bridge Year "suggest a program" form. email is optional/nullable.
+      const program_name = trimOrNull(payload.program_name)
+      const company = trimOrNull(payload.company)
+      const link = trimOrNull(payload.link)
+      const why = trimOrNull(payload.why)
+      const email = trimOrNull(payload.email)
+      return {
+        program_name: program_name ? program_name.slice(0, 500) : null,
+        company: company ? company.slice(0, 500) : null,
+        link: link ? link.slice(0, 500) : null,
+        why: why ? why.slice(0, 5000) : null,
+        email: email ? email.toLowerCase().slice(0, 500) : null,
+      }
+    }
+    case 'interview_prep_request': {
+      // Interview Prep "request a resource" form. email is optional/nullable.
+      const description = trimOrNull(payload.description)
+      const stage = trimOrNull(payload.stage)
+      const interview_type = trimOrNull(payload.interview_type)
+      const help_needed = trimOrNull(payload.help_needed)
+      const email = trimOrNull(payload.email)
+      return {
+        description: description ? description.slice(0, 5000) : null,
+        stage: stage ? stage.slice(0, 500) : null,
+        interview_type: interview_type ? interview_type.slice(0, 500) : null,
+        help_needed: help_needed ? help_needed.slice(0, 5000) : null,
+        email: email ? email.toLowerCase().slice(0, 500) : null,
+      }
+    }
+    case 'panel_suggestion': {
+      // Partner Panels "suggest a panel" form. email is optional/nullable.
+      const topic = trimOrNull(payload.topic)
+      const why_helpful = trimOrNull(payload.why_helpful)
+      const stage = trimOrNull(payload.stage)
+      const category = trimOrNull(payload.category)
+      const email = trimOrNull(payload.email)
+      return {
+        topic: topic ? topic.slice(0, 5000) : null,
+        why_helpful: why_helpful ? why_helpful.slice(0, 5000) : null,
+        stage: stage ? stage.slice(0, 500) : null,
+        category: category ? category.slice(0, 500) : null,
+        email: email ? email.toLowerCase().slice(0, 500) : null,
+      }
+    }
+    case 'linkedin_episode_request': {
+      // LinkedIn Series "suggest a topic" form. email is optional/nullable.
+      const topic = trimOrNull(payload.topic)
+      const email = trimOrNull(payload.email)
+      const category = trimOrNull(payload.category)
+      return {
+        topic: topic ? topic.slice(0, 5000) : null,
+        email: email ? email.toLowerCase().slice(0, 500) : null,
+        category: category ? category.slice(0, 500) : null,
+      }
+    }
+    case 'bridge_year_subscriber': {
+      // Bridge Year email capture. email is REQUIRED (validated below). Normalize
+      // (trim + lowercase) so any UNIQUE(email) constraint dedupes case-variants.
+      const email = trimOrNull(payload.email)
+      return {
+        email: email ? email.toLowerCase().slice(0, 500) : null,
+      }
+    }
     default:
       return {}
   }
@@ -236,16 +323,30 @@ Deno.serve(async (req) => {
     const row = buildRow(type, (payload && typeof payload === 'object') ? payload : {})
 
     // 2b. Server-side input validation at the trust boundary (MED-3).
-    //   - email format for the types that carry an email (coffee_chat, resume, panelist),
+    //   - email format for the types where email is REQUIRED (coffee_chat, resume,
+    //     panelist, subscriber, bridge_year_subscriber),
+    //   - email format for the types where email is OPTIONAL, but only when present,
     //   - max length on long free-text fields so an absurdly long value can't be
     //     inserted. Generic 400 on failure — no DB internals leaked.
-    if (type === 'coffee_chat' || type === 'resume' || type === 'panelist' || type === 'subscriber') {
+    if (type === 'coffee_chat' || type === 'resume' || type === 'panelist' || type === 'subscriber' || type === 'bridge_year_subscriber') {
       const email = row.email
       if (typeof email !== 'string' || !EMAIL_REGEX.test(email)) {
         return json({ error: 'Invalid submission' }, 400)
       }
     }
-    const longTextFields = ['story', 'topics', 'why', 'eligibility', 'target_companies']
+    // Types that carry an OPTIONAL email column: the email is nullable, so only
+    // enforce the format when a non-empty value is actually present.
+    const OPTIONAL_EMAIL_TYPES = [
+      'template_request', 'bridge_year_suggestion', 'interview_prep_request',
+      'panel_suggestion', 'linkedin_episode_request',
+    ]
+    if (OPTIONAL_EMAIL_TYPES.includes(type)) {
+      const email = row.email
+      if (typeof email === 'string' && email.length > 0 && !EMAIL_REGEX.test(email)) {
+        return json({ error: 'Invalid submission' }, 400)
+      }
+    }
+    const longTextFields = ['story', 'topics', 'why', 'eligibility', 'target_companies', 'request', 'description', 'help_needed', 'why_helpful', 'topic']
     for (const field of longTextFields) {
       const val = row[field]
       if (typeof val === 'string' && val.length > MAX_LONGTEXT) {

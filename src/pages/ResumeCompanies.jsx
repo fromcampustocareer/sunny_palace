@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
 import ResumeSubNav from '../components/ResumeSubNav'
@@ -6,6 +6,7 @@ import CompanyLogo from '../components/CompanyLogo'
 import { COMPANIES as COMPANY_CATALOG } from '../data/companies'
 import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 const TRENDING = ['google', 'amazon', 'discord', 'apple', 'microsoft', 'meta', 'spotify', 'reddit', 'openai']
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
@@ -25,6 +26,8 @@ export default function ResumeCompanies() {
   const [reqName, setReqName] = useState('')
   const [reqWebsite, setReqWebsite] = useState('')
   const [reqStatus, setReqStatus] = useState('idle')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileReset = useRef(null)
 
   useEffect(() => {
     // Reads resume_submissions directly. RLS gates rows; column GRANTs
@@ -81,13 +84,38 @@ export default function ResumeCompanies() {
   async function handleRequestSubmit(e) {
     e.preventDefault()
     if (!reqName.trim()) return
+    if (TURNSTILE_ENABLED && !turnstileToken) return
     setReqStatus('loading')
-    const { error } = await supabase.from('template_requests').insert({
-      request: `${reqName.trim()}${reqWebsite ? ' | ' + reqWebsite.trim() : ''}`,
-      category: 'company',
-    })
-    if (error) setReqStatus('error')
-    else { setReqStatus('success'); setReqName(''); setReqWebsite('') }
+    // Request now flows through the Turnstile-gated submit-form edge function
+    // (service role) — the direct anon INSERT on template_requests is revoked
+    // (migration 019) so the open write-spam path is closed.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'template_request',
+          turnstileToken,
+          payload: {
+            request: `${reqName.trim()}${reqWebsite ? ' | ' + reqWebsite.trim() : ''}`,
+            category: 'company',
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
+    if (ok) { setReqStatus('success'); setReqName(''); setReqWebsite('') }
+    else {
+      setReqStatus('error')
+      setTurnstileToken('')
+      turnstileReset.current?.()
+    }
   }
 
   // Decorative blurred backdrop — Simple Icons slugs only (kept to ones that
@@ -300,7 +328,8 @@ export default function ResumeCompanies() {
                 onChange={e => setReqWebsite(e.target.value)}
               />
             </div>
-            <button type="submit" className="rc-request__submit" disabled={reqStatus === 'loading' || !reqName.trim()}>
+            <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} />
+            <button type="submit" className="rc-request__submit" disabled={reqStatus === 'loading' || !reqName.trim() || (TURNSTILE_ENABLED && !turnstileToken)}>
               {reqStatus === 'loading' ? t.notListedSubmitting : t.notListedSubmit}
             </button>
             {reqStatus === 'success' && <p className="rc-request__msg rc-request__msg--success">{t.notListedSuccess}</p>}

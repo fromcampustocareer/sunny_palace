@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
-import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 export default function InterviewPrep() {
   const t = useT('interviewPrep')
@@ -23,6 +23,8 @@ export default function InterviewPrep() {
   const [formLoading, setFormLoading] = useState(false)
   const [formError, setFormError] = useState('')
   const [form, setForm] = useState({ role: '', stage: '', type: '', need: '', email: '' })
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileReset = useRef(null)
   const [previewIndex, setPreviewIndex] = useState(null)
   const previewTriggerRef = useRef(null)
   const tabsRef = useRef(null)
@@ -73,20 +75,46 @@ export default function InterviewPrep() {
       setFormError(t.formErrorRequired)
       return
     }
+    if (TURNSTILE_ENABLED && !turnstileToken) {
+      setFormError(t.formErrorGeneric)
+      return
+    }
     setFormLoading(true)
     setFormError('')
-    const { error } = await supabase.from('interview_prep_requests').insert({
-      description: form.role,
-      stage: form.stage || null,
-      interview_type: form.type || null,
-      help_needed: form.need || null,
-      email: form.email || null,
-    })
+    // Request now flows through the Turnstile-gated submit-form edge function
+    // (service role) — the direct anon INSERT on interview_prep_requests is
+    // revoked (migration 019) so the open write-spam path is closed.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'interview_prep_request',
+          turnstileToken,
+          payload: {
+            description: form.role,
+            stage: form.stage || null,
+            interview_type: form.type || null,
+            help_needed: form.need || null,
+            email: form.email || null,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setFormLoading(false)
-    if (error) {
-      setFormError(t.formErrorGeneric)
-    } else {
+    if (ok) {
       setFormSubmitted(true)
+    } else {
+      setFormError(t.formErrorGeneric)
+      setTurnstileToken('')
+      turnstileReset.current?.()
     }
   }
 
@@ -1047,7 +1075,8 @@ export default function InterviewPrep() {
                 <input className="ip-form-input" type="email" id="ipEmail" placeholder={t.formPlaceholderEmail} value={form.email} onChange={e => setField('email', e.target.value)} />
               </div>
               {formError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: '13px', marginBottom: '10px' }}>{formError}</p>}
-              <button className="ip-form-btn" type="submit" disabled={formLoading || !form.role.trim()}>{formLoading ? t.formSubmitting : t.formSubmit}</button>
+              <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} />
+              <button className="ip-form-btn" type="submit" disabled={formLoading || !form.role.trim() || (TURNSTILE_ENABLED && !turnstileToken)}>{formLoading ? t.formSubmitting : t.formSubmit}</button>
             </form>
           )}
         </div>
