@@ -1,9 +1,11 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.107.0'
 
-// Public, Turnstile-gated insert proxy for the three moderated forms:
+// Public, Turnstile-gated insert proxy for the moderated/public forms:
 //   coffee_chat  -> coffee_chat_profiles
 //   resume       -> resume_submissions
 //   opportunity  -> opportunities
+//   panelist     -> panelists
+//   subscriber   -> subscribers   (newsletter signup; anon INSERT revoked in migration 017)
 //
 // The browser no longer inserts these rows directly (anon INSERT is revoked in
 // migration 007). All inserts flow through here, run with the service role, and
@@ -85,6 +87,7 @@ const TABLE_BY_TYPE: Record<string, string> = {
   resume: 'resume_submissions',
   opportunity: 'opportunities',
   panelist: 'panelists',
+  subscriber: 'subscribers',
 }
 
 const str = (v: unknown) => (typeof v === 'string' ? v : null)
@@ -165,6 +168,18 @@ function buildRow(type: string, payload: Record<string, unknown>): Record<string
         // Force server-side — panelist applications enter the moderation queue:
         status: 'pending',
       }
+    case 'subscriber': {
+      // Newsletter signup. Whitelist ONLY email + source; never let the client set
+      // `name`, `confirmed`, `confirmation_token`, etc. email is normalized
+      // (trimmed + lowercased) so the UNIQUE(email) constraint dedupes case-variants;
+      // source is trimmed and capped so a crafted client can't push a huge value.
+      const email = trimOrNull(payload.email)
+      const source = trimOrNull(payload.source)
+      return {
+        email: email ? email.toLowerCase() : null,
+        source: source ? source.slice(0, 200) : null,
+      }
+    }
     default:
       return {}
   }
@@ -224,7 +239,7 @@ Deno.serve(async (req) => {
     //   - email format for the types that carry an email (coffee_chat, resume, panelist),
     //   - max length on long free-text fields so an absurdly long value can't be
     //     inserted. Generic 400 on failure — no DB internals leaked.
-    if (type === 'coffee_chat' || type === 'resume' || type === 'panelist') {
+    if (type === 'coffee_chat' || type === 'resume' || type === 'panelist' || type === 'subscriber') {
       const email = row.email
       if (typeof email !== 'string' || !EMAIL_REGEX.test(email)) {
         return json({ error: 'Invalid submission' }, 400)
@@ -254,6 +269,11 @@ Deno.serve(async (req) => {
     if (dbErr) {
       // Keep DB internals out of the client response.
       console.error(`Insert error (${table}):`, dbErr)
+      // Map a unique-violation (e.g. an already-subscribed email) to a 409 so the
+      // client can render its "already subscribed" state — mirrors add-to-waitlist.
+      if (dbErr.code === '23505') {
+        return json({ error: 'Already submitted' }, 409)
+      }
       return json({ error: 'Could not save submission' }, 500)
     }
 
