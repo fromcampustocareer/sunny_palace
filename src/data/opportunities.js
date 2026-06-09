@@ -1070,3 +1070,24 @@ export const ARCHIVED_OPPORTUNITIES = [
     closed: "Closed", title: "Inside HRT", company: "Hudson River Trading",
     tags: ["Program", "Students", "Spring"], desc: "Externship for students.", viewLink: "https://www.hudsonrivertrading.com/hrt-job/inside-hrt/",
   },
+  {
+    id: "6cc802fd-5100-486a-9e33-cb5834c32b09", logo: "GO",
+    closed: "Closed", title: "2026 Future of Work Summer Camp", company: "GoDaddy",
+    tags: ["Program", "Students", "Multiple"], desc: "Pre-Internship Program for students.", viewLink: "https://careers.godaddy/summercamp",
+  },
+  {
+    id: "27f6a830-7579-4214-82c6-c909064175d3", logo: "DE",
+    closed: "Closed", title: "Compass Conference (Class of 2029-2030)", company: "Deloitte",
+    tags: ["Program", "Students", "Summer"], desc: "Career Conference for students.", viewLink: "https://apply.deloitte.com/en_US/careers/InviteToApply?jobId=328755",
+  },
+  {
+    id: "bac11f2c-d191-4c97-8039-bb0cd1fa0e19", logo: "TM",
+    closed: "Closed", title: "TMCF Leadership Institute 2026", company: "Thurgood Marshall College Fund",
+    tags: ["Program", "Students", "Summer"], desc: "Conference + Recruitment (All Majors) for students.", viewLink: "https://whosnext.tmcf.org/jobs/1612?lang=en-us",
+  },
+  {
+    id: "359747dd-7201-41d1-bfc1-cb28369bd791", logo: "IT",
+    closed: "Closed", title: "US Chess Academy 2026", company: "IMC Trading",
+    tags: ["Program", "Students", "Summer"], desc: "Chess Competition for students.", viewLink: "https://www.imc.com/eu/careers/jobs/4829446101",
+  },
+]
