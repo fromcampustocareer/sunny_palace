@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import ArticleLayout from '../components/ArticleLayout'
-import { supabase } from '../lib/supabase'
 import { useT } from '../hooks/useT'
+import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 function ExtIcon() {
   return (
@@ -29,6 +29,8 @@ export default function BridgeYear() {
   const [formError, setFormError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({ program: '', company: '', email: '' })
   const [form, setForm] = useState({ program: '', company: '', link: '', why: '', email: '' })
+  const [suggestTurnstileToken, setSuggestTurnstileToken] = useState('')
+  const suggestTurnstileReset = useRef(null)
 
   const [previewProgram, setPreviewProgram] = useState(null)
   const previewTriggerRef = useRef(null)
@@ -58,6 +60,8 @@ export default function BridgeYear() {
   const [captureEmail, setCaptureEmail] = useState('')
   const [captureLoading, setCaptureLoading] = useState(false)
   const [captureError, setCaptureError] = useState('')
+  const [captureTurnstileToken, setCaptureTurnstileToken] = useState('')
+  const captureTurnstileReset = useRef(null)
   const [captureSubmitted, setCaptureSubmitted] = useState(() => {
     if (typeof window === 'undefined') return false
     try { return window.localStorage.getItem('jxj.bridge-year.subscribed') === '1' } catch { return false }
@@ -124,21 +128,44 @@ export default function BridgeYear() {
       setFormError('')
       return
     }
+    if (TURNSTILE_ENABLED && !suggestTurnstileToken) return
     setFieldErrors({ program: '', company: '', email: '' })
     setFormLoading(true)
     setFormError('')
-    const { error } = await supabase.from('bridge_year_suggestions').insert({
-      program_name: form.program.trim(),
-      company: form.company.trim(),
-      link: form.link.trim() || null,
-      why: form.why.trim() || null,
-      email: form.email.trim() || null,
-    })
+    // Suggestion now flows through the Turnstile-gated submit-form edge function
+    // (service role) — the direct anon INSERT on bridge_year_suggestions is
+    // revoked (migration 019) so the open write-spam path is closed.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'bridge_year_suggestion',
+          turnstileToken: suggestTurnstileToken,
+          payload: {
+            program_name: form.program.trim(),
+            company: form.company.trim(),
+            link: form.link.trim() || null,
+            why: form.why.trim() || null,
+            email: form.email.trim() || null,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setFormLoading(false)
-    if (error) {
-      setFormError(t.formErrorGeneric)
-    } else {
+    if (ok) {
       setFormSubmitted(true)
+    } else {
+      setFormError(t.formErrorGeneric)
+      setSuggestTurnstileToken('')
+      suggestTurnstileReset.current?.()
     }
   }
 
@@ -154,15 +181,41 @@ export default function BridgeYear() {
       setCaptureError(t.captureErrorEmail)
       return
     }
+    if (TURNSTILE_ENABLED && !captureTurnstileToken) {
+      setCaptureError(t.captureErrorGeneric)
+      return
+    }
     setCaptureError('')
     setCaptureLoading(true)
-    const { error } = await supabase.from('bridge_year_subscribers').insert({ email: v })
+    // Capture now flows through the Turnstile-gated submit-form edge function
+    // (service role) — the direct anon INSERT on bridge_year_subscribers is
+    // revoked (migration 019) so the open write-spam path is closed.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'bridge_year_subscriber',
+          turnstileToken: captureTurnstileToken,
+          payload: { email: v },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
     setCaptureLoading(false)
-    if (error) {
-      setCaptureError(t.captureErrorGeneric)
-    } else {
+    if (ok) {
       setCaptureSubmitted(true)
       try { window.localStorage.setItem('jxj.bridge-year.subscribed', '1') } catch {}
+    } else {
+      setCaptureError(t.captureErrorGeneric)
+      setCaptureTurnstileToken('')
+      captureTurnstileReset.current?.()
     }
   }
 
@@ -1508,9 +1561,10 @@ export default function BridgeYear() {
                   aria-describedby={captureError ? 'captureEmail-error' : undefined}
                   autoComplete="email"
                 />
-                <button type="submit" className="by-capture__btn" disabled={captureLoading || !captureEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(captureEmail.trim())}>
+                <button type="submit" className="by-capture__btn" disabled={captureLoading || !captureEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(captureEmail.trim()) || (TURNSTILE_ENABLED && !captureTurnstileToken)}>
                   {captureLoading ? t.captureSubmitting : t.captureButton}
                 </button>
+                <Turnstile onToken={setCaptureTurnstileToken} resetRef={captureTurnstileReset} />
                 {captureError && <span id="captureEmail-error" className="by-capture__error" role="alert">{captureError}</span>}
               </form>
               {t.captureTrust && <p className="by-capture__trust">{t.captureTrust}</p>}
@@ -1811,7 +1865,8 @@ export default function BridgeYear() {
                   <button type="submit" className="by-suggest__error-card__retry" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formRetryLabel}</button>
                 </div>
               )}
-              <button className="by-suggest__btn" type="submit" disabled={formLoading || !form.program.trim() || !form.company.trim()}>{formLoading ? t.formSubmitting : t.formSubmit}</button>
+              <Turnstile onToken={setSuggestTurnstileToken} resetRef={suggestTurnstileReset} />
+              <button className="by-suggest__btn" type="submit" disabled={formLoading || !form.program.trim() || !form.company.trim() || (TURNSTILE_ENABLED && !suggestTurnstileToken)}>{formLoading ? t.formSubmitting : t.formSubmit}</button>
             </form>
           )}
           </div>
