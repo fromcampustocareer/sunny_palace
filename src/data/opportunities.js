@@ -982,3 +982,25 @@ export const ARCHIVED_OPPORTUNITIES = [
   },
   {
     id: "0083557d-c132-45a9-a186-511f64086351", logo: "MI",
+    closed: "Closed", title: "Meet Millennium 2026 Bangalore", company: "Millennium",
+    tags: ["Program", "Students", "Summer"], desc: "Networking Event for students.", viewLink: "https://campusjobs.mlp.com/careers/job?pid=755953964353&domain=mlp.com",
+  },
+  {
+    id: "94ac273b-ee01-4e33-b6fa-297d55cda097", logo: "LM",
+    closed: "Closed", title: "2026 Unite Summit - Exploratory Program", company: "Liberty Mutual",
+    tags: ["Program", "Students", "Summer"], desc: "Discovery Program for students.", viewLink: "https://campus-libertymutual.icims.com/jobs/74387/2026-unite-summit---exploratory-program/job",
+  },
+  {
+    id: "004f45ad-6a56-4a5f-b5ef-f2ab7dca02ce", logo: "DE",
+    closed: "Closed", title: "Audit & Assurance - Discovery Intern (Sophomore/Junior) - Summer 2026", company: "Deloitte",
+    tags: ["Internship", "Students", "Summer"], desc: "Internship for students.", viewLink: "https://apply.deloitte.com/en_US/careers/JobDetail/Audit-Assurance-Discovery-Intern-Sophomore-Junior-Business-Technology-Profile-Summer-2026/306703",
+  },
+  {
+    id: "a8c3c9e7-21f4-4d22-8b1b-df41329328df", logo: "SA",
+    closed: "Closed", title: "Dream Award", company: "Scholarship America",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://scholarshipamerica.org/scholarship/dreamaward/",
+  },
+  {
+    id: "d5b96ce4-efce-4ce5-975f-a5f75dca698b", logo: "GG",
+    closed: "Closed", title: "GDC Festival of Games 2026 Scholarship", company: "Global Game Jam",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://globalgamejam.org/news/want-attend-gdc-festival-gaming-2026-apply-ggj-scholarship",
