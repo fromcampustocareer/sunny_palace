@@ -15,23 +15,40 @@ export default function ArticleSubscribe({ source }) {
     e.preventDefault()
     const val = email.trim()
     if (!val) return
+    if (TURNSTILE_ENABLED && !turnstileToken) return
     setLoading(true)
     setError('')
 
-    const { error: err } = await supabase
-      .from('subscribers')
-      .insert({ email: val, source: source || 'article' })
+    // Signup flows through the Turnstile-gated submit-form edge function (service
+    // role) instead of a direct anon insert — the anon INSERT on subscribers is
+    // revoked (migration 017) so the welcome-email webhook can't be abused. A 409
+    // means the email is already subscribed: treat it (and a 2xx) as success.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'subscriber',
+          turnstileToken,
+          payload: { email: val, source: source || 'article' },
+        }),
+      })
+      ok = res.ok || res.status === 409
+    } catch {
+      ok = false
+    }
 
     setLoading(false)
-    if (err) {
-      if (err.code === '23505') {
-        // unique violation — already subscribed
-        setDone(true)
-      } else {
-        setError(t.subscribeError)
-      }
-    } else {
+    if (ok) {
       setDone(true)
+    } else {
+      setError(t.subscribeError)
+      setTurnstileToken('')
+      turnstileReset.current?.()
     }
   }
 
