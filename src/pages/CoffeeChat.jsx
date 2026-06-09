@@ -417,13 +417,16 @@ export default function CoffeeChat() {
       // instead we map the validated type to an explicit MIME from the allow-list.
       const AVATAR_MIME = { 'image/png': 'image/png', 'image/jpeg': 'image/jpeg', 'image/webp': 'image/webp' }
       const AVATAR_MAX_BYTES = 2 * 1024 * 1024 // 2MB — matches the bucket file_size_limit
+      const AVATAR_EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }
       const safeMime = AVATAR_MIME[photoFile.type]
       if (!safeMime || photoFile.size > AVATAR_MAX_BYTES) {
         setFormLoading(false)
         setPhotoError('Please upload a PNG, JPEG, or WebP under 2MB.')
         return
       }
-      const ext = photoFile.name.split('.').pop()
+      // Derive the storage-key extension from the validated MIME, never from the
+      // user-controlled filename, so a crafted name can't shape the storage path.
+      const ext = AVATAR_EXT[photoFile.type]
       const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
       const { error: uploadError } = await supabase.storage.from('avatars').upload(path, photoFile, { contentType: safeMime })
       if (!uploadError) {
