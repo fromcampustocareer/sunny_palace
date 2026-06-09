@@ -1004,3 +1004,25 @@ export const ARCHIVED_OPPORTUNITIES = [
     id: "d5b96ce4-efce-4ce5-975f-a5f75dca698b", logo: "GG",
     closed: "Closed", title: "GDC Festival of Games 2026 Scholarship", company: "Global Game Jam",
     tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://globalgamejam.org/news/want-attend-gdc-festival-gaming-2026-apply-ggj-scholarship",
+  },
+  {
+    id: "56d051b8-1679-4e4e-815b-cab567a8cc68", logo: "HS",
+    closed: "Closed (Feb 15)", title: "HSF Scholar Program 2026", company: "Hispanic Scholarship Fund",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://www.hsf.net/scholarship",
+  },
+  {
+    id: "1d10569d-aa69-4139-900b-21dbcc715075", logo: "CH",
+    closed: "Closed", title: "Chime Scholars Foundation", company: "Chime",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://www.chime.com/about-us/chime-scholars-foundation/#interested-in-applying",
+  },
+  {
+    id: "d47e77df-e88a-496c-8fb0-886c38d0032c", logo: "MI",
+    closed: "Closed (Mar 16)", title: "Black at Microsoft Scholarship", company: "Microsoft",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://scholarshipamerica.org/scholarship/black-at-microsoft/",
+  },
+  {
+    id: "f7a6cc92-46cb-46a7-8c93-2aa403db45e6", logo: "OF",
+    closed: "Closed (Mar 17)", title: "Obama-Chesky Voyager Scholarship", company: "Obama Foundation",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://www.obama.org/programs/voyager-scholarship/",
+  },
+  {
