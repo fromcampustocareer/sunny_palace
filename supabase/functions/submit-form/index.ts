@@ -269,6 +269,11 @@ Deno.serve(async (req) => {
     if (dbErr) {
       // Keep DB internals out of the client response.
       console.error(`Insert error (${table}):`, dbErr)
+      // Map a unique-violation (e.g. an already-subscribed email) to a 409 so the
+      // client can render its "already subscribed" state — mirrors add-to-waitlist.
+      if (dbErr.code === '23505') {
+        return json({ error: 'Already submitted' }, 409)
+      }
       return json({ error: 'Could not save submission' }, 500)
     }
 
