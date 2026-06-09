@@ -1048,3 +1048,25 @@ export const ARCHIVED_OPPORTUNITIES = [
   {
     id: "81b69dc0-9b91-475e-821c-cbe960ff666b", logo: "IC",
     closed: "Closed (Mar 12)", title: "Invictus/Verus Scholarship", company: "Invictus Capital Partners",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://scholarshipamerica.org/scholarship/invictuscp-verusmc/",
+  },
+  {
+    id: "fbf5cf97-772b-4644-aa5a-cb23c5d144ef", logo: "GG",
+    closed: "Closed", title: "Guild Giving National Scholarship", company: "Guild Giving Foundation",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://scholarshipamerica.org/scholarship/guildgiving/",
+  },
+  {
+    id: "6b14c223-4da1-470b-ab18-9ba53c7de15e", logo: "WD",
+    closed: "Closed", title: "Western Digital STEM Scholarship", company: "Western Digital",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://scholarshipamerica.org/scholarship/westerndigital-stem/",
+  },
+  {
+    id: "66aca640-b2af-45f6-95a9-0b2fbd52ec93", logo: "PS",
+    closed: "Closed", title: "NSF REU - Machine Learning in Cybersecurity", company: "Penn State University",
+    tags: ["Research", "Students", "Summer"], desc: "Research for students.", viewLink: "https://reu.ist.psu.edu/",
+  },
+  {
+    id: "01bcb318-2fb3-4735-a396-df4e5cb06596", logo: "HR",
+    closed: "Closed", title: "Inside HRT", company: "Hudson River Trading",
+    tags: ["Program", "Students", "Spring"], desc: "Externship for students.", viewLink: "https://www.hudsonrivertrading.com/hrt-job/inside-hrt/",
+  },
