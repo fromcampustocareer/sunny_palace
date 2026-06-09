@@ -1026,3 +1026,25 @@ export const ARCHIVED_OPPORTUNITIES = [
     tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://www.obama.org/programs/voyager-scholarship/",
   },
   {
+    id: "52839ec3-7dc6-40c7-80ca-c848269ef3c1", logo: "PR",
+    closed: "Closed", title: "Presidio Future Built Scholarship", company: "Presidio",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://scholarshipamerica.org/scholarship/presidio/",
+  },
+  {
+    id: "aeba3352-874d-40d2-8d7c-f863d9634afa", logo: "FS",
+    closed: "Closed (Feb 13)", title: "Feeding Student Success Scholarship 2026-27", company: "Feeding Student Success",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://apply.mykaleidoscope.com/program/FeedingStudentSuccessScholarship2627",
+  },
+  {
+    id: "e19b3271-2255-4d10-a4ff-9d1d3d44d11e", logo: "TI",
+    closed: "Closed (Feb 26)", title: "TIAA First-Generation Scholarship", company: "TIAA",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://scholarshipamerica.org/scholarship/tiaa/",
+  },
+  {
+    id: "5c4c5d2c-27c3-4009-b0bf-4be6880f9ef0", logo: "CI",
+    closed: "Closed", title: "CopperPoint Community Scholarship", company: "CopperPoint Insurance",
+    tags: ["Scholarship", "Students", "Multiple"], desc: "Scholarship for students.", viewLink: "https://scholarshipamerica.org/scholarship/copperpoint/",
+  },
+  {
+    id: "81b69dc0-9b91-475e-821c-cbe960ff666b", logo: "IC",
+    closed: "Closed (Mar 12)", title: "Invictus/Verus Scholarship", company: "Invictus Capital Partners",
