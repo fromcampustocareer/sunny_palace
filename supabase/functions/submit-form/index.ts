@@ -112,9 +112,11 @@ function buildRow(type: string, payload: Record<string, unknown>): Record<string
         capacity: trimOrNull(payload.capacity),
         avatar_url: trimOrNull(payload.avatar_url),
         consented_at: new Date().toISOString(),
-        // Force server-side — never trust the client for these:
-        status: 'pending',
-        public_profile: false,
+        // Force server-side — coffee-chat profiles auto-publish (like opportunities
+        // and resumes) so they appear on the directory immediately. The board reads
+        // status='approved' AND public_profile=true, so both are required.
+        status: 'approved',
+        public_profile: true,
       }
     case 'resume':
       return {
