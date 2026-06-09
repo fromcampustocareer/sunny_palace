@@ -1,9 +1,11 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.107.0'
 
-// Public, Turnstile-gated insert proxy for the three moderated forms:
+// Public, Turnstile-gated insert proxy for the moderated/public forms:
 //   coffee_chat  -> coffee_chat_profiles
 //   resume       -> resume_submissions
 //   opportunity  -> opportunities
+//   panelist     -> panelists
+//   subscriber   -> subscribers   (newsletter signup; anon INSERT revoked in migration 017)
 //
 // The browser no longer inserts these rows directly (anon INSERT is revoked in
 // migration 007). All inserts flow through here, run with the service role, and
@@ -85,6 +87,7 @@ const TABLE_BY_TYPE: Record<string, string> = {
   resume: 'resume_submissions',
   opportunity: 'opportunities',
   panelist: 'panelists',
+  subscriber: 'subscribers',
 }
 
 const str = (v: unknown) => (typeof v === 'string' ? v : null)
