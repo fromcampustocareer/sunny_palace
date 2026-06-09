@@ -8,6 +8,8 @@ export default function ArticleSubscribe({ source }) {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileReset = useRef(null)
 
   async function handleSubmit(e) {
     e.preventDefault()
