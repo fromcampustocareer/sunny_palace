@@ -72,9 +72,10 @@ export default function ArticleSubscribe({ source }) {
               required
               disabled={loading}
             />
-            <button className="art-subscribe__btn" type="submit" disabled={loading}>
+            <button className="art-subscribe__btn" type="submit" disabled={loading || (TURNSTILE_ENABLED && !turnstileToken)}>
               {loading ? t.subscribeBtnLoading : t.subscribeBtnIdle}
             </button>
+            <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="art-subscribe__turnstile" />
           </form>
         )}
         {error && <p style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>{error}</p>}
