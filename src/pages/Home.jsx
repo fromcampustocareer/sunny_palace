@@ -1532,8 +1532,9 @@ export default function Home() {
                 />
               </div>
               {newsletterError && <p role="alert" className="modal__error">{newsletterError}</p>}
+              <Turnstile onToken={setNewsletterToken} resetRef={newsletterTurnstileReset} className="modal__turnstile" />
               <div className="modal__footer">
-                <button className="modal__btn" disabled={newsletterLoading || !newsletterEmail.trim()} onClick={handleNewsletterSubmit}>
+                <button className="modal__btn" disabled={newsletterLoading || !newsletterEmail.trim() || (TURNSTILE_ENABLED && !newsletterToken)} onClick={handleNewsletterSubmit}>
                   {newsletterLoading ? t.newsletterSubmitting : t.newsletterSubmit}
                 </button>
                 <span className="modal__reassurance">{t.newsletterReassurance}</span>
