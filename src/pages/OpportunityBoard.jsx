@@ -69,7 +69,7 @@ const LOGO_TINT = {
   fellowship:  { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
 }
 function OBCard({ card, featured, t, idx = 0 }) {
-  const isExternal = card.postLink.startsWith('http')
+  const safePost = safeHttpUrl(card.postLink)
   const typeKey = (card.type || '').split(' ')[0]
   const logoStyle = LOGO_TINT[typeKey] || card.logoStyle || {}
   return (
@@ -97,8 +97,8 @@ function OBCard({ card, featured, t, idx = 0 }) {
         {safeHttpUrl(card.viewLink)
           ? <a href={safeHttpUrl(card.viewLink) || undefined} className="ob-card__cta-primary" target="_blank" rel="noopener">{card.viewLabel || t.cardViewRole}</a>
           : <span className="ob-card__cta-primary ob-card__cta-primary--disabled" aria-disabled="true">{card.viewLabel || t.cardViewRole}</span>}
-        {card.postLink && (isExternal
-          ? <a href={card.postLink} className="ob-card__cta-secondary" target="_blank" rel="noopener">{card.postLabel}</a>
+        {card.postLink && (safePost
+          ? <a href={safePost} className="ob-card__cta-secondary" target="_blank" rel="noopener">{card.postLabel}</a>
           : <Link to={card.postLink} className="ob-card__cta-secondary">{card.postLabel}</Link>
         )}
       </div>
