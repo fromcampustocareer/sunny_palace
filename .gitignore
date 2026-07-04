@@ -5,6 +5,10 @@ dist/
 .env*.local
 .worktrees/
 
+# Local tool/session files — not part of the project
+.superpowers/
+.claude/scheduled_tasks.lock
+
 # Supabase CLI local link metadata (project ref, pooler URL/host, versions).
 # Not secrets, but unnecessary recon — keep it out of the public repo (MED-6).
 supabase/.temp/

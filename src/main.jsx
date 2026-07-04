@@ -4,8 +4,8 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import ErrorBoundary from './components/ErrorBoundary'
 import { LanguageProvider } from './context/LanguageContext'
-import '../style.css'
-import '../article.css'
+import './styles/style.css'
+import './styles/article.css'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
