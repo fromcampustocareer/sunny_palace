@@ -186,7 +186,7 @@ The `public/_headers` and `public/_redirects` files are the same rules in Cloudf
 ## Tech Stack
 
 - **React 18** + **React Router 6** — the app and its pages
-- **Vite 5** — dev server and build tool
+- **Vite 8** — dev server and build tool
 - **Tailwind CSS 3** — utility styles (brand colors/fonts in `tailwind.config.js`)
 - **GSAP 3** — the scroll animations
 - **Supabase** — database, storage, and edge functions
