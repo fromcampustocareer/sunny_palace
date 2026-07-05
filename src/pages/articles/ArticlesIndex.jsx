@@ -5,7 +5,7 @@ import { useT } from '../../hooks/useT'
 
 const ArrowIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
   </svg>
 )
 
@@ -15,10 +15,10 @@ export default function ArticlesIndex() {
   const [search, setSearch] = useState('')
 
   const FILTERS = [
-    { key: 'all',     label: t.filterAll },
-    { key: 'jose',    label: t.filterJose },
+    { key: 'all', label: t.filterAll },
+    { key: 'jose', label: t.filterJose },
     { key: 'jocelyn', label: t.filterJocelyn },
-    { key: 'both',    label: t.filterBoth },
+    { key: 'both', label: t.filterBoth },
   ]
   const AUTHOR_LABEL = { jose: t.authorJose, jocelyn: t.authorJocelyn, both: t.authorBoth }
 
@@ -161,7 +161,7 @@ export default function ArticlesIndex() {
       <div className="arc-controls">
         <div className="arc-search">
           <svg className="arc-search__icon" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
           <input
             type="search"

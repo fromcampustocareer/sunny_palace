@@ -6,7 +6,6 @@ import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 
 // Hide the episode roadmap browser (filters + jump-to TOC + episodes 01–10).
 // Flip to true to restore the full episode-browsing section.
-const SHOW_EPISODES = false
 
 // Stable structural data — canonical keys only, no display strings
 const EPISODES = [
@@ -350,57 +349,7 @@ export default function LinkedInSeries() {
   const [searchParams, setSearchParams] = useSearchParams()
   const filtersRef = useRef(null)
 
-  useEffect(() => {
-    // The "/" shortcut focuses the filter bar, which only exists when the episode browser is shown.
-    if (!SHOW_EPISODES) return
-    const onKeyDown = e => {
-      if (e.key !== '/') return
-      const el = document.activeElement
-      const tag = el?.tagName
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el?.isContentEditable) return
-      const firstFilter = filtersRef.current?.querySelector('button')
-      if (firstFilter) {
-        e.preventDefault()
-        firstFilter.focus()
-      }
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [])
-  const filterLens = searchParams.get('lens') || ''   // '' | 'jose' | 'jocelyn' | 'both'
-  const filterTopic = searchParams.get('topic') || '' // '' | 'internships' | 'offers' | 'rejection' | 'on-the-job'
 
-  const updateFilter = (key, value) => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev)
-      if (value) next.set(key, value)
-      else next.delete(key)
-      return next
-    }, { replace: true })
-  }
-  const [topic, setTopic] = useState('')
-  const [email, setEmail] = useState('')
-  const [category, setCategory] = useState('')
-  const [categoryOther, setCategoryOther] = useState('')
-  const [formLoading, setFormLoading] = useState(false)
-  const [formError, setFormError] = useState('')
-  const [fieldErrors, setFieldErrors] = useState({ topic: '', email: '', category: '' })
-  const [formSubmitted, setFormSubmitted] = useState(false)
-  const [turnstileToken, setTurnstileToken] = useState('')
-  const turnstileReset = useRef(null)
-
-  const LENS_OPTIONS = [
-    { v: 'jose',    label: t.filterJose,    desc: t.filterJoseDesc },
-    { v: 'jocelyn', label: t.filterJocelyn, desc: t.filterJocelynDesc },
-    { v: 'both',    label: t.filterBoth,    desc: t.filterBothDesc },
-  ]
-  const TOPIC_OPTIONS = [
-    { v: 'internships', label: t.filterInternships, desc: t.filterInternshipsDesc },
-    { v: 'offers',      label: t.filterOffers,      desc: t.filterOffersDesc },
-    { v: 'rejection',   label: t.filterRejection,   desc: t.filterRejectionDesc },
-    { v: 'on-the-job',  label: t.filterOnTheJob,    desc: t.filterOnTheJobDesc },
-  ]
-  const noFilters = !filterLens && !filterTopic
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -454,17 +403,6 @@ export default function LinkedInSeries() {
     }
   }
 
-  const visibleEps = EPISODES.filter(ep => {
-    if (filterLens && ep.lens !== filterLens) return false
-    if (filterTopic && !ep.topics.includes(filterTopic)) return false
-    return true
-  })
-
-  function getLensLabel(lens) {
-    if (lens === 'jose') return t.lensLabelJose
-    if (lens === 'jocelyn') return t.lensLabelJocelyn
-    return t.lensLabelBoth
-  }
 
   function getAuthorLabel(author) {
     if (author === 'jose') return t.authorJose
@@ -582,43 +520,8 @@ export default function LinkedInSeries() {
         </section>
       )}
 
-      {SHOW_EPISODES && (
-      <>
-      <div className="ls-controls">
-        <div className="ls-filters" role="group" aria-label={t.filtersAriaLabel} ref={filtersRef}>
-          <button
-            className={`ls-filter${noFilters ? ' ls-filter--active' : ''}`}
-            aria-pressed={noFilters}
-            onClick={() => setSearchParams({}, { replace: true })}
-          >
-            <span className="ls-filter__label">{t.filterAll}</span>
-            {t.filterAllDesc && <span className="ls-filter__desc">{t.filterAllDesc}</span>}
-          </button>
-          {LENS_OPTIONS.map(({ v, label, desc }) => (
-            <button
-              key={v}
-              className={`ls-filter${filterLens === v ? ' ls-filter--active' : ''}`}
-              aria-pressed={filterLens === v}
-              onClick={() => updateFilter('lens', filterLens === v ? '' : v)}
-            >
-              <span className="ls-filter__label">{label}</span>
-              {desc && <span className="ls-filter__desc">{desc}</span>}
-            </button>
-          ))}
-          <span className="ls-filters__rule" aria-hidden="true" />
-          {TOPIC_OPTIONS.map(({ v, label, desc }) => (
-            <button
-              key={v}
-              className={`ls-filter${filterTopic === v ? ' ls-filter--active' : ''}`}
-              aria-pressed={filterTopic === v}
-              onClick={() => updateFilter('topic', filterTopic === v ? '' : v)}
-            >
-              <span className="ls-filter__label">{label}</span>
-              {desc && <span className="ls-filter__desc">{desc}</span>}
-            </button>
-          ))}
-        </div>
-      </div>
+
+
 
       <div className="ls-divider"><hr /></div>
 
@@ -649,45 +552,45 @@ export default function LinkedInSeries() {
         {visibleEps.length === 0
           ? <div className="ls-no-results" aria-live="polite"><p>{t.noResults}</p></div>
           : visibleEps.map((ep, epIdx) => {
-              const epData = t.episodes[parseInt(ep.num, 10) - 1] ?? {}
-              const isNext = epIdx === 0
-              return (
-                <div key={ep.num} id={`ep-${ep.num}`} className="ls-ep">
-                  <div className="ls-ep__head">
-                    <div className="ls-ep__num">{ep.num}</div>
-                    <div className="ls-ep__info">
-                      <div className="ls-ep__badges">
-                        <span className={`ls-ep__lens ${lensClass(ep.lens)}`}>{getLensLabel(ep.lens)}</span>
-                        {ep.tags.map(tag => <span key={tag} className="ls-ep__tag">{t[TAG_KEY_MAP[tag]] ?? tag}</span>)}
-                      </div>
-                      <h2 className="ls-ep__title">{epData.title}</h2>
-                      <p className="ls-ep__summary">{epData.summary}</p>
-                      <p className="ls-ep__why">{epData.why}</p>
+            const epData = t.episodes[parseInt(ep.num, 10) - 1] ?? {}
+            const isNext = epIdx === 0
+            return (
+              <div key={ep.num} id={`ep-${ep.num}`} className="ls-ep">
+                <div className="ls-ep__head">
+                  <div className="ls-ep__num">{ep.num}</div>
+                  <div className="ls-ep__info">
+                    <div className="ls-ep__badges">
+                      <span className={`ls-ep__lens ${lensClass(ep.lens)}`}>{getLensLabel(ep.lens)}</span>
+                      {ep.tags.map(tag => <span key={tag} className="ls-ep__tag">{t[TAG_KEY_MAP[tag]] ?? tag}</span>)}
                     </div>
-                  </div>
-                  <div className="ls-ep__posts">
-                    {ep.posts.map((p, postIdx) => {
-                      const postData = epData.posts?.[postIdx] ?? {}
-                      return (
-                        <div key={`${ep.num}-${postIdx}`} className={`ls-post${postIdx === 0 ? ' ls-post--featured' : ''}`} style={{ '--ls-i': postIdx }}>
-                          <div className="ls-post__type">{t[TYPE_KEY_MAP[p.type]] ?? p.type}</div>
-                          <div className="ls-post__title">{postData.title}</div>
-                          <div className="ls-post__preview">{postData.preview}</div>
-                          <div className="ls-post__footer">
-                            <span className={`ls-post__author ${authorClass(p.author)}`}>{getAuthorLabel(p.author)}</span>
-                            {isNext && <span className="ls-post__status">{t.statusComingSoon}</span>}
-                          </div>
-                        </div>
-                      )
-                    })}
+                    <h2 className="ls-ep__title">{epData.title}</h2>
+                    <p className="ls-ep__summary">{epData.summary}</p>
+                    <p className="ls-ep__why">{epData.why}</p>
                   </div>
                 </div>
-              )
-            })
+                <div className="ls-ep__posts">
+                  {ep.posts.map((p, postIdx) => {
+                    const postData = epData.posts?.[postIdx] ?? {}
+                    return (
+                      <div key={`${ep.num}-${postIdx}`} className={`ls-post${postIdx === 0 ? ' ls-post--featured' : ''}`} style={{ '--ls-i': postIdx }}>
+                        <div className="ls-post__type">{t[TYPE_KEY_MAP[p.type]] ?? p.type}</div>
+                        <div className="ls-post__title">{postData.title}</div>
+                        <div className="ls-post__preview">{postData.preview}</div>
+                        <div className="ls-post__footer">
+                          <span className={`ls-post__author ${authorClass(p.author)}`}>{getAuthorLabel(p.author)}</span>
+                          {isNext && <span className="ls-post__status">{t.statusComingSoon}</span>}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })
         }
       </div>
-      </>
-      )}
+
+
 
       <div className="ls-bridge">
         <div className="ls-bridge__inner">
@@ -695,8 +598,8 @@ export default function LinkedInSeries() {
           <a href="#suggest" className="ls-bridge__cta">
             {t.bridgeCtaLabel}
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <polyline points="6 13 12 19 18 13"/>
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <polyline points="6 13 12 19 18 13" />
             </svg>
           </a>
         </div>
@@ -727,110 +630,110 @@ export default function LinkedInSeries() {
               {(t.formPerks || []).map((perk, i) => (
                 <li key={i} className="ls-form-perk">
                   <span className="ls-form-perk__icon" aria-hidden="true">
-                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 5.8l2.4 2.4L9 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 5.8l2.4 2.4L9 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                   </span>
                   <span><strong>{perk.strong}</strong>{perk.rest}</span>
                 </li>
               ))}
             </ul>
           </div>
-        <div className="ls-form-box">
-          {formSubmitted ? (
-            <div className="ls-form-success">
-              <div className="ls-form-success__icon" aria-hidden="true">
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 11.5l4 4L17 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <div className="ls-form-box">
+            {formSubmitted ? (
+              <div className="ls-form-success">
+                <div className="ls-form-success__icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 11.5l4 4L17 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </div>
+                <p className="ls-form-success__title">{t.formSuccessTitle}</p>
+                <p className="ls-form-success__body">{t.formSuccessBody}</p>
               </div>
-              <p className="ls-form-success__title">{t.formSuccessTitle}</p>
-              <p className="ls-form-success__body">{t.formSuccessBody}</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <div className="ls-form-row">
-                <label className="ls-form-label" htmlFor="topicField">{t.formLabelTopic}</label>
-                <textarea
-                  className={`ls-form-textarea${fieldErrors.topic ? ' is-invalid' : ''}`}
-                  id="topicField"
-                  placeholder={t.formPlaceholderTopic}
-                  value={topic}
-                  maxLength={10000}
-                  onChange={e => { setTopic(e.target.value); if (fieldErrors.topic) setFieldErrors(s => ({ ...s, topic: '' })) }}
-                  aria-invalid={!!fieldErrors.topic}
-                  aria-describedby={fieldErrors.topic ? 'topicField-error' : (topic.length >= 500 ? 'topicField-counter' : undefined)}
-                />
-                {fieldErrors.topic && <span id="topicField-error" className="ls-form-row__error" role="alert">{fieldErrors.topic}</span>}
-                {topic.length >= 500 && (
-                  <span id="topicField-counter" className={`ls-form-row__counter${topic.length >= 9000 ? ' ls-form-row__counter--warn' : ''}`} aria-live="polite">
-                    {topic.length >= 9000 ? `${topic.length} / 10000` : `${topic.length} chars`}
-                  </span>
-                )}
-              </div>
-              <div className="ls-form-row">
-                <label className="ls-form-label" htmlFor="emailField">{t.formLabelEmail}</label>
-                <input
-                  className={`ls-form-input${fieldErrors.email ? ' is-invalid' : ''}`}
-                  type="email"
-                  id="emailField"
-                  placeholder={t.formPlaceholderEmail}
-                  value={email}
-                  onChange={e => { setEmail(e.target.value); if (fieldErrors.email) setFieldErrors(s => ({ ...s, email: '' })) }}
-                  onBlur={e => {
-                    const v = e.target.value.trim()
-                    if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
-                      setFieldErrors(s => ({ ...s, email: t.formErrorEmail }))
-                    }
-                  }}
-                  aria-invalid={!!fieldErrors.email}
-                  aria-describedby={fieldErrors.email ? 'emailField-error' : undefined}
-                />
-                {fieldErrors.email && <span id="emailField-error" className="ls-form-row__error" role="alert">{fieldErrors.email}</span>}
-              </div>
-              <div className="ls-form-row">
-                <label className="ls-form-label" htmlFor="topicCat">{t.formLabelCategory}</label>
-                <select className="ls-form-select" id="topicCat" value={category} onChange={e => setCategory(e.target.value)}>
-                  <option value="">{t.formCategoryPlaceholder}</option>
-                  <option value="internship-search">{t.catInternshipSearch}</option>
-                  <option value="full-time-search">{t.catFullTimeSearch}</option>
-                  <option value="resume-cover-letter">{t.catResumeCoverLetter}</option>
-                  <option value="interviews">{t.catInterviews}</option>
-                  <option value="offers-negotiation">{t.catOffersNegotiation}</option>
-                  <option value="recruiting-outreach">{t.catRecruitingOutreach}</option>
-                  <option value="networking-mentorship">{t.catNetworkingMentorship}</option>
-                  <option value="linkedin-brand">{t.catLinkedInBrand}</option>
-                  <option value="workplace-onboarding">{t.catWorkplaceOnboarding}</option>
-                  <option value="career-pivots">{t.catCareerPivots}</option>
-                  <option value="grad-school-gap">{t.catGradSchoolGap}</option>
-                  <option value="mindset-rejection">{t.catMindsetRejection}</option>
-                  <option value="other">{t.catOther}</option>
-                </select>
-              </div>
-              {category === 'other' && (
+            ) : (
+              <form onSubmit={handleSubmit}>
                 <div className="ls-form-row">
-                  <label className="ls-form-label" htmlFor="topicCatOther">{t.formLabelCategoryOther}</label>
-                  <input
-                    className={`ls-form-input${fieldErrors.category ? ' is-invalid' : ''}`}
-                    type="text"
-                    id="topicCatOther"
-                    placeholder={t.formPlaceholderCategoryOther}
-                    value={categoryOther}
-                    onChange={e => { setCategoryOther(e.target.value); if (fieldErrors.category) setFieldErrors(s => ({ ...s, category: '' })) }}
-                    maxLength={120}
-                    aria-invalid={!!fieldErrors.category}
-                    aria-describedby={fieldErrors.category ? 'topicCatOther-error' : undefined}
+                  <label className="ls-form-label" htmlFor="topicField">{t.formLabelTopic}</label>
+                  <textarea
+                    className={`ls-form-textarea${fieldErrors.topic ? ' is-invalid' : ''}`}
+                    id="topicField"
+                    placeholder={t.formPlaceholderTopic}
+                    value={topic}
+                    maxLength={10000}
+                    onChange={e => { setTopic(e.target.value); if (fieldErrors.topic) setFieldErrors(s => ({ ...s, topic: '' })) }}
+                    aria-invalid={!!fieldErrors.topic}
+                    aria-describedby={fieldErrors.topic ? 'topicField-error' : (topic.length >= 500 ? 'topicField-counter' : undefined)}
                   />
-                  {fieldErrors.category && <span id="topicCatOther-error" className="ls-form-row__error" role="alert">{fieldErrors.category}</span>}
+                  {fieldErrors.topic && <span id="topicField-error" className="ls-form-row__error" role="alert">{fieldErrors.topic}</span>}
+                  {topic.length >= 500 && (
+                    <span id="topicField-counter" className={`ls-form-row__counter${topic.length >= 9000 ? ' ls-form-row__counter--warn' : ''}`} aria-live="polite">
+                      {topic.length >= 9000 ? `${topic.length} / 10000` : `${topic.length} chars`}
+                    </span>
+                  )}
                 </div>
-              )}
-              {formError && (
-                <div role="alert" className="ls-form-error-card">
-                  <span className="ls-form-error-card__msg"><strong>{t.formErrorLabel}</strong> {formError}</span>
-                  <button type="submit" className="ls-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formBtnSubmitting : t.formRetryLabel}</button>
+                <div className="ls-form-row">
+                  <label className="ls-form-label" htmlFor="emailField">{t.formLabelEmail}</label>
+                  <input
+                    className={`ls-form-input${fieldErrors.email ? ' is-invalid' : ''}`}
+                    type="email"
+                    id="emailField"
+                    placeholder={t.formPlaceholderEmail}
+                    value={email}
+                    onChange={e => { setEmail(e.target.value); if (fieldErrors.email) setFieldErrors(s => ({ ...s, email: '' })) }}
+                    onBlur={e => {
+                      const v = e.target.value.trim()
+                      if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+                        setFieldErrors(s => ({ ...s, email: t.formErrorEmail }))
+                      }
+                    }}
+                    aria-invalid={!!fieldErrors.email}
+                    aria-describedby={fieldErrors.email ? 'emailField-error' : undefined}
+                  />
+                  {fieldErrors.email && <span id="emailField-error" className="ls-form-row__error" role="alert">{fieldErrors.email}</span>}
                 </div>
-              )}
-              <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} />
-              <button className="ls-form-btn" type="submit" disabled={formLoading || !topic.trim() || (TURNSTILE_ENABLED && !turnstileToken)}>{formLoading ? t.formBtnSubmitting : t.formBtnSubmit}</button>
-            </form>
-          )}
-        </div>
+                <div className="ls-form-row">
+                  <label className="ls-form-label" htmlFor="topicCat">{t.formLabelCategory}</label>
+                  <select className="ls-form-select" id="topicCat" value={category} onChange={e => setCategory(e.target.value)}>
+                    <option value="">{t.formCategoryPlaceholder}</option>
+                    <option value="internship-search">{t.catInternshipSearch}</option>
+                    <option value="full-time-search">{t.catFullTimeSearch}</option>
+                    <option value="resume-cover-letter">{t.catResumeCoverLetter}</option>
+                    <option value="interviews">{t.catInterviews}</option>
+                    <option value="offers-negotiation">{t.catOffersNegotiation}</option>
+                    <option value="recruiting-outreach">{t.catRecruitingOutreach}</option>
+                    <option value="networking-mentorship">{t.catNetworkingMentorship}</option>
+                    <option value="linkedin-brand">{t.catLinkedInBrand}</option>
+                    <option value="workplace-onboarding">{t.catWorkplaceOnboarding}</option>
+                    <option value="career-pivots">{t.catCareerPivots}</option>
+                    <option value="grad-school-gap">{t.catGradSchoolGap}</option>
+                    <option value="mindset-rejection">{t.catMindsetRejection}</option>
+                    <option value="other">{t.catOther}</option>
+                  </select>
+                </div>
+                {category === 'other' && (
+                  <div className="ls-form-row">
+                    <label className="ls-form-label" htmlFor="topicCatOther">{t.formLabelCategoryOther}</label>
+                    <input
+                      className={`ls-form-input${fieldErrors.category ? ' is-invalid' : ''}`}
+                      type="text"
+                      id="topicCatOther"
+                      placeholder={t.formPlaceholderCategoryOther}
+                      value={categoryOther}
+                      onChange={e => { setCategoryOther(e.target.value); if (fieldErrors.category) setFieldErrors(s => ({ ...s, category: '' })) }}
+                      maxLength={120}
+                      aria-invalid={!!fieldErrors.category}
+                      aria-describedby={fieldErrors.category ? 'topicCatOther-error' : undefined}
+                    />
+                    {fieldErrors.category && <span id="topicCatOther-error" className="ls-form-row__error" role="alert">{fieldErrors.category}</span>}
+                  </div>
+                )}
+                {formError && (
+                  <div role="alert" className="ls-form-error-card">
+                    <span className="ls-form-error-card__msg"><strong>{t.formErrorLabel}</strong> {formError}</span>
+                    <button type="submit" className="ls-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formBtnSubmitting : t.formRetryLabel}</button>
+                  </div>
+                )}
+                <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} />
+                <button className="ls-form-btn" type="submit" disabled={formLoading || !topic.trim() || (TURNSTILE_ENABLED && !turnstileToken)}>{formLoading ? t.formBtnSubmitting : t.formBtnSubmit}</button>
+              </form>
+            )}
+          </div>
         </div>
       </div>
 

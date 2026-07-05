@@ -49,7 +49,7 @@ function MultiSelectDropdown({ options, selected, onChange, placeholder }) {
       <button type="button" onClick={() => setOpen(o => !o)} className="cc-ms-trigger" aria-haspopup="listbox" aria-expanded={open}>
         <span className={selected.length ? '' : 'cc-ms-placeholder'}>{selected.length ? selected.join(', ') : placeholder}</span>
         <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }}>
-          <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
       {open && (
@@ -844,8 +844,8 @@ export default function CoffeeChat() {
         <div className="cc-filter-bar">
           <div className="cc-search-wrap">
             <svg className="cc-search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M10 10L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M10 10L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <input
               type="text"
@@ -971,7 +971,7 @@ export default function CoffeeChat() {
             <article key={p.id} className={`cc-card${p.badge === 'New' ? ' cc-card--new' : ''}`} style={{ '--cc-i': idx % 12 }}>
               <div className="cc-card__top">
                 <div className="cc-card__avatar">
-                  {p.avatarUrl ? <img src={p.avatarUrl} alt="" /> : p.initial}
+                  {p.avatarUrl ? <img src={safeHttpUrl(p.avatarUrl)} alt="" /> : p.initial}
                 </div>
                 <div className="cc-card__id">
                   <div className="cc-card__name">{p.name}</div>
@@ -1003,39 +1003,39 @@ export default function CoffeeChat() {
 
       <section className="cc-reach" id="how-to-reach-out">
         <div className="cc-reach__inner">
-        <p className="cc-kicker">{t.reachKicker}</p>
-        <h2 className="cc-section-title">{t.reachTitle}</h2>
-        <p className="cc-section-sub">{t.reachSub}</p>
-        <div className="cc-reach__grid">
-          <div>
-            <h3 className="cc-reach__col-title">{t.reachCol1Title}</h3>
-            <p className="cc-reach__body">{t.reachCol1Body1Part1} <strong>{t.reachCol1Body1Strong}</strong>{t.reachCol1Body1Part2}</p>
-            <p className="cc-reach__body">{t.reachCol1Body2Part1} <strong>{t.reachCol1Body2Strong1}</strong>, <strong>{t.reachCol1Body2Strong2}</strong>, and a <strong>{t.reachCol1Body2Strong3}</strong>{t.reachCol1Body2Part2}</p>
-            <Link to="/career-templates" className="cc-reach__templates-link">{t.reachTemplatesLink}</Link>
-          </div>
-          <div>
-            <h3 className="cc-reach__col-title">{t.reachCol2Title}</h3>
-            <div className="cc-do-list">
-              {t.reachDoDont.map((item, i) => (
-                <div key={i} className="cc-do-item">
-                  <span className={`cc-do-item__icon cc-do-item__icon--${item.type}`} aria-hidden="true">
-                    {item.type === 'do'
-                      ? <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 5.8l2.4 2.4L9 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      : <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6m0-6l-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
-                    }
-                  </span>
-                  <span><strong>{item.strongText}</strong>{item.rest}</span>
-                </div>
-              ))}
+          <p className="cc-kicker">{t.reachKicker}</p>
+          <h2 className="cc-section-title">{t.reachTitle}</h2>
+          <p className="cc-section-sub">{t.reachSub}</p>
+          <div className="cc-reach__grid">
+            <div>
+              <h3 className="cc-reach__col-title">{t.reachCol1Title}</h3>
+              <p className="cc-reach__body">{t.reachCol1Body1Part1} <strong>{t.reachCol1Body1Strong}</strong>{t.reachCol1Body1Part2}</p>
+              <p className="cc-reach__body">{t.reachCol1Body2Part1} <strong>{t.reachCol1Body2Strong1}</strong>, <strong>{t.reachCol1Body2Strong2}</strong>, and a <strong>{t.reachCol1Body2Strong3}</strong>{t.reachCol1Body2Part2}</p>
+              <Link to="/career-templates" className="cc-reach__templates-link">{t.reachTemplatesLink}</Link>
+            </div>
+            <div>
+              <h3 className="cc-reach__col-title">{t.reachCol2Title}</h3>
+              <div className="cc-do-list">
+                {t.reachDoDont.map((item, i) => (
+                  <div key={i} className="cc-do-item">
+                    <span className={`cc-do-item__icon cc-do-item__icon--${item.type}`} aria-hidden="true">
+                      {item.type === 'do'
+                        ? <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M2 5.8l2.4 2.4L9 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        : <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6m0-6l-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+                      }
+                    </span>
+                    <span><strong>{item.strongText}</strong>{item.rest}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="cc-bridge">
-          <div className="cc-bridge__inner">
-            <p className="cc-bridge__copy">{t.bridgeCopyPrefix} <em>{t.bridgeCopyEm}</em></p>
-            <a href="#apply" className="cc-bridge__cta">{t.bridgeCtaLabel}</a>
+          <div className="cc-bridge">
+            <div className="cc-bridge__inner">
+              <p className="cc-bridge__copy">{t.bridgeCopyPrefix} <em>{t.bridgeCopyEm}</em></p>
+              <a href="#apply" className="cc-bridge__cta">{t.bridgeCtaLabel}</a>
+            </div>
           </div>
-        </div>
         </div>
       </section>
 
@@ -1073,7 +1073,7 @@ export default function CoffeeChat() {
                       <img src={photoPreview} alt="Preview" className="cc-photo-preview" />
                     ) : (
                       <div className="cc-photo-placeholder">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                       </div>
                     )}
                     <div className="cc-photo-right">
@@ -1216,7 +1216,7 @@ export default function CoffeeChat() {
         <div className="cc-safety__box">
           <span className="cc-safety__icon" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10 2L3 5v5c0 4.25 3.05 7.6 7 8.5 3.95-.9 7-4.25 7-8.5V5L10 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+              <path d="M10 2L3 5v5c0 4.25 3.05 7.6 7 8.5 3.95-.9 7-4.25 7-8.5V5L10 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
             </svg>
           </span>
           <p className="cc-safety__text">

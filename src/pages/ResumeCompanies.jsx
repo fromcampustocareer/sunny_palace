@@ -69,7 +69,7 @@ export default function ResumeCompanies() {
     if (activeLetter) {
       list = list.filter(c => c.name[0].toUpperCase() === activeLetter)
     }
-    return list.sort((a, b) => a.name.localeCompare(b.name))
+    return [...list].sort((a, b) => a.name.localeCompare(b.name))
   }, [allCompanies, search, activeLetter])
 
   const availableLetters = useMemo(() => {

@@ -11,8 +11,7 @@ const TAB_KEYS = ['all', 'internship', 'research', 'program', 'scholarship']
 
 function matchCard(card, { tab, query, stage, location, deadline }) {
   if (tab !== 'all') {
-    if (tab === 'bridge') { if (!card.bridge) return false }
-    else if (!card.type.includes(tab)) return false
+    if (!card.type.includes(tab)) return false
   }
   if (query) {
     const hay = (card.keywords + ' ' + card.title + ' ' + card.company).toLowerCase()
@@ -53,7 +52,7 @@ function dbOpportunityToCard(row, t) {
     tags, meta: [...(row.location ? [row.location] : []), ...(row.pay ? [row.pay] : [])], desc: row.why || '',
     source: t.cardCommunitySource,
     viewLink: row.link, postLink: row.link, postLabel: t.cardViewRole,
-    type: typeKey, stage: '', location: /remote/i.test(row.location || '') ? 'remote' : '', deadline: deadlineFilter, bridge: false,
+    type: typeKey, stage: '', location: /remote/i.test(row.location || '') ? 'remote' : '', deadline: deadlineFilter,
     keywords: `${row.role} ${row.company} ${row.eligibility || ''}`.toLowerCase(),
     _featured: row.status === 'featured',
   }
@@ -63,13 +62,14 @@ function dbOpportunityToCard(row, t) {
 // (mirrors the Templates card system). Replaces the old per-item random logo colors.
 const LOGO_TINT = {
   scholarship: { background: 'rgba(232,168,56,.16)', color: 'var(--color-gold-dark)' },
-  program:     { background: 'rgba(179,69,57,.1)',   color: 'var(--color-accent)' },
-  internship:  { background: 'rgba(22,43,68,.1)',    color: 'var(--color-navy)' },
-  research:    { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
-  fellowship:  { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
+  program: { background: 'rgba(179,69,57,.1)', color: 'var(--color-accent)' },
+  internship: { background: 'rgba(22,43,68,.1)', color: 'var(--color-navy)' },
+  research: { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
+  fellowship: { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
 }
 function OBCard({ card, featured, t, idx = 0 }) {
   const safePost = safeHttpUrl(card.postLink)
+  const safeView = safeHttpUrl(card.viewLink)
   const typeKey = (card.type || '').split(' ')[0]
   const logoStyle = LOGO_TINT[typeKey] || card.logoStyle || {}
   return (
@@ -94,8 +94,8 @@ function OBCard({ card, featured, t, idx = 0 }) {
       {card.source && <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>}
       <div className="ob-card__desc">{card.desc}</div>
       <div className="ob-card__actions">
-        {safeHttpUrl(card.viewLink)
-          ? <a href={safeHttpUrl(card.viewLink) || undefined} className="ob-card__cta-primary" target="_blank" rel="noopener">{card.viewLabel || t.cardViewRole}</a>
+        {safeView
+          ? <a href={safeView || undefined} className="ob-card__cta-primary" target="_blank" rel="noopener">{card.viewLabel || t.cardViewRole}</a>
           : <span className="ob-card__cta-primary ob-card__cta-primary--disabled" aria-disabled="true">{card.viewLabel || t.cardViewRole}</span>}
         {card.postLink && (safePost
           ? <a href={safePost} className="ob-card__cta-secondary" target="_blank" rel="noopener">{card.postLabel}</a>
@@ -523,8 +523,8 @@ export default function OpportunityBoard() {
         <div className="ob-filter-bar">
           <div className="ob-search-wrap">
             <svg className="ob-search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M10 10L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M10 10L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <input ref={searchRef} type="text" className="ob-search" placeholder={t.searchPlaceholder} aria-label={t.searchAriaLabel} autoComplete="off" value={search} onChange={e => setSearch(e.target.value)} />
           </div>
@@ -558,36 +558,36 @@ export default function OpportunityBoard() {
           {totalVisible === 0
             ? <p className="ob-no-results">{t.noResults}</p>
             : [
-                ...visibleFeatured.map(c => ({ c, featured: true })),
-                ...visibleMain.map(c => ({ c, featured: false })),
-              ].map(({ c, featured }, i) => <OBCard key={c.id} card={c} featured={featured} t={t} idx={i} />)
+              ...visibleFeatured.map(c => ({ c, featured: true })),
+              ...visibleMain.map(c => ({ c, featured: false })),
+            ].map(({ c, featured }, i) => <OBCard key={c.id} card={c} featured={featured} t={t} idx={i} />)
           }
         </div>
 
         {ARCHIVED_OPPORTUNITIES.length > 0 && (
-        <div className="ob-archive-strip">
-          <p className="ob-archive-label">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, color: 'var(--color-muted)' }}><rect x="1" y="4" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M5 4V3a2 2 0 1 1 4 0v1" stroke="currentColor" strokeWidth="1.3"/></svg>
-            {t.archiveLabel}
-          </p>
-          <div className="ob-archive-grid">
-            {ARCHIVED_OPPORTUNITIES.map(a => (
-              <article key={a.id} className="ob-card archived">
-                <div className="ob-card__top">
-                  <div className="ob-card__company-logo" style={{ background: 'rgba(0,0,0,.05)', color: 'var(--color-muted)' }}>{a.logo}</div>
-                  <span className="ob-card__deadline" style={{ color: 'var(--color-muted)' }}>{a.closed}</span>
-                </div>
-                <div>
-                  <div className="ob-card__title">{a.title}</div>
-                  <div className="ob-card__company">{a.company}</div>
-                </div>
-                <div className="ob-card__tags">{a.tags.map(tag => <span key={tag} className="ob-tag ob-tag--muted">{tag}</span>)}</div>
-                <div className="ob-card__desc">{a.desc}</div>
-                <div className="ob-card__source"><span className="ob-card__source-dot" style={{ background: 'var(--color-muted)' }}></span> {t.archiveSource}</div>
-              </article>
-            ))}
+          <div className="ob-archive-strip">
+            <p className="ob-archive-label">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, color: 'var(--color-muted)' }}><rect x="1" y="4" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><path d="M5 4V3a2 2 0 1 1 4 0v1" stroke="currentColor" strokeWidth="1.3" /></svg>
+              {t.archiveLabel}
+            </p>
+            <div className="ob-archive-grid">
+              {ARCHIVED_OPPORTUNITIES.map(a => (
+                <article key={a.id} className="ob-card archived">
+                  <div className="ob-card__top">
+                    <div className="ob-card__company-logo" style={{ background: 'rgba(0,0,0,.05)', color: 'var(--color-muted)' }}>{a.logo}</div>
+                    <span className="ob-card__deadline" style={{ color: 'var(--color-muted)' }}>{a.closed}</span>
+                  </div>
+                  <div>
+                    <div className="ob-card__title">{a.title}</div>
+                    <div className="ob-card__company">{a.company}</div>
+                  </div>
+                  <div className="ob-card__tags">{a.tags.map(tag => <span key={tag} className="ob-tag ob-tag--muted">{tag}</span>)}</div>
+                  <div className="ob-card__desc">{a.desc}</div>
+                  <div className="ob-card__source"><span className="ob-card__source-dot" style={{ background: 'var(--color-muted)' }}></span> {t.archiveSource}</div>
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
         )}
       </section>
 
