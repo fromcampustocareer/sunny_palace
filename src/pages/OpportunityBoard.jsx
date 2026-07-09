@@ -47,249 +47,250 @@ function dbOpportunityToCard(row, t) {
       deadlineCls = diffDays < 30 ? 'urgent' : ''
       deadlineFilter = diffDays < 7 ? 'this-week this-month' : diffDays < 30 ? 'this-month' : 'rolling'
     }
-    const tags = [{ l: row.role_type || 'Opportunity', c: tagTypeMap[typeKey] || 'ob-tag--muted' }]
-    if (row.eligibility) tags.push({ l: row.eligibility, c: 'ob-tag--muted' })
-    return {
-      id: row.id, logo: abbr, logoStyle: {},
-      deadlineLabel, deadlineCls,
-      title: row.role, company: row.company,
-      tags, meta: [...(row.location ? [row.location] : []), ...(row.pay ? [row.pay] : [])], desc: row.why || '',
-      source: t.cardCommunitySource,
-      viewLink: row.link, postLink: row.link, postLabel: t.cardViewRole,
-      type: typeKey, stage: '', location: /remote/i.test(row.location || '') ? 'remote' : '', deadline: deadlineFilter,
-      keywords: `${row.role} ${row.company} ${row.eligibility || ''}`.toLowerCase(),
-      _featured: row.status === 'featured',
-    }
   }
+  const tags = [{ l: row.role_type || 'Opportunity', c: tagTypeMap[typeKey] || 'ob-tag--muted' }]
+  if (row.eligibility) tags.push({ l: row.eligibility, c: 'ob-tag--muted' })
+  return {
+    id: row.id, logo: abbr, logoStyle: {},
+    deadlineLabel, deadlineCls,
+    title: row.role, company: row.company,
+    tags, meta: [...(row.location ? [row.location] : []), ...(row.pay ? [row.pay] : [])], desc: row.why || '',
+    source: t.cardCommunitySource,
+    viewLink: row.link, postLink: row.link, postLabel: t.cardViewRole,
+    type: typeKey, stage: '', location: /remote/i.test(row.location || '') ? 'remote' : '', deadline: deadlineFilter,
+    keywords: `${row.role} ${row.company} ${row.eligibility || ''}`.toLowerCase(),
+    _featured: row.status === 'featured',
+  }
+}
 
-  // One color per opportunity type, so logo + tag + tint + CTA all agree per card
-  // (mirrors the Templates card system). Replaces the old per-item random logo colors.
-  const LOGO_TINT = {
-    scholarship: { background: 'rgba(232,168,56,.16)', color: 'var(--color-gold-dark)' },
-    program: { background: 'rgba(179,69,57,.1)', color: 'var(--color-accent)' },
-    internship: { background: 'rgba(22,43,68,.1)', color: 'var(--color-navy)' },
-    research: { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
-    fellowship: { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
-  }
-  function OBCard({ card, featured, t, idx = 0 }) {
-    const safePost = safeHttpUrl(card.postLink)
-    const safeView = safeHttpUrl(card.viewLink)
-    const typeKey = (card.type || '').split(' ')[0]
-    const logoStyle = LOGO_TINT[typeKey] || card.logoStyle || {}
-    return (
-      <article className={`ob-card${typeKey ? ' ob-card--' + typeKey : ''}${featured ? ' featured' : ''}`} style={{ '--ob-i': idx % 12 }}>
-        {featured && <span className="ob-card__featured-badge">{t.cardFeaturedBadge}</span>}
-        <div className="ob-card__top">
-          <div className="ob-card__company-logo" style={logoStyle}>{card.logo}</div>
-          <span className={`ob-card__deadline${card.deadlineCls ? ' ' + card.deadlineCls : ''}`}>{card.deadlineLabel}</span>
+// One color per opportunity type, so logo + tag + tint + CTA all agree per card
+// (mirrors the Templates card system). Replaces the old per-item random logo colors.
+const LOGO_TINT = {
+  scholarship: { background: 'rgba(232,168,56,.16)', color: 'var(--color-gold-dark)' },
+  program: { background: 'rgba(179,69,57,.1)', color: 'var(--color-accent)' },
+  internship: { background: 'rgba(22,43,68,.1)', color: 'var(--color-navy)' },
+  research: { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
+  fellowship: { background: 'rgba(58,125,107,.12)', color: 'var(--color-teal)' },
+}
+function OBCard({ card, featured, t, idx = 0 }) {
+  const safePost = safeHttpUrl(card.postLink)
+  const safeView = safeHttpUrl(card.viewLink)
+  const typeKey = (card.type || '').split(' ')[0]
+  const logoStyle = LOGO_TINT[typeKey] || card.logoStyle || {}
+  return (
+    <article className={`ob-card${typeKey ? ' ob-card--' + typeKey : ''}${featured ? ' featured' : ''}`} style={{ '--ob-i': idx % 12 }}>
+      {featured && <span className="ob-card__featured-badge">{t.cardFeaturedBadge}</span>}
+      <div className="ob-card__top">
+        <div className="ob-card__company-logo" style={logoStyle}>{card.logo}</div>
+        <span className={`ob-card__deadline${card.deadlineCls ? ' ' + card.deadlineCls : ''}`}>{card.deadlineLabel}</span>
+      </div>
+      <div>
+        <div className="ob-card__title">{card.title}</div>
+        {card.company && <div className="ob-card__company">{card.company}</div>}
+      </div>
+      <div className="ob-card__tags">
+        {card.tags.map((tag, i) => <span key={`${tag.l}-${i}`} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
+      </div>
+      {card.meta.length > 0 && (
+        <div className="ob-card__meta">
+          {card.meta.map(m => <span key={m} className="ob-card__meta-item">{m}</span>)}
         </div>
-        <div>
-          <div className="ob-card__title">{card.title}</div>
-          {card.company && <div className="ob-card__company">{card.company}</div>}
-        </div>
-        <div className="ob-card__tags">
-          {card.tags.map((tag, i) => <span key={`${tag.l}-${i}`} className={`ob-tag ${tag.c}`}>{tag.l}</span>)}
-        </div>
-        {card.meta.length > 0 && (
-          <div className="ob-card__meta">
-            {card.meta.map(m => <span key={m} className="ob-card__meta-item">{m}</span>)}
-          </div>
+      )}
+      {card.source && <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>}
+      <div className="ob-card__desc">{card.desc}</div>
+      <div className="ob-card__actions">
+        {safeView
+          ? <a href={safeView || undefined} className="ob-card__cta-primary" target="_blank" rel="noopener">{card.viewLabel || t.cardViewRole}</a>
+          : <span className="ob-card__cta-primary ob-card__cta-primary--disabled" aria-disabled="true">{card.viewLabel || t.cardViewRole}</span>}
+        {card.postLink && (safePost
+          ? <a href={safePost} className="ob-card__cta-secondary" target="_blank" rel="noopener">{card.postLabel}</a>
+          : <Link to={card.postLink} className="ob-card__cta-secondary">{card.postLabel}</Link>
         )}
-        {card.source && <div className="ob-card__source"><span className="ob-card__source-dot"></span> {card.source}</div>}
-        <div className="ob-card__desc">{card.desc}</div>
-        <div className="ob-card__actions">
-          {safeView
-            ? <a href={safeView || undefined} className="ob-card__cta-primary" target="_blank" rel="noopener">{card.viewLabel || t.cardViewRole}</a>
-            : <span className="ob-card__cta-primary ob-card__cta-primary--disabled" aria-disabled="true">{card.viewLabel || t.cardViewRole}</span>}
-          {card.postLink && (safePost
-            ? <a href={safePost} className="ob-card__cta-secondary" target="_blank" rel="noopener">{card.postLabel}</a>
-            : <Link to={card.postLink} className="ob-card__cta-secondary">{card.postLabel}</Link>
-          )}
-        </div>
-      </article>
-    )
+      </div>
+    </article>
+  )
+}
+
+// Eco links point at these routes, but they are gated and redirect to `/`,
+// so rendering them produces dead links — filter them out of the eco grid.
+const GATED_ROUTES = ['/bridge-year', '/interview-prep', '/partner-panels']
+
+export default function OpportunityBoard() {
+  const t = useT('opportunityBoard')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const urlTab = searchParams.get('tab') || ''
+  const tab = TAB_KEYS.includes(urlTab) ? urlTab : 'all'
+  const setTab = useCallback(key => {
+    const next = new URLSearchParams(searchParams)
+    if (!key || key === 'all') next.delete('tab')
+    else next.set('tab', key)
+    setSearchParams(next, { replace: true })
+  }, [searchParams, setSearchParams])
+  const [search, setSearch] = useState('')
+  const searchRef = useRef(null)
+  const progressRef = useRef(null)
+  const [stage, setStage] = useState('')
+  const [location, setLocation] = useState('')
+  const [deadline, setDeadline] = useState('')
+  const [formSubmitted, setFormSubmitted] = useState(false)
+  const [formLoading, setFormLoading] = useState(false)
+  const [formError, setFormError] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileReset = useRef(null)
+  const [fieldErrors, setFieldErrors] = useState({ role: '', company: '', type: '', link: '', why: '', email: '' })
+  const [form, setForm] = useState({ role: '', company: '', type: '', link: '', deadline: '', eligibility: '', why: '', email: '', location: '', pay: '' })
+
+  const setField = (k, v) => {
+    setForm(f => ({ ...f, [k]: v }))
+    if (fieldErrors[k]) setFieldErrors(s => ({ ...s, [k]: '' }))
   }
 
-  // Eco links point at these routes, but they are gated and redirect to `/`,
-  // so rendering them produces dead links — filter them out of the eco grid.
-  const GATED_ROUTES = ['/bridge-year', '/interview-prep', '/partner-panels']
+  const [dbOpportunities, setDbOpportunities] = useState([])
 
-  export default function OpportunityBoard() {
-    const t = useT('opportunityBoard')
-    const [searchParams, setSearchParams] = useSearchParams()
-    const urlTab = searchParams.get('tab') || ''
-    const tab = TAB_KEYS.includes(urlTab) ? urlTab : 'all'
-    const setTab = useCallback(key => {
-      const next = new URLSearchParams(searchParams)
-      if (!key || key === 'all') next.delete('tab')
-      else next.set('tab', key)
-      setSearchParams(next, { replace: true })
-    }, [searchParams, setSearchParams])
-    const [search, setSearch] = useState('')
-    const searchRef = useRef(null)
-    const progressRef = useRef(null)
-    const [stage, setStage] = useState('')
-    const [location, setLocation] = useState('')
-    const [deadline, setDeadline] = useState('')
-    const [formSubmitted, setFormSubmitted] = useState(false)
-    const [formLoading, setFormLoading] = useState(false)
-    const [formError, setFormError] = useState('')
-    const [turnstileToken, setTurnstileToken] = useState('')
-    const turnstileReset = useRef(null)
-    const [fieldErrors, setFieldErrors] = useState({ role: '', company: '', type: '', link: '', why: '', email: '' })
-    const [form, setForm] = useState({ role: '', company: '', type: '', link: '', deadline: '', eligibility: '', why: '', email: '', location: '', pay: '' })
-
-    const setField = (k, v) => {
-      setForm(f => ({ ...f, [k]: v }))
-      if (fieldErrors[k]) setFieldErrors(s => ({ ...s, [k]: '' }))
+  useEffect(() => {
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const el = progressRef.current
+      if (!el) return
+      const doc = document.documentElement
+      const max = (doc.scrollHeight - doc.clientHeight) || 1
+      const ratio = Math.min(1, Math.max(0, window.scrollY / max))
+      el.style.transform = 'scaleX(' + ratio + ')'
     }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    update()
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [])
 
-    const [dbOpportunities, setDbOpportunities] = useState([])
-
-    useEffect(() => {
-      let raf = 0
-      const update = () => {
-        raf = 0
-        const el = progressRef.current
-        if (!el) return
-        const doc = document.documentElement
-        const max = (doc.scrollHeight - doc.clientHeight) || 1
-        const ratio = Math.min(1, Math.max(0, window.scrollY / max))
-        el.style.transform = 'scaleX(' + ratio + ')'
+  useEffect(() => {
+    const onKeyDown = e => {
+      if (e.key !== '/') return
+      const el = document.activeElement
+      const tag = el?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el?.isContentEditable) return
+      if (searchRef.current) {
+        e.preventDefault()
+        searchRef.current.focus()
       }
-      const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
-      window.addEventListener('scroll', onScroll, { passive: true })
-      window.addEventListener('resize', onScroll)
-      update()
-      return () => {
-        window.removeEventListener('scroll', onScroll)
-        window.removeEventListener('resize', onScroll)
-        if (raf) cancelAnimationFrame(raf)
-      }
-    }, [])
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [])
 
-    useEffect(() => {
-      const onKeyDown = e => {
-        if (e.key !== '/') return
-        const el = document.activeElement
-        const tag = el?.tagName
-        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el?.isContentEditable) return
-        if (searchRef.current) {
-          e.preventDefault()
-          searchRef.current.focus()
-        }
-      }
-      document.addEventListener('keydown', onKeyDown)
-      return () => document.removeEventListener('keydown', onKeyDown)
-    }, [])
+  // Public list fetch (status approved/featured). Callable so we can re-fetch after a
+  // successful submission — submitted opportunities are now auto-published server-side.
+  const fetchOpportunities = useCallback(() => {
+    supabase.from('opportunities')
+      .select('id,role,company,role_type,link,deadline,eligibility,why,status,created_at,location,pay')
+      .in('status', ['approved', 'featured'])
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        if (data?.length) setDbOpportunities(data.map(row => dbOpportunityToCard(row, t)))
+      })
+  }, [t])
 
-    // Public list fetch (status approved/featured). Callable so we can re-fetch after a
-    // successful submission — submitted opportunities are now auto-published server-side.
-    const fetchOpportunities = useCallback(() => {
-      supabase.from('opportunities')
-        .select('id,role,company,role_type,link,deadline,eligibility,why,status,created_at,location,pay')
-        .in('status', ['approved', 'featured'])
-        .order('created_at', { ascending: false })
-        .then(({ data }) => {
-          if (data?.length) setDbOpportunities(data.map(row => dbOpportunityToCard(row, t)))
-        })
-    }, [t])
+  useEffect(() => {
+    fetchOpportunities()
+  }, [fetchOpportunities])
 
-    useEffect(() => {
-      fetchOpportunities()
-    }, [fetchOpportunities])
+  const filters = { tab, query: search.toLowerCase().trim(), stage, location, deadline }
 
-    const filters = { tab, query: search.toLowerCase().trim(), stage, location, deadline }
+  const allFeatured = dbOpportunities.filter(c => c._featured)
+  const allMain = [...OPPORTUNITIES, ...dbOpportunities.filter(c => !c._featured)]
+  const visibleFeatured = allFeatured.filter(c => matchCard(c, filters))
+  const visibleMain = allMain.filter(c => matchCard(c, filters))
+  const totalVisible = visibleFeatured.length + visibleMain.length
 
-    const allFeatured = dbOpportunities.filter(c => c._featured)
-    const allMain = [...OPPORTUNITIES, ...dbOpportunities.filter(c => !c._featured)]
-    const visibleFeatured = allFeatured.filter(c => matchCard(c, filters))
-    const visibleMain = allMain.filter(c => matchCard(c, filters))
-    const totalVisible = visibleFeatured.length + visibleMain.length
-
-    const handleSubmit = async (e) => {
-      e.preventDefault()
-      const errors = { role: '', company: '', type: '', link: '', why: '', email: '' }
-      if (!form.role.trim()) errors.role = t.formErrorRole
-      if (!form.company.trim()) errors.company = t.formErrorCompany
-      if (!form.type) errors.type = t.formErrorType
-      if (!form.link.trim()) errors.link = t.formErrorLink
-      if (!form.why.trim()) errors.why = t.formErrorWhy
-      if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errors.email = t.formErrorEmail
-      if (Object.values(errors).some(Boolean)) {
-        setFieldErrors(errors)
-        setFormError('')
-        return
-      }
-      if (TURNSTILE_ENABLED && !turnstileToken) {
-        setFormError(t.formErrorGeneric)
-        return
-      }
-      setFieldErrors({ role: '', company: '', type: '', link: '', why: '', email: '' })
-      setFormLoading(true)
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const errors = { role: '', company: '', type: '', link: '', why: '', email: '' }
+    if (!form.role.trim()) errors.role = t.formErrorRole
+    if (!form.company.trim()) errors.company = t.formErrorCompany
+    if (!form.type) errors.type = t.formErrorType
+    if (!form.link.trim()) errors.link = t.formErrorLink
+    if (!form.why.trim()) errors.why = t.formErrorWhy
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errors.email = t.formErrorEmail
+    if (Object.values(errors).some(Boolean)) {
+      setFieldErrors(errors)
       setFormError('')
-      // Insert now flows through the Turnstile-gated submit-form edge function
-      // (service role). status is forced to 'approved' server-side, so the row is
-      // published immediately and we re-fetch the public list on success.
-      let ok = false
-      try {
-        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            type: 'opportunity',
-            turnstileToken,
-            payload: {
-              role: form.role.trim(),
-              company: form.company.trim(),
-              role_type: form.type,
-              link: form.link.trim(),
-              deadline: form.deadline.trim() || null,
-              eligibility: form.eligibility.trim() || null,
-              why: form.why.trim(),
-              submitted_by: form.email.trim() || null,
-              location: form.location.trim() || null,
-              pay: form.pay.trim() || null,
-            },
-          }),
-        })
-        ok = res.ok
-      } catch {
-        ok = false
-      }
-      setFormLoading(false)
-      if (!ok) {
-        setFormError(t.formErrorGeneric)
-        setTurnstileToken('')
-        turnstileReset.current?.()
-      } else {
-        setFormSubmitted(true)
-        setTurnstileToken('')
-        turnstileReset.current?.()
-        // Row is live (approved) — re-fetch so the new opportunity appears in the board.
-        fetchOpportunities()
-      }
+      return
     }
+    if (TURNSTILE_ENABLED && !turnstileToken) {
+      setFormError(t.formErrorGeneric)
+      return
+    }
+    setFieldErrors({ role: '', company: '', type: '', link: '', why: '', email: '' })
+    setFormLoading(true)
+    setFormError('')
+    // Insert now flows through the Turnstile-gated submit-form edge function
+    // (service role). status is forced to 'approved' server-side, so the row is
+    // published immediately and we re-fetch the public list on success.
+    let ok = false
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/submit-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          type: 'opportunity',
+          turnstileToken,
+          payload: {
+            role: form.role.trim(),
+            company: form.company.trim(),
+            role_type: form.type,
+            link: form.link.trim(),
+            deadline: form.deadline.trim() || null,
+            eligibility: form.eligibility.trim() || null,
+            why: form.why.trim(),
+            submitted_by: form.email.trim() || null,
+            location: form.location.trim() || null,
+            pay: form.pay.trim() || null,
+          },
+        }),
+      })
+      ok = res.ok
+    } catch {
+      ok = false
+    }
+    setFormLoading(false)
+    if (!ok) {
+      setFormError(t.formErrorGeneric)
+      setTurnstileToken('')
+      turnstileReset.current?.()
+    } else {
+      setFormSubmitted(true)
+      setTurnstileToken('')
+      turnstileReset.current?.()
+      // Row is live (approved) — re-fetch so the new opportunity appears in the board.
+      fetchOpportunities()
+    }
+  }
 
-    // Icons sit on the teal Source band, so tint them light or gold-fill for contrast.
-    const SOURCE_ITEM_STYLES = [
-      { background: 'rgba(255,255,255,.14)', color: 'var(--color-cream)' },
-      { background: 'rgba(255,255,255,.14)', color: 'var(--color-cream)' },
-      { background: 'var(--color-gold)', color: 'var(--color-dark)' },
-    ]
+  // Icons sit on the teal Source band, so tint them light or gold-fill for contrast.
+  const SOURCE_ITEM_STYLES = [
+    { background: 'rgba(255,255,255,.14)', color: 'var(--color-cream)' },
+    { background: 'rgba(255,255,255,.14)', color: 'var(--color-cream)' },
+    { background: 'var(--color-gold)', color: 'var(--color-dark)' },
+  ]
 
-    return (
-      <ArticleLayout
-        title="Opportunity Board"
-        signoffLine={t.signoffLine}
-        signoffSub={t.signoffSub}
-        signoffCta={t.signoffCta}
-      >
-        <div ref={progressRef} className="ob-scroll-progress" aria-hidden="true" />
-        <style>{`
+  return (
+    <ArticleLayout
+      title="Opportunity Board"
+      signoffLine={t.signoffLine}
+      signoffSub={t.signoffSub}
+      signoffCta={t.signoffCta}
+    >
+      <div ref={progressRef} className="ob-scroll-progress" aria-hidden="true" />
+      <style>{`
         html, body { background: var(--color-cream); }
         :root { --ob-shadow-warm: 58, 38, 22; }
         .ob-scroll-progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-gold) 100%); z-index: 1000; pointer-events: none; transform: scaleX(0); transform-origin: left; transition: transform .12s linear; will-change: transform; }
@@ -486,265 +487,265 @@ function dbOpportunityToCard(row, t) {
         @media (max-width: 480px) { .ob-hero { padding: 80px 16px 40px; } .ob-hero__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; } }
       `}</style>
 
-        <header className="ob-hero" id="top">
-          <p className="ob-hero__kicker">{t.heroKicker}</p>
-          <h1 className="ob-hero__title">{t.heroTitle} <em>{t.heroTitleEm}</em></h1>
-          {t.heroTagline && <p className="ob-hero__tagline">{t.heroTagline}</p>}
-          <p className="ob-hero__sub">{t.heroSub}</p>
-          <p className="ob-hero__body">
-            {t.heroBody1} <strong>{t.heroBodyStrong}</strong>{t.heroBody2}
-          </p>
-          {t.heroStats?.length > 0 && (
-            <div className="ob-hero__stats">
-              {t.heroStats.map(stat => (
-                <div key={stat.label} className="ob-hero__stat">
-                  <div className="ob-hero__stat-value">{stat.value}</div>
-                  <div className="ob-hero__stat-label">{stat.label}</div>
-                </div>
+      <header className="ob-hero" id="top">
+        <p className="ob-hero__kicker">{t.heroKicker}</p>
+        <h1 className="ob-hero__title">{t.heroTitle} <em>{t.heroTitleEm}</em></h1>
+        {t.heroTagline && <p className="ob-hero__tagline">{t.heroTagline}</p>}
+        <p className="ob-hero__sub">{t.heroSub}</p>
+        <p className="ob-hero__body">
+          {t.heroBody1} <strong>{t.heroBodyStrong}</strong>{t.heroBody2}
+        </p>
+        {t.heroStats?.length > 0 && (
+          <div className="ob-hero__stats">
+            {t.heroStats.map(stat => (
+              <div key={stat.label} className="ob-hero__stat">
+                <div className="ob-hero__stat-value">{stat.value}</div>
+                <div className="ob-hero__stat-label">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <hr className="ob-divider" />
+
+      <section className="ob-board" id="board">
+        <div className="ob-board__head">
+          <p className="ob-kicker">{t.boardKicker}</p>
+          <h2 className="ob-section-title">{t.boardTitle}</h2>
+          <p className="ob-section-sub">{t.boardSub}</p>
+        </div>
+
+        <div className="ob-tabs" role="group" aria-label={t.tabGroupAriaLabel}>
+          {TAB_KEYS.map(key => {
+            const labelMap = { all: t.tabAll, internship: t.tabInternship, research: t.tabResearch, program: t.tabProgram, scholarship: t.tabScholarship }
+            return (
+              <button key={key} id={`ob-tab-${key}`} className={`ob-tab ob-tab--${key}${tab === key ? ' active' : ''}`} aria-pressed={tab === key} onClick={() => setTab(key)}>{labelMap[key]}</button>
+            )
+          })}
+        </div>
+
+        <div className="ob-filter-bar">
+          <div className="ob-search-wrap">
+            <svg className="ob-search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M10 10L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <input ref={searchRef} type="text" className="ob-search" placeholder={t.searchPlaceholder} aria-label={t.searchAriaLabel} autoComplete="off" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
+          <select className="ob-filter-select" aria-label={t.filterStageAriaLabel} value={stage} onChange={e => setStage(e.target.value)}>
+            <option value="">{t.filterStageAll}</option>
+            <option value="first-second">{t.filterStageFirstSecond}</option>
+            <option value="junior">{t.filterStageJunior}</option>
+            <option value="senior">{t.filterStageSenior}</option>
+            <option value="recent-grad">{t.filterStageRecentGrad}</option>
+            <option value="transition">{t.filterStageTransition}</option>
+            <option value="phd">{t.filterStagePhD}</option>
+          </select>
+          <select className="ob-filter-select" aria-label={t.filterLocationAriaLabel} value={location} onChange={e => setLocation(e.target.value)}>
+            <option value="">{t.filterLocationAll}</option>
+            <option value="remote">{t.filterLocationRemote}</option>
+            <option value="us">{t.filterLocationUS}</option>
+            <option value="canada">{t.filterLocationCanada}</option>
+            <option value="international">{t.filterLocationInternational}</option>
+          </select>
+          <select className="ob-filter-select" aria-label={t.filterDeadlineAriaLabel} value={deadline} onChange={e => setDeadline(e.target.value)}>
+            <option value="">{t.filterDeadlineAny}</option>
+            <option value="this-week">{t.filterDeadlineThisWeek}</option>
+            <option value="this-month">{t.filterDeadlineThisMonth}</option>
+            <option value="rolling">{t.filterDeadlineRolling}</option>
+          </select>
+        </div>
+
+        <div className="ob-results-count"><span>{totalVisible}</span>&nbsp;{t.opportunitiesShown}</div>
+
+        <div className="ob-main-grid">
+          {totalVisible === 0
+            ? <p className="ob-no-results">{t.noResults}</p>
+            : [
+              ...visibleFeatured.map(c => ({ c, featured: true })),
+              ...visibleMain.map(c => ({ c, featured: false })),
+            ].map(({ c, featured }, i) => <OBCard key={c.id} card={c} featured={featured} t={t} idx={i} />)
+          }
+        </div>
+
+        {ARCHIVED_OPPORTUNITIES.length > 0 && (
+          <div className="ob-archive-strip">
+            <p className="ob-archive-label">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, color: 'var(--color-muted)' }}><rect x="1" y="4" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><path d="M5 4V3a2 2 0 1 1 4 0v1" stroke="currentColor" strokeWidth="1.3" /></svg>
+              {t.archiveLabel}
+            </p>
+            <div className="ob-archive-grid">
+              {ARCHIVED_OPPORTUNITIES.map(a => (
+                <article key={a.id} className="ob-card archived">
+                  <div className="ob-card__top">
+                    <div className="ob-card__company-logo" style={{ background: 'rgba(0,0,0,.05)', color: 'var(--color-muted)' }}>{a.logo}</div>
+                    <span className="ob-card__deadline" style={{ color: 'var(--color-muted)' }}>{a.closed}</span>
+                  </div>
+                  <div>
+                    <div className="ob-card__title">{a.title}</div>
+                    <div className="ob-card__company">{a.company}</div>
+                  </div>
+                  <div className="ob-card__tags">{a.tags.map(tag => <span key={tag} className="ob-tag ob-tag--muted">{tag}</span>)}</div>
+                  <div className="ob-card__desc">{a.desc}</div>
+                  <div className="ob-card__source"><span className="ob-card__source-dot" style={{ background: 'var(--color-muted)' }}></span> {t.archiveSource}</div>
+                </article>
               ))}
             </div>
-          )}
-        </header>
-
-        <hr className="ob-divider" />
-
-        <section className="ob-board" id="board">
-          <div className="ob-board__head">
-            <p className="ob-kicker">{t.boardKicker}</p>
-            <h2 className="ob-section-title">{t.boardTitle}</h2>
-            <p className="ob-section-sub">{t.boardSub}</p>
           </div>
+        )}
+      </section>
 
-          <div className="ob-tabs" role="group" aria-label={t.tabGroupAriaLabel}>
-            {TAB_KEYS.map(key => {
-              const labelMap = { all: t.tabAll, internship: t.tabInternship, research: t.tabResearch, program: t.tabProgram, scholarship: t.tabScholarship }
-              return (
-                <button key={key} id={`ob-tab-${key}`} className={`ob-tab ob-tab--${key}${tab === key ? ' active' : ''}`} aria-pressed={tab === key} onClick={() => setTab(key)}>{labelMap[key]}</button>
-              )
-            })}
-          </div>
-
-          <div className="ob-filter-bar">
-            <div className="ob-search-wrap">
-              <svg className="ob-search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M10 10L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-              <input ref={searchRef} type="text" className="ob-search" placeholder={t.searchPlaceholder} aria-label={t.searchAriaLabel} autoComplete="off" value={search} onChange={e => setSearch(e.target.value)} />
-            </div>
-            <select className="ob-filter-select" aria-label={t.filterStageAriaLabel} value={stage} onChange={e => setStage(e.target.value)}>
-              <option value="">{t.filterStageAll}</option>
-              <option value="first-second">{t.filterStageFirstSecond}</option>
-              <option value="junior">{t.filterStageJunior}</option>
-              <option value="senior">{t.filterStageSenior}</option>
-              <option value="recent-grad">{t.filterStageRecentGrad}</option>
-              <option value="transition">{t.filterStageTransition}</option>
-              <option value="phd">{t.filterStagePhD}</option>
-            </select>
-            <select className="ob-filter-select" aria-label={t.filterLocationAriaLabel} value={location} onChange={e => setLocation(e.target.value)}>
-              <option value="">{t.filterLocationAll}</option>
-              <option value="remote">{t.filterLocationRemote}</option>
-              <option value="us">{t.filterLocationUS}</option>
-              <option value="canada">{t.filterLocationCanada}</option>
-              <option value="international">{t.filterLocationInternational}</option>
-            </select>
-            <select className="ob-filter-select" aria-label={t.filterDeadlineAriaLabel} value={deadline} onChange={e => setDeadline(e.target.value)}>
-              <option value="">{t.filterDeadlineAny}</option>
-              <option value="this-week">{t.filterDeadlineThisWeek}</option>
-              <option value="this-month">{t.filterDeadlineThisMonth}</option>
-              <option value="rolling">{t.filterDeadlineRolling}</option>
-            </select>
-          </div>
-
-          <div className="ob-results-count"><span>{totalVisible}</span>&nbsp;{t.opportunitiesShown}</div>
-
-          <div className="ob-main-grid">
-            {totalVisible === 0
-              ? <p className="ob-no-results">{t.noResults}</p>
-              : [
-                ...visibleFeatured.map(c => ({ c, featured: true })),
-                ...visibleMain.map(c => ({ c, featured: false })),
-              ].map(({ c, featured }, i) => <OBCard key={c.id} card={c} featured={featured} t={t} idx={i} />)
-            }
-          </div>
-
-          {ARCHIVED_OPPORTUNITIES.length > 0 && (
-            <div className="ob-archive-strip">
-              <p className="ob-archive-label">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, color: 'var(--color-muted)' }}><rect x="1" y="4" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" /><path d="M5 4V3a2 2 0 1 1 4 0v1" stroke="currentColor" strokeWidth="1.3" /></svg>
-                {t.archiveLabel}
-              </p>
-              <div className="ob-archive-grid">
-                {ARCHIVED_OPPORTUNITIES.map(a => (
-                  <article key={a.id} className="ob-card archived">
-                    <div className="ob-card__top">
-                      <div className="ob-card__company-logo" style={{ background: 'rgba(0,0,0,.05)', color: 'var(--color-muted)' }}>{a.logo}</div>
-                      <span className="ob-card__deadline" style={{ color: 'var(--color-muted)' }}>{a.closed}</span>
-                    </div>
-                    <div>
-                      <div className="ob-card__title">{a.title}</div>
-                      <div className="ob-card__company">{a.company}</div>
-                    </div>
-                    <div className="ob-card__tags">{a.tags.map(tag => <span key={tag} className="ob-tag ob-tag--muted">{tag}</span>)}</div>
-                    <div className="ob-card__desc">{a.desc}</div>
-                    <div className="ob-card__source"><span className="ob-card__source-dot" style={{ background: 'var(--color-muted)' }}></span> {t.archiveSource}</div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-
-        <section className="ob-source" id="source">
-          <div className="ob-source__inner">
-            <p className="ob-kicker">{t.sourceKicker}</p>
-            <h2 className="ob-section-title">{t.sourceTitle}</h2>
-            <p className="ob-section-sub">{t.sourceSub}</p>
-            <div className="ob-source__layout">
-              <div>
-                <p className="ob-source__body">{t.sourceBody1Part1} <strong>{t.sourceBody1Strong}</strong>{t.sourceBody1Part2}</p>
-                <p className="ob-source__body" style={{ marginTop: '16px' }}>{t.sourceBody2Part1} <strong>{t.sourceBody2Strong}</strong>{t.sourceBody2Part2}</p>
-              </div>
-              <div className="ob-source__list">
-                {t.sourceItems.map((s, i) => (
-                  <div key={s.title} className="ob-source__item">
-                    <span className="ob-source__item-icon" style={SOURCE_ITEM_STYLES[i]}>{s.icon}</span>
-                    <div>
-                      <div className="ob-source__item-title">{s.title}</div>
-                      <div className="ob-source__item-desc">{s.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="ob-submit" id="submit">
-          <div className="ob-submit__layout">
+      <section className="ob-source" id="source">
+        <div className="ob-source__inner">
+          <p className="ob-kicker">{t.sourceKicker}</p>
+          <h2 className="ob-section-title">{t.sourceTitle}</h2>
+          <p className="ob-section-sub">{t.sourceSub}</p>
+          <div className="ob-source__layout">
             <div>
-              <p className="ob-submit__intro-kicker">{t.submitKicker}</p>
-              <h2 className="ob-submit__intro-title">{t.submitTitle}</h2>
-              <p className="ob-submit__intro-body">{t.submitBody} <strong>{t.submitBodyStrong}</strong>{t.submitBodySuffix}</p>
+              <p className="ob-source__body">{t.sourceBody1Part1} <strong>{t.sourceBody1Strong}</strong>{t.sourceBody1Part2}</p>
+              <p className="ob-source__body" style={{ marginTop: '16px' }}>{t.sourceBody2Part1} <strong>{t.sourceBody2Strong}</strong>{t.sourceBody2Part2}</p>
             </div>
-            <div className="ob-form-box">
-              {formSubmitted ? (
-                <div className="ob-form-success">
-                  <div className="ob-form-success__icon">✓</div>
-                  <div className="ob-form-success__title">Your opportunity is now live</div>
-                  <p className="ob-form-success__body">It has been added to the board below for the community to see. Thank you for helping keep the board current.</p>
+            <div className="ob-source__list">
+              {t.sourceItems.map((s, i) => (
+                <div key={s.title} className="ob-source__item">
+                  <span className="ob-source__item-icon" style={SOURCE_ITEM_STYLES[i]}>{s.icon}</span>
+                  <div>
+                    <div className="ob-source__item-title">{s.title}</div>
+                    <div className="ob-source__item-desc">{s.desc}</div>
+                  </div>
                 </div>
-              ) : (
-                <form onSubmit={handleSubmit}>
-                  <div className="ob-form-row">
-                    <label className="ob-form-label" htmlFor="obRoleName">{t.formLabelRole} <span>{t.formLabelRoleRequired}</span></label>
-                    <input className={`ob-form-input${fieldErrors.role ? ' is-invalid' : ''}`} type="text" id="obRoleName" placeholder={t.formPlaceholderRole} value={form.role} onChange={e => setField('role', e.target.value)} aria-invalid={!!fieldErrors.role} aria-describedby={fieldErrors.role ? 'obRoleName-error' : undefined} />
-                    {fieldErrors.role && <span id="obRoleName-error" className="ob-form-row__error" role="alert">{fieldErrors.role}</span>}
-                  </div>
-                  <div className="ob-form-row ob-form-row-2">
-                    <div>
-                      <label className="ob-form-label" htmlFor="obCompany">{t.formLabelCompany} <span>{t.formLabelCompanyRequired}</span></label>
-                      <input className={`ob-form-input${fieldErrors.company ? ' is-invalid' : ''}`} type="text" id="obCompany" placeholder={t.formPlaceholderCompany} value={form.company} onChange={e => setField('company', e.target.value)} aria-invalid={!!fieldErrors.company} aria-describedby={fieldErrors.company ? 'obCompany-error' : undefined} />
-                      {fieldErrors.company && <span id="obCompany-error" className="ob-form-row__error" role="alert">{fieldErrors.company}</span>}
-                    </div>
-                    <div>
-                      <label className="ob-form-label" htmlFor="obRoleType">{t.formLabelType} <span>{t.formLabelTypeRequired}</span></label>
-                      <select className={`ob-form-select${fieldErrors.type ? ' is-invalid' : ''}`} id="obRoleType" value={form.type} onChange={e => setField('type', e.target.value)} aria-invalid={!!fieldErrors.type} aria-describedby={fieldErrors.type ? 'obRoleType-error' : undefined}>
-                        <option value="">{t.formTypeDefault}</option>
-                        <option value="internship">{t.formTypeInternship}</option>
-                        <option value="apprenticeship">{t.formTypeApprenticeship}</option>
-                        <option value="new grad">{t.formTypeNewGrad}</option>
-                        <option value="fellowship">{t.formTypeFellowship}</option>
-                        <option value="program">{t.formTypeProgram}</option>
-                        <option value="scholarship">{t.formTypeScholarship}</option>
-                      </select>
-                      {fieldErrors.type && <span id="obRoleType-error" className="ob-form-row__error" role="alert">{fieldErrors.type}</span>}
-                    </div>
-                  </div>
-                  <div className="ob-form-row">
-                    <label className="ob-form-label" htmlFor="obLink">{t.formLabelLink} <span>{t.formLabelLinkRequired}</span></label>
-                    <input className={`ob-form-input${fieldErrors.link ? ' is-invalid' : ''}`} type="url" id="obLink" placeholder={t.formPlaceholderLink} value={form.link} onChange={e => setField('link', e.target.value)} aria-invalid={!!fieldErrors.link} aria-describedby={fieldErrors.link ? 'obLink-error' : undefined} />
-                    {fieldErrors.link && <span id="obLink-error" className="ob-form-row__error" role="alert">{fieldErrors.link}</span>}
-                  </div>
-                  <div className="ob-form-row ob-form-row-2">
-                    <div>
-                      <label className="ob-form-label" htmlFor="obDeadline">{t.formLabelDeadline}</label>
-                      <input className="ob-form-input" type="text" id="obDeadline" placeholder={t.formPlaceholderDeadline} value={form.deadline} onChange={e => setForm(f => ({ ...f, deadline: e.target.value }))} />
-                    </div>
-                    <div>
-                      <label className="ob-form-label" htmlFor="obEligibility">{t.formLabelEligibility}</label>
-                      <input className="ob-form-input" type="text" id="obEligibility" placeholder={t.formPlaceholderEligibility} value={form.eligibility} onChange={e => setForm(f => ({ ...f, eligibility: e.target.value }))} />
-                    </div>
-                  </div>
-                  <div className="ob-form-row ob-form-row-2">
-                    <div>
-                      <label className="ob-form-label" htmlFor="obLocation">{t.formLabelLocation}</label>
-                      <input className="ob-form-input" type="text" id="obLocation" placeholder={t.formPlaceholderLocation} value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} />
-                    </div>
-                    <div>
-                      <label className="ob-form-label" htmlFor="obPay">{t.formLabelPay}</label>
-                      <input className="ob-form-input" type="text" id="obPay" placeholder={t.formPlaceholderPay} value={form.pay} onChange={e => setForm(f => ({ ...f, pay: e.target.value }))} />
-                    </div>
-                  </div>
-                  <div className="ob-form-row">
-                    <label className="ob-form-label" htmlFor="obWhy">{t.formLabelWhy} <span>{t.formLabelWhyRequired}</span></label>
-                    <textarea className={`ob-form-textarea${fieldErrors.why ? ' is-invalid' : ''}`} id="obWhy" placeholder={t.formPlaceholderWhy} value={form.why} onChange={e => setField('why', e.target.value)} aria-invalid={!!fieldErrors.why} aria-describedby={fieldErrors.why ? 'obWhy-error' : undefined}></textarea>
-                    {fieldErrors.why && <span id="obWhy-error" className="ob-form-row__error" role="alert">{fieldErrors.why}</span>}
-                  </div>
-                  <div className="ob-form-row">
-                    <label className="ob-form-label" htmlFor="obEmail">{t.formLabelEmail} <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>{t.formEmailOptional}</span></label>
-                    <input
-                      className={`ob-form-input${fieldErrors.email ? ' is-invalid' : ''}`}
-                      type="email"
-                      id="obEmail"
-                      placeholder={t.formPlaceholderEmail}
-                      value={form.email}
-                      onChange={e => setField('email', e.target.value)}
-                      onBlur={e => {
-                        const v = e.target.value.trim()
-                        if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
-                          setFieldErrors(s => ({ ...s, email: t.formErrorEmail }))
-                        }
-                      }}
-                      aria-invalid={!!fieldErrors.email}
-                      aria-describedby={fieldErrors.email ? 'obEmail-error' : undefined}
-                    />
-                    {fieldErrors.email && <span id="obEmail-error" className="ob-form-row__error" role="alert">{fieldErrors.email}</span>}
-                  </div>
-                  {formError && (
-                    <div role="alert" className="ob-form-error-card">
-                      <span className="ob-form-error-card__msg"><strong>{t.formErrorLabel}</strong> {formError}</span>
-                      <button type="submit" className="ob-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formRetryLabel}</button>
-                    </div>
-                  )}
-                  <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="ob-form-turnstile" />
-                  <button className="ob-form-btn" type="submit" disabled={formLoading || (TURNSTILE_ENABLED && !turnstileToken)}>
-                    {formLoading ? t.formSubmitting : t.formSubmit}
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-        </section>
-
-        <hr className="ob-divider" />
-
-        <section className="ob-eco">
-          <div className="ob-eco__inner">
-            <p className="ob-eco__kicker">{t.ecoKicker}</p>
-            <h2 className="ob-eco__title">{t.ecoTitle}</h2>
-            <p className="ob-eco__body">{t.ecoBody}</p>
-            <div className="ob-eco__grid">
-              {t.ecoLinks.filter(l => !GATED_ROUTES.includes(l.to)).map(l => (
-                <Link key={l.to} to={l.to} className="ob-eco__link">
-                  <div className="ob-eco__link-title">{l.title}</div>
-                  <div className="ob-eco__link-desc">{l.desc}</div>
-                </Link>
               ))}
             </div>
           </div>
-        </section>
-      </ArticleLayout>
-    )
-  }
+        </div>
+      </section>
+
+      <section className="ob-submit" id="submit">
+        <div className="ob-submit__layout">
+          <div>
+            <p className="ob-submit__intro-kicker">{t.submitKicker}</p>
+            <h2 className="ob-submit__intro-title">{t.submitTitle}</h2>
+            <p className="ob-submit__intro-body">{t.submitBody} <strong>{t.submitBodyStrong}</strong>{t.submitBodySuffix}</p>
+          </div>
+          <div className="ob-form-box">
+            {formSubmitted ? (
+              <div className="ob-form-success">
+                <div className="ob-form-success__icon">✓</div>
+                <div className="ob-form-success__title">Your opportunity is now live</div>
+                <p className="ob-form-success__body">It has been added to the board below for the community to see. Thank you for helping keep the board current.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div className="ob-form-row">
+                  <label className="ob-form-label" htmlFor="obRoleName">{t.formLabelRole} <span>{t.formLabelRoleRequired}</span></label>
+                  <input className={`ob-form-input${fieldErrors.role ? ' is-invalid' : ''}`} type="text" id="obRoleName" placeholder={t.formPlaceholderRole} value={form.role} onChange={e => setField('role', e.target.value)} aria-invalid={!!fieldErrors.role} aria-describedby={fieldErrors.role ? 'obRoleName-error' : undefined} />
+                  {fieldErrors.role && <span id="obRoleName-error" className="ob-form-row__error" role="alert">{fieldErrors.role}</span>}
+                </div>
+                <div className="ob-form-row ob-form-row-2">
+                  <div>
+                    <label className="ob-form-label" htmlFor="obCompany">{t.formLabelCompany} <span>{t.formLabelCompanyRequired}</span></label>
+                    <input className={`ob-form-input${fieldErrors.company ? ' is-invalid' : ''}`} type="text" id="obCompany" placeholder={t.formPlaceholderCompany} value={form.company} onChange={e => setField('company', e.target.value)} aria-invalid={!!fieldErrors.company} aria-describedby={fieldErrors.company ? 'obCompany-error' : undefined} />
+                    {fieldErrors.company && <span id="obCompany-error" className="ob-form-row__error" role="alert">{fieldErrors.company}</span>}
+                  </div>
+                  <div>
+                    <label className="ob-form-label" htmlFor="obRoleType">{t.formLabelType} <span>{t.formLabelTypeRequired}</span></label>
+                    <select className={`ob-form-select${fieldErrors.type ? ' is-invalid' : ''}`} id="obRoleType" value={form.type} onChange={e => setField('type', e.target.value)} aria-invalid={!!fieldErrors.type} aria-describedby={fieldErrors.type ? 'obRoleType-error' : undefined}>
+                      <option value="">{t.formTypeDefault}</option>
+                      <option value="internship">{t.formTypeInternship}</option>
+                      <option value="apprenticeship">{t.formTypeApprenticeship}</option>
+                      <option value="new grad">{t.formTypeNewGrad}</option>
+                      <option value="fellowship">{t.formTypeFellowship}</option>
+                      <option value="program">{t.formTypeProgram}</option>
+                      <option value="scholarship">{t.formTypeScholarship}</option>
+                    </select>
+                    {fieldErrors.type && <span id="obRoleType-error" className="ob-form-row__error" role="alert">{fieldErrors.type}</span>}
+                  </div>
+                </div>
+                <div className="ob-form-row">
+                  <label className="ob-form-label" htmlFor="obLink">{t.formLabelLink} <span>{t.formLabelLinkRequired}</span></label>
+                  <input className={`ob-form-input${fieldErrors.link ? ' is-invalid' : ''}`} type="url" id="obLink" placeholder={t.formPlaceholderLink} value={form.link} onChange={e => setField('link', e.target.value)} aria-invalid={!!fieldErrors.link} aria-describedby={fieldErrors.link ? 'obLink-error' : undefined} />
+                  {fieldErrors.link && <span id="obLink-error" className="ob-form-row__error" role="alert">{fieldErrors.link}</span>}
+                </div>
+                <div className="ob-form-row ob-form-row-2">
+                  <div>
+                    <label className="ob-form-label" htmlFor="obDeadline">{t.formLabelDeadline}</label>
+                    <input className="ob-form-input" type="text" id="obDeadline" placeholder={t.formPlaceholderDeadline} value={form.deadline} onChange={e => setForm(f => ({ ...f, deadline: e.target.value }))} />
+                  </div>
+                  <div>
+                    <label className="ob-form-label" htmlFor="obEligibility">{t.formLabelEligibility}</label>
+                    <input className="ob-form-input" type="text" id="obEligibility" placeholder={t.formPlaceholderEligibility} value={form.eligibility} onChange={e => setForm(f => ({ ...f, eligibility: e.target.value }))} />
+                  </div>
+                </div>
+                <div className="ob-form-row ob-form-row-2">
+                  <div>
+                    <label className="ob-form-label" htmlFor="obLocation">{t.formLabelLocation}</label>
+                    <input className="ob-form-input" type="text" id="obLocation" placeholder={t.formPlaceholderLocation} value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} />
+                  </div>
+                  <div>
+                    <label className="ob-form-label" htmlFor="obPay">{t.formLabelPay}</label>
+                    <input className="ob-form-input" type="text" id="obPay" placeholder={t.formPlaceholderPay} value={form.pay} onChange={e => setForm(f => ({ ...f, pay: e.target.value }))} />
+                  </div>
+                </div>
+                <div className="ob-form-row">
+                  <label className="ob-form-label" htmlFor="obWhy">{t.formLabelWhy} <span>{t.formLabelWhyRequired}</span></label>
+                  <textarea className={`ob-form-textarea${fieldErrors.why ? ' is-invalid' : ''}`} id="obWhy" placeholder={t.formPlaceholderWhy} value={form.why} onChange={e => setField('why', e.target.value)} aria-invalid={!!fieldErrors.why} aria-describedby={fieldErrors.why ? 'obWhy-error' : undefined}></textarea>
+                  {fieldErrors.why && <span id="obWhy-error" className="ob-form-row__error" role="alert">{fieldErrors.why}</span>}
+                </div>
+                <div className="ob-form-row">
+                  <label className="ob-form-label" htmlFor="obEmail">{t.formLabelEmail} <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>{t.formEmailOptional}</span></label>
+                  <input
+                    className={`ob-form-input${fieldErrors.email ? ' is-invalid' : ''}`}
+                    type="email"
+                    id="obEmail"
+                    placeholder={t.formPlaceholderEmail}
+                    value={form.email}
+                    onChange={e => setField('email', e.target.value)}
+                    onBlur={e => {
+                      const v = e.target.value.trim()
+                      if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+                        setFieldErrors(s => ({ ...s, email: t.formErrorEmail }))
+                      }
+                    }}
+                    aria-invalid={!!fieldErrors.email}
+                    aria-describedby={fieldErrors.email ? 'obEmail-error' : undefined}
+                  />
+                  {fieldErrors.email && <span id="obEmail-error" className="ob-form-row__error" role="alert">{fieldErrors.email}</span>}
+                </div>
+                {formError && (
+                  <div role="alert" className="ob-form-error-card">
+                    <span className="ob-form-error-card__msg"><strong>{t.formErrorLabel}</strong> {formError}</span>
+                    <button type="submit" className="ob-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formRetryLabel}</button>
+                  </div>
+                )}
+                <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="ob-form-turnstile" />
+                <button className="ob-form-btn" type="submit" disabled={formLoading || (TURNSTILE_ENABLED && !turnstileToken)}>
+                  {formLoading ? t.formSubmitting : t.formSubmit}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <hr className="ob-divider" />
+
+      <section className="ob-eco">
+        <div className="ob-eco__inner">
+          <p className="ob-eco__kicker">{t.ecoKicker}</p>
+          <h2 className="ob-eco__title">{t.ecoTitle}</h2>
+          <p className="ob-eco__body">{t.ecoBody}</p>
+          <div className="ob-eco__grid">
+            {t.ecoLinks.filter(l => !GATED_ROUTES.includes(l.to)).map(l => (
+              <Link key={l.to} to={l.to} className="ob-eco__link">
+                <div className="ob-eco__link-title">{l.title}</div>
+                <div className="ob-eco__link-desc">{l.desc}</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+    </ArticleLayout>
+  )
 }
+
