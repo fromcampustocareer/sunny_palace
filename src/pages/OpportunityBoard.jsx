@@ -41,8 +41,9 @@ function dbOpportunityToCard(row, t) {
     deadlineLabel = `${t.deadlineCloses} ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
 
     if (diffDays < 0) {
+      deadlineLabel = t.deadlineClosed
       deadlineCls = 'closed'
-      deadlineFilter = 'closed'   // or exclude the card / move to an archived section
+      deadlineFilter = 'closed'
     } else {
       deadlineCls = diffDays < 30 ? 'urgent' : ''
       deadlineFilter = diffDays < 7 ? 'this-week this-month' : diffDays < 30 ? 'this-month' : 'rolling'
@@ -371,6 +372,7 @@ export default function OpportunityBoard() {
         .ob-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
         .ob-card__company-logo { width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(0,0,0,.08); background: rgba(0,0,0,.04); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--color-dark); flex-shrink: 0; }
         .ob-card__deadline { font-size: 11px; font-weight: 700; color: var(--color-muted); letter-spacing: .04em; flex-shrink: 0; }
+        .ob-card__deadline.closed { color: var(--color-muted); opacity: 0.6; }
         .ob-card__deadline.urgent { color: var(--color-accent); }
         .ob-card__deadline.rolling { color: var(--color-teal); }
         .ob-card__title { font-family: var(--font-display); font-size: clamp(14px,1.7vw,16px); font-weight: 700; color: var(--color-dark); line-height: 1.3; }
@@ -554,6 +556,7 @@ export default function OpportunityBoard() {
             <option value="this-week">{t.filterDeadlineThisWeek}</option>
             <option value="this-month">{t.filterDeadlineThisMonth}</option>
             <option value="rolling">{t.filterDeadlineRolling}</option>
+            <option value="closed">{t.filterDeadlineClosed}</option>
           </select>
         </div>
 
