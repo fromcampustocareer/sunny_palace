@@ -41,9 +41,11 @@ function loadTurnstile() {
   return scriptPromise
 }
 
+// `onToken`: callback when token changes (success/expiry/error)
+// `onError`: callback when script fails to load (ad blocker, network, etc.)
 // `resetRef` (optional): pass a ref object; we attach a reset() fn so the parent can
 // clear the widget after a successful submit.
-export default function Turnstile({ onToken, resetRef, className }) {
+export default function Turnstile({ onToken, onError, resetRef, className }) {
   const containerRef = useRef(null)
   const widgetIdRef = useRef(null)
 
@@ -69,8 +71,9 @@ export default function Turnstile({ onToken, resetRef, className }) {
         })
       })
       .catch((err) => {
-        // Network/adblock failure — don't hard-block; log for diagnostics.
+        // Script load failed (ad blocker, network error, etc.) — notify parent.
         console.error('Turnstile load error:', err)
+        onError?.(err)
       })
 
     return () => {
@@ -80,7 +83,7 @@ export default function Turnstile({ onToken, resetRef, className }) {
       }
       widgetIdRef.current = null
     }
-  }, [handleToken, handleClear])
+  }, [handleToken, handleClear, onError])
 
   // Expose a reset() so parents can re-challenge after a submit.
   useEffect(() => {

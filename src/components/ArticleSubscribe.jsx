@@ -9,13 +9,15 @@ export default function ArticleSubscribe({ source }) {
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileError, setTurnstileError] = useState(false)
   const turnstileReset = useRef(null)
 
   async function handleSubmit(e) {
     e.preventDefault()
     const val = email.trim()
     if (!val) return
-    if (TURNSTILE_ENABLED && !turnstileToken) return
+    // Allow submit if: no Turnstile, or have token, or script failed (fail-open)
+    if (TURNSTILE_ENABLED && !turnstileToken && !turnstileError) return
     setLoading(true)
     setError('')
 
@@ -48,6 +50,7 @@ export default function ArticleSubscribe({ source }) {
     } else {
       setError(t.subscribeError)
       setTurnstileToken('')
+      setTurnstileError(false)
       turnstileReset.current?.()
     }
   }
@@ -72,13 +75,23 @@ export default function ArticleSubscribe({ source }) {
               required
               disabled={loading}
             />
-            <button className="art-subscribe__btn" type="submit" disabled={loading || (TURNSTILE_ENABLED && !turnstileToken)}>
+            <button
+              className="art-subscribe__btn"
+              type="submit"
+              disabled={loading || (TURNSTILE_ENABLED && !turnstileToken && !turnstileError)}
+            >
               {loading ? t.subscribeBtnLoading : t.subscribeBtnIdle}
             </button>
-            <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="art-subscribe__turnstile" />
+            <Turnstile
+              onToken={setTurnstileToken}
+              onError={() => setTurnstileError(true)}
+              resetRef={turnstileReset}
+              className="art-subscribe__turnstile"
+            />
           </form>
         )}
         {error && <p style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>{error}</p>}
+        {turnstileError && <p style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
       </div>
     </div>
   )
