@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import ArticleLayout from '../../components/ArticleLayout'
-import { ArticleEngagement } from '../components/ArticleEngagement'
+import { ArticleEngagement } from '../../components/ArticleEngagement'
 import ArticleSubscribe from '../../components/ArticleSubscribe'
 import { useT } from '../../hooks/useT'
 import { useShare } from '../../hooks/useShare'
