@@ -4,12 +4,15 @@ import Turnstile, { TURNSTILE_ENABLED } from './Turnstile'
 
 export default function ArticleSubscribe({ source }) {
   const t = useT('articleLayout')
+  const tForms = useT('forms')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileError, setTurnstileError] = useState(false)
   const turnstileReset = useRef(null)
+
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -72,10 +75,16 @@ export default function ArticleSubscribe({ source }) {
               required
               disabled={loading}
             />
-            <button className="art-subscribe__btn" type="submit" disabled={loading || (TURNSTILE_ENABLED && !turnstileToken)}>
+            <button className="art-subscribe__btn" type="submit" disabled={loading || turnstileError || (TURNSTILE_ENABLED && !turnstileToken)}>
               {loading ? t.subscribeBtnLoading : t.subscribeBtnIdle}
             </button>
-            <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="art-subscribe__turnstile" />
+            {turnstileError && <p role="alert" className="form-error-turnstile">{tForms.errorTurnstile}</p>}
+            <Turnstile
+              onToken={setTurnstileToken}
+              onError={() => setTurnstileError(true)}
+              resetRef={turnstileReset}
+              className="art-subscribe__turnstile"
+            />
           </form>
         )}
         {error && <p style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>{error}</p>}

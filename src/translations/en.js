@@ -24,6 +24,9 @@ export const en = {
     langToggleLabel: 'Switch language',
     waitlist: 'Join Waitlist',
   },
+  forms: {
+    errorTurnstile: 'Verification unavailable — try disabling ad blockers',
+  },
   home: {
     heroFoot1: 'First-gen',
     heroFoot2: 'Mexican-American',

@@ -174,6 +174,7 @@ function dbProfileToCard(row) {
 export default function CoffeeChat() {
   const GATED_ROUTES = ['/bridge-year', '/interview-prep', '/partner-panels']
   const t = useT('coffeeChat')
+  const tForms = useT('forms')
   const [searchParams, setSearchParams] = useSearchParams()
   const filterRole = searchParams.get('role') || ''
   const filterFunc = searchParams.get('func') || ''
@@ -203,6 +204,7 @@ export default function CoffeeChat() {
   const [formError, setFormError] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
   const turnstileReset = useRef(null)
+  const [turnstileError, setTurnstileError] = useState(false)
   const [fieldErrors, setFieldErrors] = useState({ name: '', email: '', linkedin: '', role: '', func: '', topics: '', capacity: '', consent1: '', consent2: '' })
   const [funcChips, setFuncChips] = useState([])
   const [identityChips, setIdentityChips] = useState([])
@@ -296,6 +298,7 @@ export default function CoffeeChat() {
       document.body.style.overflow = ''
     }
   }, [modalOpen])
+
 
   const visibleProfiles = dbProfiles.filter(p => {
     const q = search.toLowerCase().trim()
@@ -1202,8 +1205,14 @@ export default function CoffeeChat() {
                     <button type="submit" className="cc-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formRetryLabel}</button>
                   </div>
                 )}
-                <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="cc-form-turnstile" />
-                <button className="cc-form-btn" type="submit" disabled={formLoading || (TURNSTILE_ENABLED && !turnstileToken)}>{formLoading ? t.formSubmitting : t.formSubmit}</button>
+                {turnstileError && <p role="alert" className="form-error-turnstile">{tForms.errorTurnstile}</p>}
+                <Turnstile
+                  className="cc-form-turnstile"
+                  onToken={setTurnstileToken}
+                  onError={() => setTurnstileError(true)}
+                  resetRef={turnstileReset}
+                />
+                <button className="cc-form-btn" type="submit" disabled={formLoading || turnstileError || (TURNSTILE_ENABLED && !turnstileToken)}>{formLoading ? t.formSubmitting : t.formSubmit}</button>
               </form>
             )}
           </div>

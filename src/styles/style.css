@@ -2309,6 +2309,12 @@ ul { list-style: none; }
   color: var(--color-accent);
 }
 
+.form-error-turnstile {
+  color: var(--color-accent);
+  font-size: 13px;
+  margin-top: 8px;
+}
+
 .modal__footer {
   display: flex;
   align-items: center;

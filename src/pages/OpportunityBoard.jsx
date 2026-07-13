@@ -118,6 +118,7 @@ const GATED_ROUTES = ['/bridge-year', '/interview-prep', '/partner-panels']
 
 export default function OpportunityBoard() {
   const t = useT('opportunityBoard')
+  const tForms = useT('forms')
   const [searchParams, setSearchParams] = useSearchParams()
   const urlTab = searchParams.get('tab') || ''
   const tab = TAB_KEYS.includes(urlTab) ? urlTab : 'all'
@@ -137,6 +138,7 @@ export default function OpportunityBoard() {
   const [formLoading, setFormLoading] = useState(false)
   const [formError, setFormError] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
+  const [turnstileError, setTurnstileError] = useState(false)
   const turnstileReset = useRef(null)
   const [fieldErrors, setFieldErrors] = useState({ role: '', company: '', type: '', link: '', why: '', email: '' })
   const [form, setForm] = useState({ role: '', company: '', type: '', link: '', deadline: '', eligibility: '', why: '', email: '', location: '', pay: '' })
@@ -200,6 +202,7 @@ export default function OpportunityBoard() {
   useEffect(() => {
     fetchOpportunities()
   }, [fetchOpportunities])
+
 
   const filters = { tab, query: search.toLowerCase().trim(), stage, location, deadline }
 
@@ -721,8 +724,14 @@ export default function OpportunityBoard() {
                     <button type="submit" className="ob-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formRetryLabel}</button>
                   </div>
                 )}
-                <Turnstile onToken={setTurnstileToken} resetRef={turnstileReset} className="ob-form-turnstile" />
-                <button className="ob-form-btn" type="submit" disabled={formLoading || (TURNSTILE_ENABLED && !turnstileToken)}>
+                {turnstileError && <p role="alert" className="form-error-turnstile">{tForms.errorTurnstile}</p>}
+                <Turnstile
+                  className="ob-form-turnstile"
+                  onToken={setTurnstileToken}
+                  onError={() => setTurnstileError(true)}
+                  resetRef={turnstileReset}
+                />
+                <button className="ob-form-btn" type="submit" disabled={formLoading || turnstileError || (TURNSTILE_ENABLED && !turnstileToken)}>
                   {formLoading ? t.formSubmitting : t.formSubmit}
                 </button>
               </form>

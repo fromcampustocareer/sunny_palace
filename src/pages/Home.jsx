@@ -46,6 +46,7 @@ export default function Home() {
   const navigate = useNavigate()
   const { lang, setLang } = useLang()
   const t = useT('home')
+  const tForms = useT('forms')
   const tNav = useT('nav')
 
   const [searchOpen, setSearchOpen] = useState(false)
@@ -61,6 +62,7 @@ export default function Home() {
   const [modalLoading, setModalLoading] = useState(false)
   const [modalError, setModalError] = useState('')
   const [modalToken, setModalToken] = useState('')
+  const [modalTurnstileError, setModalTurnstileError] = useState(false)
   const modalTurnstileReset = useRef(null)
   const [waitlistOpen, setWaitlistOpen] = useState(false)
   const [waitlistSent, setWaitlistSent] = useState(false)
@@ -70,6 +72,7 @@ export default function Home() {
   const [waitlistLoading, setWaitlistLoading] = useState(false)
   const [waitlistError, setWaitlistError] = useState('')
   const [waitlistToken, setWaitlistToken] = useState('')
+  const [waitlistTurnstileError, setWaitlistTurnstileError] = useState(false)
   const waitlistTurnstileReset = useRef(null)
   const waitlistRef = useRef(null)
   const [newsletterOpen, setNewsletterOpen] = useState(false)
@@ -78,6 +81,7 @@ export default function Home() {
   const [newsletterLoading, setNewsletterLoading] = useState(false)
   const [newsletterError, setNewsletterError] = useState('')
   const [newsletterToken, setNewsletterToken] = useState('')
+  const [newsletterTurnstileError, setNewsletterTurnstileError] = useState(false)
   const newsletterTurnstileReset = useRef(null)
   const newsletterRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -1430,9 +1434,10 @@ export default function Home() {
                 <textarea id="modalMessage" className="modal__input modal__textarea" placeholder={t.modalMessagePlaceholder} value={modalMessage} onChange={e => setModalMessage(e.target.value)} rows={4} />
               </div>
               {modalError && <p role="alert" className="modal__error">{modalError}</p>}
-              <Turnstile onToken={setModalToken} resetRef={modalTurnstileReset} className="modal__turnstile" />
+              {modalTurnstileError && <p role="alert" className="form-error-turnstile">{tForms.errorTurnstile}</p>}
+              <Turnstile onToken={setModalToken} onError={() => setModalTurnstileError(true)} resetRef={modalTurnstileReset} className="modal__turnstile" />
               <div className="modal__footer">
-                <button className="modal__btn" disabled={modalLoading || !modalEmail.trim() || !modalMessage.trim() || (TURNSTILE_ENABLED && !modalToken)} onClick={handleModalSubmit}>
+                <button className="modal__btn" disabled={modalLoading || !modalEmail.trim() || !modalMessage.trim() || modalTurnstileError || (TURNSTILE_ENABLED && !modalToken)} onClick={handleModalSubmit}>
                   {modalLoading ? t.modalSending : t.modalSend}
                 </button>
                 <span className="modal__reassurance">{t.modalReassurance}</span>
@@ -1476,9 +1481,10 @@ export default function Home() {
                 <input type="text" id="waitlistSchool" className="modal__input" placeholder={t.waitlistSchoolPlaceholder} value={waitlistSchool} onChange={e => setWaitlistSchool(e.target.value)} />
               </div>
               {waitlistError && <p role="alert" className="modal__error">{waitlistError}</p>}
-              <Turnstile onToken={setWaitlistToken} resetRef={waitlistTurnstileReset} className="modal__turnstile" />
+              {waitlistTurnstileError && <p role="alert" className="form-error-turnstile">{tForms.errorTurnstile}</p>}
+              <Turnstile onToken={setWaitlistToken} onError={() => setWaitlistTurnstileError(true)} resetRef={waitlistTurnstileReset} className="modal__turnstile" />
               <div className="modal__footer">
-                <button className="modal__btn" disabled={waitlistLoading || !waitlistName.trim() || !waitlistEmail.trim() || (TURNSTILE_ENABLED && !waitlistToken)} onClick={handleWaitlistSubmit}>
+                <button className="modal__btn" disabled={waitlistLoading || !waitlistName.trim() || !waitlistEmail.trim() || waitlistTurnstileError || (TURNSTILE_ENABLED && !waitlistToken)} onClick={handleWaitlistSubmit}>
                   {waitlistLoading ? t.waitlistSubmitting : t.waitlistSubmit}
                 </button>
                 <span className="modal__reassurance">{t.waitlistReassurance}</span>
@@ -1532,9 +1538,10 @@ export default function Home() {
                 />
               </div>
               {newsletterError && <p role="alert" className="modal__error">{newsletterError}</p>}
-              <Turnstile onToken={setNewsletterToken} resetRef={newsletterTurnstileReset} className="modal__turnstile" />
+              {newsletterTurnstileError && <p role="alert" className="form-error-turnstile">{tForms.errorTurnstile}</p>}
+              <Turnstile onToken={setNewsletterToken} onError={() => setNewsletterTurnstileError(true)} resetRef={newsletterTurnstileReset} className="modal__turnstile" />
               <div className="modal__footer">
-                <button className="modal__btn" disabled={newsletterLoading || !newsletterEmail.trim() || (TURNSTILE_ENABLED && !newsletterToken)} onClick={handleNewsletterSubmit}>
+                <button className="modal__btn" disabled={newsletterLoading || !newsletterEmail.trim() || newsletterTurnstileError || (TURNSTILE_ENABLED && !newsletterToken)} onClick={handleNewsletterSubmit}>
                   {newsletterLoading ? t.newsletterSubmitting : t.newsletterSubmit}
                 </button>
                 <span className="modal__reassurance">{t.newsletterReassurance}</span>
