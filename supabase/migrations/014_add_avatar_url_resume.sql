@@ -18,3 +18,6 @@ ALTER TABLE coffee_chat_profiles ADD COLUMN IF NOT EXISTS avatar_url text;
 -- avatar_url is non-PII (a public storage URL); expose it to anon like the other
 -- non-PII columns granted in migration 006. email / linkedin_url stay revoked.
 GRANT SELECT (avatar_url) ON resume_submissions TO anon;
+
+-- fixes issue #91
+GRANT SELECT (avatar_url) ON coffee_chat_profiles TO anon;

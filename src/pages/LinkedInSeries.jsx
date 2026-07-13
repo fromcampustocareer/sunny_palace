@@ -519,7 +519,6 @@ export default function LinkedInSeries() {
           })}
         </section>
       )}
-
       <div className="ls-bridge">
         <div className="ls-bridge__inner">
           <p className="ls-bridge__copy">{t.bridgeCopyPrefix} <em>{t.bridgeCopyEm}</em></p>
