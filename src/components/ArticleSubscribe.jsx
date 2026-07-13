@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useT } from '../hooks/useT'
 import Turnstile, { TURNSTILE_ENABLED } from './Turnstile'
 
@@ -11,6 +11,12 @@ export default function ArticleSubscribe({ source }) {
   const [turnstileToken, setTurnstileToken] = useState('')
   const [turnstileError, setTurnstileError] = useState(false)
   const turnstileReset = useRef(null)
+
+  useEffect(() => {
+    if (turnstileToken) {
+      setTurnstileError(false)
+    }
+  }, [turnstileToken])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -50,7 +56,6 @@ export default function ArticleSubscribe({ source }) {
     } else {
       setError(t.subscribeError)
       setTurnstileToken('')
-      setTurnstileError(false)
       turnstileReset.current?.()
     }
   }
@@ -78,10 +83,11 @@ export default function ArticleSubscribe({ source }) {
             <button
               className="art-subscribe__btn"
               type="submit"
-              disabled={loading || (TURNSTILE_ENABLED && !turnstileToken && !turnstileError)}
+              disabled={loading || turnstileError || (TURNSTILE_ENABLED && !turnstileToken)}
             >
               {loading ? t.subscribeBtnLoading : t.subscribeBtnIdle}
             </button>
+            {turnstileError && <p style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
             <Turnstile
               onToken={setTurnstileToken}
               onError={() => setTurnstileError(true)}
@@ -91,8 +97,8 @@ export default function ArticleSubscribe({ source }) {
           </form>
         )}
         {error && <p style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>{error}</p>}
-        {turnstileError && <p style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
       </div>
     </div>
   )
 }
+
