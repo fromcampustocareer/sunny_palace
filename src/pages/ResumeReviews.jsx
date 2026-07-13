@@ -11,75 +11,75 @@ import Turnstile, { TURNSTILE_ENABLED } from '../components/Turnstile'
 const LIKES_KEY = 'jxj_resume_likes_v1'
 
 const STAGE_META_STYLE = {
-  intern: { cls: 'intern', tagCls: 'rr-tag--blue' },
-  newgrad: { cls: 'newgrad', tagCls: 'rr-tag--teal' },
-  fulltime: { cls: 'fulltime', tagCls: 'rr-tag--navy' },
-  pivot: { cls: 'pivot', tagCls: 'rr-tag--accent' },
-  contract: { cls: 'contract', tagCls: 'rr-tag--muted' },
-  apprenticeship: { cls: 'apprenticeship', tagCls: 'rr-tag--gold' },
+  intern:        { cls: 'intern',        tagCls: 'rr-tag--blue' },
+  newgrad:       { cls: 'newgrad',       tagCls: 'rr-tag--teal' },
+  fulltime:      { cls: 'fulltime',      tagCls: 'rr-tag--navy' },
+  pivot:         { cls: 'pivot',         tagCls: 'rr-tag--accent' },
+  contract:      { cls: 'contract',      tagCls: 'rr-tag--muted' },
+  apprenticeship:{ cls: 'apprenticeship',tagCls: 'rr-tag--gold' },
 }
 
 function getStageMeta(stage, t) {
   const style = STAGE_META_STYLE[stage] || { cls: 'contract', tagCls: 'rr-tag--muted' }
   const labelMap = {
-    intern: t.stageInternLabel,
-    newgrad: t.stageNewGradLabel,
-    fulltime: t.stageFullTimeLabel,
-    pivot: t.stageCareerPivotLabel,
-    contract: t.stageContractLabel,
+    intern:         t.stageInternLabel,
+    newgrad:        t.stageNewGradLabel,
+    fulltime:       t.stageFullTimeLabel,
+    pivot:          t.stageCareerPivotLabel,
+    contract:       t.stageContractLabel,
     apprenticeship: t.stageApprenticeshipLabel,
   }
   return { ...style, label: labelMap[stage] || stage.toUpperCase() }
 }
 
 const TAG_LABELS = {
-  'first-gen': 'First-Gen',
-  'non-cs': 'Non-CS Major',
-  'nontraditional': 'Nontraditional',
-  'transfer': 'Transfer Student',
-  'career-changer': 'Career Changer',
-  'community-college': 'Community College',
-  'lgbtq': 'LGBTQ+',
-  'veteran': 'Veteran',
+  'first-gen':           'First-Gen',
+  'non-cs':              'Non-CS Major',
+  'nontraditional':      'Nontraditional',
+  'transfer':            'Transfer Student',
+  'career-changer':      'Career Changer',
+  'community-college':   'Community College',
+  'lgbtq':               'LGBTQ+',
+  'veteran':             'Veteran',
   'first-gen-immigrant': 'First-Gen Immigrant',
-  'disability': 'Person with Disability',
-  'rural': 'Rural Background',
-  'returning-adult': 'Returning Adult',
-  'international': 'International Student',
-  'black': 'Black / African American',
-  'latinx': 'Latinx / Hispanic',
-  'indigenous': 'Indigenous / Native American',
-  'asian': 'Asian / Pacific Islander',
-  'foster': 'Foster Care Alumni',
+  'disability':          'Person with Disability',
+  'rural':               'Rural Background',
+  'returning-adult':     'Returning Adult',
+  'international':       'International Student',
+  'black':               'Black / African American',
+  'latinx':              'Latinx / Hispanic',
+  'indigenous':          'Indigenous / Native American',
+  'asian':               'Asian / Pacific Islander',
+  'foster':              'Foster Care Alumni',
 }
 
 const TAG_COLOR_MAP = {
-  'first-gen': 'teal',
-  'non-cs': 'blue',
-  'nontraditional': 'accent',
-  'transfer': 'gold',
-  'career-changer': 'navy',
-  'community-college': 'muted',
-  'lgbtq': 'teal',
-  'veteran': 'navy',
+  'first-gen':           'teal',
+  'non-cs':              'blue',
+  'nontraditional':      'accent',
+  'transfer':            'gold',
+  'career-changer':      'navy',
+  'community-college':   'muted',
+  'lgbtq':               'teal',
+  'veteran':             'navy',
   'first-gen-immigrant': 'teal',
-  'disability': 'blue',
-  'rural': 'gold',
-  'returning-adult': 'accent',
-  'international': 'blue',
-  'black': 'navy',
-  'latinx': 'accent',
-  'indigenous': 'gold',
-  'asian': 'teal',
-  'foster': 'muted',
+  'disability':          'blue',
+  'rural':               'gold',
+  'returning-adult':     'accent',
+  'international':       'blue',
+  'black':               'navy',
+  'latinx':              'accent',
+  'indigenous':          'gold',
+  'asian':               'teal',
+  'foster':              'muted',
 }
 
 
 
 const SIDEBAR_COMPANIES = [
-  'google', 'microsoft', 'meta', 'apple', 'amazon', 'netflix', 'nvidia', 'tesla',
-  'stripe', 'openai', 'anthropic', 'salesforce', 'adobe', 'uber', 'airbnb', 'spotify',
-  'pinterest', 'reddit', 'discord', 'dropbox', 'figma', 'jpmorgan', 'goldman', 'mckinsey', 'fidelity',
+  'google','microsoft','meta','apple','amazon','netflix','nvidia','tesla',
+  'stripe','openai','anthropic','salesforce','adobe','uber','airbnb','spotify',
+  'pinterest','reddit','discord','dropbox','figma','jpmorgan','goldman','mckinsey','fidelity',
 ]
 
 
@@ -251,8 +251,13 @@ export default function ResumeReviews() {
   const [submitLoading, setSubmitLoading] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
-  const turnstileReset = useRef(null)
   const [turnstileError, setTurnstileError] = useState(false)
+  const turnstileReset = useRef(null)
+
+  // A token means the widget recovered (e.g. the visitor turned off their blocker).
+  useEffect(() => {
+    if (turnstileToken) setTurnstileError(false)
+  }, [turnstileToken])
   const [submitForm, setSubmitForm] = useState({ handle: '', email: '', linkedin: '', roleTitle: '', roleType: '', roleTypeOther: '', stage: '', stageOther: '', companies: '', bgTags: [], bgOther: '', download: 'no', story: '', annotate: 'no' })
   const [fileName, setFileName] = useState('')
   const [avatarFile, setAvatarFile] = useState(null)
@@ -271,7 +276,7 @@ export default function ResumeReviews() {
     setLikedIds(prev => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id); else next.add(id)
-      try { localStorage.setItem(LIKES_KEY, JSON.stringify([...next])) } catch { }
+      try { localStorage.setItem(LIKES_KEY, JSON.stringify([...next])) } catch {}
       return next
     })
   }
@@ -298,8 +303,8 @@ export default function ResumeReviews() {
       return true
     })
     if (filter.sort === 'featured') result = [...result].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
-    else if (filter.sort === 'liked') result = [...result].sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
-    else if (filter.sort === 'viewed') result = [...result].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+    else if (filter.sort === 'liked')    result = [...result].sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0))
+    else if (filter.sort === 'viewed')   result = [...result].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
     else if (filter.sort === 'screened') result = [...result].sort((a, b) => ((b.viewCount || 0) + (b.likeCount || 0) * 3) - ((a.viewCount || 0) + (a.likeCount || 0) * 3))
     return result
   }, [filter, allResumes])
@@ -379,12 +384,6 @@ export default function ResumeReviews() {
       panelTriggerRef.current = null
     }
   }, [panelId])
-
-  useEffect(() => {
-    if (turnstileToken) {
-      setTurnstileError(false)
-    }
-  }, [turnstileToken])
 
   const handlePanelKeyDown = (e) => {
     if (e.key !== 'Tab') return
@@ -992,118 +991,118 @@ export default function ResumeReviews() {
           <p className="rr-grid-count"><strong>{visibleResumes.length}</strong> {t.foundCount}</p>
         </div>
 
-        <div className="rr-grid">
-          {isLoading ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <div key={`skel-${i}`} className="rr-card-skel" style={{ animationDelay: `${i * 80}ms` }} aria-hidden="true">
-                <div className="rr-card-skel__pill" />
-                <div className="rr-card-skel__logos">
-                  <div className="rr-card-skel__logo" /><div className="rr-card-skel__logo" /><div className="rr-card-skel__logo" /><div className="rr-card-skel__logo" />
-                </div>
-                <div className="rr-card-skel__line" />
-                <div className="rr-card-skel__line rr-card-skel__line--w70" />
-                <div className="rr-card-skel__info">
-                  <div className="rr-card-skel__avatar" />
-                  <div className="rr-card-skel__id">
-                    <div className="rr-card-skel__id-line" />
-                    <div className="rr-card-skel__id-line rr-card-skel__id-line--w50" />
+          <div className="rr-grid">
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={`skel-${i}`} className="rr-card-skel" style={{ animationDelay: `${i * 80}ms` }} aria-hidden="true">
+                  <div className="rr-card-skel__pill" />
+                  <div className="rr-card-skel__logos">
+                    <div className="rr-card-skel__logo" /><div className="rr-card-skel__logo" /><div className="rr-card-skel__logo" /><div className="rr-card-skel__logo" />
+                  </div>
+                  <div className="rr-card-skel__line" />
+                  <div className="rr-card-skel__line rr-card-skel__line--w70" />
+                  <div className="rr-card-skel__info">
+                    <div className="rr-card-skel__avatar" />
+                    <div className="rr-card-skel__id">
+                      <div className="rr-card-skel__id-line" />
+                      <div className="rr-card-skel__id-line rr-card-skel__id-line--w50" />
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : visibleResumes.length === 0 ? (
+              <div className="rr-grid--empty">
+                <strong>{t.gridEmptyStrong}</strong>
+                {t.gridEmptyBody}
               </div>
-            ))
-          ) : visibleResumes.length === 0 ? (
-            <div className="rr-grid--empty">
-              <strong>{t.gridEmptyStrong}</strong>
-              {t.gridEmptyBody}
-            </div>
-          ) : (
-            <>
-              {visibleResumes.map((r, idx) => {
-                const sm = getStageMeta(r.stage, t)
-                const liked = likedIds.has(r.id)
-                const fullCompanies = (r.companies || []).slice(0, 4)
-                const cells = Array.from({ length: 4 }, (_, i) => fullCompanies[i] || null)
-                const moreCount = r.companies.length > 4 ? r.companies.length - 3 : 0
-                return (
-                  <article
-                    key={r.id}
-                    className={`rr-card rr-card--${sm.cls}`}
-                    style={{ '--rr-i': idx % 12 }}
-                    onClick={() => { panelTriggerRef.current = document.activeElement; setPanelId(r.id) }}
-                    tabIndex={0}
-                    role="button"
-                    aria-label={`${t.cardViewBtn} ${r.handle}`}
-                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); panelTriggerRef.current = e.currentTarget; setPanelId(r.id) } }}
-                  >
-                    <div className="rr-card__visual">
-                      <span className={`rr-card__pill rr-pill--${sm.cls}`}>{sm.label}</span>
-                      {r.featured && <span className="rr-card__featured-badge">{t.cardFeaturedBadge}</span>}
-                      <div className="rr-card__logos">
-                        {cells.map((co, i) => {
-                          if (i === 3 && moreCount > 0) {
-                            return <div key={`more-${i}`} className="rr-card__logo-cell rr-card__logo-cell--more">+{moreCount}</div>
-                          }
-                          if (!co) return <div key={`empty-${i}`} className="rr-card__logo-cell rr-card__logo-cell--empty" aria-hidden="true" />
-                          return (
-                            <div key={co} className="rr-card__logo-cell">
-                              <CoLogo coKey={co} size={28} fullColor />
-                            </div>
-                          )
-                        })}
+            ) : (
+              <>
+                {visibleResumes.map((r, idx) => {
+                  const sm = getStageMeta(r.stage, t)
+                  const liked = likedIds.has(r.id)
+                  const fullCompanies = (r.companies || []).slice(0, 4)
+                  const cells = Array.from({ length: 4 }, (_, i) => fullCompanies[i] || null)
+                  const moreCount = r.companies.length > 4 ? r.companies.length - 3 : 0
+                  return (
+                    <article
+                      key={r.id}
+                      className={`rr-card rr-card--${sm.cls}`}
+                      style={{ '--rr-i': idx % 12 }}
+                      onClick={() => { panelTriggerRef.current = document.activeElement; setPanelId(r.id) }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`${t.cardViewBtn} ${r.handle}`}
+                      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); panelTriggerRef.current = e.currentTarget; setPanelId(r.id) } }}
+                    >
+                      <div className="rr-card__visual">
+                        <span className={`rr-card__pill rr-pill--${sm.cls}`}>{sm.label}</span>
+                        {r.featured && <span className="rr-card__featured-badge">{t.cardFeaturedBadge}</span>}
+                        <div className="rr-card__logos">
+                          {cells.map((co, i) => {
+                            if (i === 3 && moreCount > 0) {
+                              return <div key={`more-${i}`} className="rr-card__logo-cell rr-card__logo-cell--more">+{moreCount}</div>
+                            }
+                            if (!co) return <div key={`empty-${i}`} className="rr-card__logo-cell rr-card__logo-cell--empty" aria-hidden="true" />
+                            return (
+                              <div key={co} className="rr-card__logo-cell">
+                                <CoLogo coKey={co} size={28} fullColor />
+                              </div>
+                            )
+                          })}
+                        </div>
+                        {r.story
+                          ? <p className="rr-card__story">{r.story}</p>
+                          : <p className="rr-card__story rr-card__story--empty">{r.submitted}</p>
+                        }
                       </div>
-                      {r.story
-                        ? <p className="rr-card__story">{r.story}</p>
-                        : <p className="rr-card__story rr-card__story--empty">{r.submitted}</p>
-                      }
+                      <div className="rr-card__info">
+                        {r.avatarUrl
+                          ? <img className="rr-card__avatar" src={r.avatarUrl} alt="" />
+                          : <span className="rr-card__avatar-fallback">{(r.handle?.[0] || '?').toUpperCase()}</span>
+                        }
+                        <div className="rr-card__id">
+                          <div className="rr-card__handle">{r.role}</div>
+                          <div className="rr-card__role">@{r.handle}</div>
+                        </div>
+                        <div className="rr-card__metrics">
+                          <button
+                            type="button"
+                            className={`rr-card__metric${liked ? ' rr-card__metric--liked' : ''}`}
+                            aria-label={liked ? t.cardUnlikeAction : t.cardLikeAction}
+                            aria-pressed={liked}
+                            onClick={e => { e.stopPropagation(); toggleLike(r.id) }}
+                          >
+                            <svg viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                            </svg>
+                            <span>{(r.likeCount || 0) + (liked ? 1 : 0)}</span>
+                          </button>
+                          <span className="rr-card__metric" aria-label={t.cardViewAria}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                              <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            <span>{r.viewCount > 1000 ? `${(r.viewCount/1000).toFixed(1)}k` : (r.viewCount || 0)}</span>
+                          </span>
+                        </div>
+                      </div>
+                    </article>
+                  )
+                })}
+                {hiddenCount > 0 && (
+                  <div className="rr-hidden-card">
+                    <div className="rr-hidden-card__avatars" aria-hidden="true">
+                      <span style={{ background: 'var(--color-blue)' }} />
+                      <span style={{ background: 'var(--color-accent)' }} />
+                      <span style={{ background: 'var(--color-teal)' }} />
+                      <span style={{ background: 'var(--color-gold)' }} />
                     </div>
-                    <div className="rr-card__info">
-                      {r.avatarUrl
-                        ? <img className="rr-card__avatar" src={r.avatarUrl} alt="" />
-                        : <span className="rr-card__avatar-fallback">{(r.handle?.[0] || '?').toUpperCase()}</span>
-                      }
-                      <div className="rr-card__id">
-                        <div className="rr-card__handle">{r.role}</div>
-                        <div className="rr-card__role">@{r.handle}</div>
-                      </div>
-                      <div className="rr-card__metrics">
-                        <button
-                          type="button"
-                          className={`rr-card__metric${liked ? ' rr-card__metric--liked' : ''}`}
-                          aria-label={liked ? t.cardUnlikeAction : t.cardLikeAction}
-                          aria-pressed={liked}
-                          onClick={e => { e.stopPropagation(); toggleLike(r.id) }}
-                        >
-                          <svg viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                          </svg>
-                          <span>{(r.likeCount || 0) + (liked ? 1 : 0)}</span>
-                        </button>
-                        <span className="rr-card__metric" aria-label={t.cardViewAria}>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle cx="12" cy="12" r="3" />
-                          </svg>
-                          <span>{r.viewCount > 1000 ? `${(r.viewCount / 1000).toFixed(1)}k` : (r.viewCount || 0)}</span>
-                        </span>
-                      </div>
-                    </div>
-                  </article>
-                )
-              })}
-              {hiddenCount > 0 && (
-                <div className="rr-hidden-card">
-                  <div className="rr-hidden-card__avatars" aria-hidden="true">
-                    <span style={{ background: 'var(--color-blue)' }} />
-                    <span style={{ background: 'var(--color-accent)' }} />
-                    <span style={{ background: 'var(--color-teal)' }} />
-                    <span style={{ background: 'var(--color-gold)' }} />
+                    <p className="rr-hidden-card__text"><strong>{hiddenCount}</strong> {t.hiddenFooter}</p>
                   </div>
-                  <p className="rr-hidden-card__text"><strong>{hiddenCount}</strong> {t.hiddenFooter}</p>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+                )}
+              </>
+            )}
+          </div>
       </section>
 
       <hr className="rr-divider" />
@@ -1111,28 +1110,28 @@ export default function ResumeReviews() {
       {/* HOW IT WORKS */}
       <section className="rr-howto">
         <div className="rr-howto__inner">
-          <div className="rr-howto__head">
-            <p className="rr-kicker">{t.howKicker}</p>
-            <h2 className="rr-section-title">{t.howTitle}</h2>
-            <p className="rr-section-sub">{t.howSub}</p>
+        <div className="rr-howto__head">
+          <p className="rr-kicker">{t.howKicker}</p>
+          <h2 className="rr-section-title">{t.howTitle}</h2>
+          <p className="rr-section-sub">{t.howSub}</p>
+        </div>
+        <div className="rr-howto__grid">
+          <div className="rr-howto__card">
+            <div className="rr-howto__num">{t.howStep1Num}</div>
+            <div className="rr-howto__title">{t.howStep1Title}</div>
+            <p className="rr-howto__body">{t.howStep1Body}</p>
           </div>
-          <div className="rr-howto__grid">
-            <div className="rr-howto__card">
-              <div className="rr-howto__num">{t.howStep1Num}</div>
-              <div className="rr-howto__title">{t.howStep1Title}</div>
-              <p className="rr-howto__body">{t.howStep1Body}</p>
-            </div>
-            <div className="rr-howto__card">
-              <div className="rr-howto__num">{t.howStep2Num}</div>
-              <div className="rr-howto__title">{t.howStep2Title}</div>
-              <p className="rr-howto__body">{t.howStep2Body}</p>
-            </div>
-            <div className="rr-howto__card">
-              <div className="rr-howto__num">{t.howStep3Num}</div>
-              <div className="rr-howto__title">{t.howStep3Title}</div>
-              <p className="rr-howto__body">{t.howStep3Body}</p>
-            </div>
+          <div className="rr-howto__card">
+            <div className="rr-howto__num">{t.howStep2Num}</div>
+            <div className="rr-howto__title">{t.howStep2Title}</div>
+            <p className="rr-howto__body">{t.howStep2Body}</p>
           </div>
+          <div className="rr-howto__card">
+            <div className="rr-howto__num">{t.howStep3Num}</div>
+            <div className="rr-howto__title">{t.howStep3Title}</div>
+            <p className="rr-howto__body">{t.howStep3Body}</p>
+          </div>
+        </div>
         </div>
       </section>
 
@@ -1229,7 +1228,7 @@ export default function ResumeReviews() {
                     }} />
                     {avatarPreview
                       ? <img src={avatarPreview} alt="Preview" style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                      : <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-muted)', flexShrink: 0 }} aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
+                      : <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-muted)', flexShrink: 0 }} aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                     }
                     <div>
                       <span className="rr-upload-label" style={{ display: 'block', textAlign: 'left' }}>{avatarFile ? avatarFile.name : t.formAvatarLabel}</span>
@@ -1241,7 +1240,7 @@ export default function ResumeReviews() {
                   <label className="rr-form-label">{t.formLabelResume} <span>{t.formLabelResumeRequired}</span> <em>{t.formLabelResumeNote}</em></label>
                   <div className="rr-upload-zone">
                     <input ref={fileRef} type="file" id="sfFile" accept=".pdf" onChange={e => { if (e.target.files[0]) setFileName(e.target.files[0].name) }} />
-                    <svg className="rr-upload-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
+                    <svg className="rr-upload-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     <span className="rr-upload-label">{t.formResumeUploadLabel}</span>
                     <span className="rr-upload-hint">{t.formResumeUploadHint}</span>
                     {fileName && <div className="rr-upload-filename"><span>✓</span><span>{fileName}</span></div>}
@@ -1266,13 +1265,9 @@ export default function ResumeReviews() {
                   </div>
                 </div>
                 {submitError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: '13px', marginBottom: '10px' }}>{submitError}</p>}
-                {turnstileError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
-                <Turnstile
-                  onToken={setTurnstileToken}
-                  onError={() => setTurnstileError(true)}
-                  resetRef={turnstileReset}
-                />
-                <button className="rr-form-btn" type="submit" disabled={formLoading || turnstileError || (TURNSTILE_ENABLED && !turnstileToken)}>{submitLoading ? t.formSubmitting : t.formSubmit}</button>
+                {turnstileError && <p role="alert" className="form-turnstile-error">{t.formErrorTurnstile}</p>}
+                <Turnstile onToken={setTurnstileToken} onError={() => setTurnstileError(true)} resetRef={turnstileReset} className="rr-form-turnstile" />
+                <button className="rr-form-btn" type="submit" disabled={submitLoading || turnstileError || (TURNSTILE_ENABLED && !turnstileToken)}>{submitLoading ? t.formSubmitting : t.formSubmit}</button>
                 <p className="rr-form-note">{t.formNote}</p>
               </form>
             )}
@@ -1324,7 +1319,7 @@ export default function ResumeReviews() {
                   <div className="rr-panel__thumb-sub" />
                 </div>
                 <div className="rr-panel__no-preview">
-                  <svg className="rr-panel__no-preview-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
+                  <svg className="rr-panel__no-preview-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                   <span>{t.panelNoPreview}</span>
                   <span style={{ fontSize: '11px', opacity: .6 }}>{t.panelNoPreviewSub}</span>
                 </div>

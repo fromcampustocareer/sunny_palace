@@ -202,8 +202,13 @@ export default function CoffeeChat() {
   const [formLoading, setFormLoading] = useState(false)
   const [formError, setFormError] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
-  const turnstileReset = useRef(null)
   const [turnstileError, setTurnstileError] = useState(false)
+  const turnstileReset = useRef(null)
+
+  // A token means the widget recovered (e.g. the visitor turned off their blocker).
+  useEffect(() => {
+    if (turnstileToken) setTurnstileError(false)
+  }, [turnstileToken])
   const [fieldErrors, setFieldErrors] = useState({ name: '', email: '', linkedin: '', role: '', func: '', topics: '', capacity: '', consent1: '', consent2: '' })
   const [funcChips, setFuncChips] = useState([])
   const [identityChips, setIdentityChips] = useState([])
@@ -297,12 +302,6 @@ export default function CoffeeChat() {
       document.body.style.overflow = ''
     }
   }, [modalOpen])
-
-  useEffect(() => {
-    if (turnstileToken) {
-      setTurnstileError(false)
-    }
-  }, [turnstileToken])
 
   const visibleProfiles = dbProfiles.filter(p => {
     const q = search.toLowerCase().trim()
@@ -1209,12 +1208,8 @@ export default function CoffeeChat() {
                     <button type="submit" className="cc-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formRetryLabel}</button>
                   </div>
                 )}
-                {turnstileError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
-                <Turnstile
-                  onToken={setTurnstileToken}
-                  onError={() => setTurnstileError(true)}
-                  resetRef={turnstileReset}
-                />
+                {turnstileError && <p role="alert" className="form-turnstile-error">{t.formErrorTurnstile}</p>}
+                <Turnstile onToken={setTurnstileToken} onError={() => setTurnstileError(true)} resetRef={turnstileReset} className="cc-form-turnstile" />
                 <button className="cc-form-btn" type="submit" disabled={formLoading || turnstileError || (TURNSTILE_ENABLED && !turnstileToken)}>{formLoading ? t.formSubmitting : t.formSubmit}</button>
               </form>
             )}
@@ -1273,4 +1268,3 @@ export default function CoffeeChat() {
     </ArticleLayout>
   )
 }
-

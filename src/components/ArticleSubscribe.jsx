@@ -12,18 +12,16 @@ export default function ArticleSubscribe({ source }) {
   const [turnstileError, setTurnstileError] = useState(false)
   const turnstileReset = useRef(null)
 
+  // A token means the widget recovered (e.g. the visitor turned off their blocker).
   useEffect(() => {
-    if (turnstileToken) {
-      setTurnstileError(false)
-    }
+    if (turnstileToken) setTurnstileError(false)
   }, [turnstileToken])
 
   async function handleSubmit(e) {
     e.preventDefault()
     const val = email.trim()
     if (!val) return
-    // Allow submit if: no Turnstile, or have token, or script failed (fail-open)
-    if (TURNSTILE_ENABLED && !turnstileToken && !turnstileError) return
+    if (TURNSTILE_ENABLED && !turnstileToken) return
     setLoading(true)
     setError('')
 
@@ -80,20 +78,11 @@ export default function ArticleSubscribe({ source }) {
               required
               disabled={loading}
             />
-            <button
-              className="art-subscribe__btn"
-              type="submit"
-              disabled={loading || turnstileError || (TURNSTILE_ENABLED && !turnstileToken)}
-            >
+            <button className="art-subscribe__btn" type="submit" disabled={loading || turnstileError || (TURNSTILE_ENABLED && !turnstileToken)}>
               {loading ? t.subscribeBtnLoading : t.subscribeBtnIdle}
             </button>
-            {turnstileError && <p style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
-            <Turnstile
-              onToken={setTurnstileToken}
-              onError={() => setTurnstileError(true)}
-              resetRef={turnstileReset}
-              className="art-subscribe__turnstile"
-            />
+            {turnstileError && <p role="alert" className="form-turnstile-error">{t.subscribeTurnstileError}</p>}
+            <Turnstile onToken={setTurnstileToken} onError={() => setTurnstileError(true)} resetRef={turnstileReset} className="art-subscribe__turnstile" />
           </form>
         )}
         {error && <p style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>{error}</p>}
@@ -101,4 +90,3 @@ export default function ArticleSubscribe({ source }) {
     </div>
   )
 }
-

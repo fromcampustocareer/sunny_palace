@@ -137,8 +137,8 @@ export default function OpportunityBoard() {
   const [formLoading, setFormLoading] = useState(false)
   const [formError, setFormError] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
-  const turnstileReset = useRef(null)
   const [turnstileError, setTurnstileError] = useState(false)
+  const turnstileReset = useRef(null)
   const [fieldErrors, setFieldErrors] = useState({ role: '', company: '', type: '', link: '', why: '', email: '' })
   const [form, setForm] = useState({ role: '', company: '', type: '', link: '', deadline: '', eligibility: '', why: '', email: '', location: '', pay: '' })
 
@@ -202,11 +202,11 @@ export default function OpportunityBoard() {
     fetchOpportunities()
   }, [fetchOpportunities])
 
+  // A token means the widget recovered (e.g. the visitor turned off their blocker).
   useEffect(() => {
-    if (turnstileToken) {
-      setTurnstileError(false)
-    }
+    if (turnstileToken) setTurnstileError(false)
   }, [turnstileToken])
+
   const filters = { tab, query: search.toLowerCase().trim(), stage, location, deadline }
 
   const allFeatured = dbOpportunities.filter(c => c._featured)
@@ -727,12 +727,8 @@ export default function OpportunityBoard() {
                     <button type="submit" className="ob-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formRetryLabel}</button>
                   </div>
                 )}
-                {turnstileError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
-                <Turnstile
-                  onToken={setTurnstileToken}
-                  onError={() => setTurnstileError(true)}
-                  resetRef={turnstileReset}
-                />
+                {turnstileError && <p role="alert" className="form-turnstile-error">{t.formErrorTurnstile}</p>}
+                <Turnstile onToken={setTurnstileToken} onError={() => setTurnstileError(true)} resetRef={turnstileReset} className="ob-form-turnstile" />
                 <button className="ob-form-btn" type="submit" disabled={formLoading || turnstileError || (TURNSTILE_ENABLED && !turnstileToken)}>
                   {formLoading ? t.formSubmitting : t.formSubmit}
                 </button>
