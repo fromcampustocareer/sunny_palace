@@ -48,9 +48,14 @@ function loadTurnstile() {
 export default function Turnstile({ onToken, onError, resetRef, className }) {
   const containerRef = useRef(null)
   const widgetIdRef = useRef(null)
+  const onErrorRef = useRef(onError)
 
   const handleToken = useCallback((token) => { onToken?.(token) }, [onToken])
   const handleClear = useCallback(() => { onToken?.('') }, [onToken])
+
+  useEffect(() => {
+    onErrorRef.current = onError
+  }, [onError])
 
   useEffect(() => {
     // No site key configured → no-op (local dev / build without the var).
@@ -73,7 +78,7 @@ export default function Turnstile({ onToken, onError, resetRef, className }) {
       .catch((err) => {
         // Script load failed (ad blocker, network error, etc.) — notify parent.
         console.error('Turnstile load error:', err)
-        onError?.(err)
+        onErrorRef.current?.(err)
       })
 
     return () => {
@@ -83,7 +88,7 @@ export default function Turnstile({ onToken, onError, resetRef, className }) {
       }
       widgetIdRef.current = null
     }
-  }, [handleToken, handleClear, onError])
+  }, [handleToken, handleClear])
 
   // Expose a reset() so parents can re-challenge after a submit.
   useEffect(() => {

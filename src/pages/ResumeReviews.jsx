@@ -1266,8 +1266,9 @@ export default function ResumeReviews() {
                   </div>
                 </div>
                 {submitError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: '13px', marginBottom: '10px' }}>{submitError}</p>}
-                {turnstileError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
+                {turnstileError && <p role="alert" className="form-error-turnstile">{t.forms.errorTurnstile}</p>}
                 <Turnstile
+                  className="rr-form-turnstile"
                   onToken={setTurnstileToken}
                   onError={() => setTurnstileError(true)}
                   resetRef={turnstileReset}

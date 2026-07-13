@@ -1477,7 +1477,7 @@ export default function Home() {
                 <textarea id="modalMessage" className="modal__input modal__textarea" placeholder={t.modalMessagePlaceholder} value={modalMessage} onChange={e => setModalMessage(e.target.value)} rows={4} />
               </div>
               {modalError && <p role="alert" className="modal__error">{modalError}</p>}
-              {turnstileErrorContact && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
+              {turnstileErrorContact && <p role="alert" className="form-error-turnstile">{t.forms.errorTurnstile}</p>}
               <Turnstile
                 onToken={setModalToken}
                 onError={() => setTurnstileErrorContact(true)}
@@ -1529,7 +1529,7 @@ export default function Home() {
                 <input type="text" id="waitlistSchool" className="modal__input" placeholder={t.waitlistSchoolPlaceholder} value={waitlistSchool} onChange={e => setWaitlistSchool(e.target.value)} />
               </div>
               {waitlistError && <p role="alert" className="modal__error">{waitlistError}</p>}
-              {turnstileErrorWaitlist && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
+              {turnstileErrorWaitlist && <p role="alert" className="form-error-turnstile">{t.forms.errorTurnstile}</p>}
               <Turnstile
                 onToken={setWaitlistToken}
                 onError={() => setTurnstileErrorWaitlist(true)}
@@ -1591,7 +1591,7 @@ export default function Home() {
                 />
               </div>
               {newsletterError && <p role="alert" className="modal__error">{newsletterError}</p>}
-              {turnstileErrorNewsletter && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
+              {turnstileErrorNewsletter && <p role="alert" className="form-error-turnstile">{t.forms.errorTurnstile}</p>}
               <Turnstile
                 onToken={setNewsletterToken}
                 onError={() => setTurnstileErrorNewsletter(true)}

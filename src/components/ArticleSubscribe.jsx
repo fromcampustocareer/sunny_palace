@@ -87,7 +87,7 @@ export default function ArticleSubscribe({ source }) {
             >
               {loading ? t.subscribeBtnLoading : t.subscribeBtnIdle}
             </button>
-            {turnstileError && <p style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
+            {turnstileError && <p role="alert" className="form-error-turnstile">{t.forms.errorTurnstile}</p>}
             <Turnstile
               onToken={setTurnstileToken}
               onError={() => setTurnstileError(true)}

@@ -24,6 +24,9 @@ export const es = {
     langToggleLabel: 'Cambiar idioma',
     waitlist: 'Únete a la Lista',
   },
+  forms: {
+    errorTurnstile: 'Verificación no disponible — intenta desactivar los bloqueadores de anuncios',
+  },
   home: {
     heroFoot1: 'Primera generación',
     heroFoot2: 'Mexicano-Americano',

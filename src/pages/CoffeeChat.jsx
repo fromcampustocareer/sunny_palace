@@ -1209,8 +1209,9 @@ export default function CoffeeChat() {
                     <button type="submit" className="cc-form-error-card__retry" disabled={formLoading}>{formLoading ? t.formSubmitting : t.formRetryLabel}</button>
                   </div>
                 )}
-                {turnstileError && <p role="alert" style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8 }}>Verification unavailable — try disabling ad blockers</p>}
+                {turnstileError && <p role="alert" className="form-error-turnstile">{t.forms.errorTurnstile}</p>}
                 <Turnstile
+                  className="cc-form-turnstile"
                   onToken={setTurnstileToken}
                   onError={() => setTurnstileError(true)}
                   resetRef={turnstileReset}
