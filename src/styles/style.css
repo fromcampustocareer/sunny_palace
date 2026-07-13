@@ -3815,3 +3815,13 @@ ul {
     animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
+
+/* Shown when the Turnstile script can't load (ad blocker / network). Shared by
+   every gated form: contact, waitlist, newsletter, coffee chat, resume reviews,
+   opportunity board and the article subscribe widget. */
+.form-turnstile-error {
+  color: var(--color-accent);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 8px 0 0;
+}
