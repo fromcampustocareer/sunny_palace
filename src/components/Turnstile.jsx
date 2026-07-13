@@ -53,7 +53,6 @@ export default function Turnstile({ onToken, onError, resetRef, className }) {
   // Parents pass `onError` as an inline arrow, so its identity changes on every
   // render. Keep it in a ref and out of the effect deps below — otherwise the
   // effect re-runs each render and its cleanup destroys the widget mid-typing.
-  const onErrorRef = useRef(onError)
   useEffect(() => { onErrorRef.current = onError })
 
   const handleToken = useCallback((token) => { onToken?.(token) }, [onToken])
